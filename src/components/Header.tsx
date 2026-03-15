@@ -87,7 +87,7 @@ const Header = () => {
               </li>
             ))}
             <li className="pt-4">
-              <a href="#" className="flex items-center gap-2 text-primary text-lg font-semibold">
+              <a href="/sign-in" className="flex items-center gap-2 text-primary text-lg font-semibold">
                 <User className="w-5 h-5" />
                 Login
               </a>
