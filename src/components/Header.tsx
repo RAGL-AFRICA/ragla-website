@@ -24,12 +24,12 @@ const Header = () => {
           </a>
 
           <div className="flex items-center gap-6">
-            <a href="#" className="hidden md:flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm">
+            <a href="/sign-in" className="hidden md:flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm">
               <User className="w-4 h-4" />
               Login
             </a>
             <a
-              href="#membership"
+              href="/membership-benefits"
               className="hidden md:inline-flex bg-primary text-primary-foreground px-6 py-2.5 rounded-full text-sm font-semibold hover:brightness-110 transition-all duration-200"
             >
               Join today
