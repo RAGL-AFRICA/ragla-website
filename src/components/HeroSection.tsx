@@ -42,13 +42,13 @@ const HeroSection = () => {
           </p>
           <div className="flex flex-col gap-3">
             <a
-              href="#membership"
+              href="/membership-benefits"
               className="border border-primary text-primary text-center py-3 px-8 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 uppercase tracking-wider text-sm"
             >
               Become a Member
             </a>
             <a
-              href="#about"
+              href="/about-us"
               className="border border-primary text-primary text-center py-3 px-8 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 uppercase tracking-wider text-sm"
             >
               More About RAGLA

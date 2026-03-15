@@ -1,5 +1,5 @@
 import { Facebook, Twitter, Instagram, MessageCircle, MapPin, Phone, Mail } from "lucide-react";
-import logo from "@/assets/ragla-logo.png";
+import logo from "@/assets/ragla logo.png";
 
 const Footer = () => {
   return (
@@ -11,7 +11,9 @@ const Footer = () => {
             Ready To Join? Start Your Membership Journey..
           </h3>
           <a
-            href="#membership"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdk8sP-RagcTtUhWOMolVX7unaXpBOfdF0c4fiPhuWAE45UcA/viewform?usp=header"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-primary-foreground text-primary py-3 px-8 rounded-lg font-bold hover:opacity-90 transition-opacity uppercase tracking-wider text-sm"
           >
             Join Now
@@ -23,7 +25,17 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Logo + tagline */}
           <div className="md:col-span-1">
-            <img src={logo} alt="RAGLA Logo" className="h-16 w-auto mb-4" />
+            <div className="flex items-start gap-3 mb-4">
+              <img src={logo} alt="RAGLA Logo" className="h-16 w-auto flex-shrink-0" />
+              <div>
+                <h3 className="text-foreground font-black text-lg leading-tight tracking-tight">
+                  ROYAL ACADEMY
+                </h3>
+                <p className="text-primary text-xs font-bold uppercase tracking-widest mt-1">
+                  Of Governance & Leadership Africa
+                </p>
+              </div>
+            </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Top-notch Pan-African Governance and Leadership Academy
             </p>
@@ -85,7 +97,7 @@ const Footer = () => {
       <div className="border-t border-border">
         <div className="container-main py-4 flex flex-col md:flex-row items-center justify-between gap-2">
           <p className="text-muted-foreground text-xs">
-            Copyright © 2026 <span className="font-semibold text-foreground">RAGLA.</span> Designed By Marktech Studios
+            Copyright © 2026 <span className="font-semibold text-foreground">RAGLA.</span>
           </p>
           <div className="flex gap-4">
             <a href="#" className="text-muted-foreground text-xs hover:text-primary transition-colors">FAQs</a>

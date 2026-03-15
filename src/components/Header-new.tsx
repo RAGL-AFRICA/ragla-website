@@ -21,9 +21,11 @@ const Header = () => {
         <div className="container-main flex items-center justify-between">
           <a href="/" className="flex items-center gap-3">
             <img src={logo} alt="RAGLA Logo" className="h-14 w-auto" />
-            <div className="hidden sm:block leading-tight">
-              <p className="text-foreground font-bold text-xs tracking-widest">ROYAL ACADEMY</p>
-              <p className="text-foreground font-bold text-xs tracking-widest">OF GOVERNANCE AND LEADERSHIP AFRICA</p>
+            <div className="hidden sm:block">
+              <h1 className="text-foreground font-bold text-sm leading-tight">
+                ROYAL ACADEMY OF<br />
+                GOVERNANCE AND LEADERSHIP AFRICA
+              </h1>
             </div>
           </a>
 

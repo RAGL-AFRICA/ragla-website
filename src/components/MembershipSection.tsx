@@ -42,7 +42,7 @@ const MembershipSection = () => {
               <h4 className="text-foreground font-semibold mb-4">{cat.title}</h4>
               <p className="text-muted-foreground text-sm mb-6">{cat.members} Members</p>
               <a
-                href="#"
+                href="/membership-benefits"
                 className="inline-block border border-primary text-primary py-2 px-6 rounded-lg text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 uppercase tracking-wider"
               >
                 Criteria & Benefits
@@ -59,7 +59,9 @@ const MembershipSection = () => {
           className="text-center mt-12"
         >
           <a
-            href="#"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdk8sP-RagcTtUhWOMolVX7unaXpBOfdF0c4fiPhuWAE45UcA/viewform?usp=header"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-block bg-primary text-primary-foreground py-3 px-10 rounded-lg font-bold hover:brightness-110 transition-all duration-200 uppercase tracking-wider text-sm"
           >
             Join Us Now
