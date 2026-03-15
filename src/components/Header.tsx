@@ -19,11 +19,15 @@ const Header = () => {
       {/* Top bar */}
       <header className="bg-background py-4">
         <div className="container-main flex items-center justify-between">
-          <a href="/" className="flex items-center gap-3">
-            <img src={logo} alt="RAGLA Logo" className="h-14 w-auto" />
-            <div className="hidden sm:block leading-tight">
-              <p className="text-foreground font-bold text-xs tracking-widest">ROYAL ACADEMY</p>
-              <p className="text-foreground font-bold text-xs tracking-widest">OF GOVERNANCE AND LEADERSHIP AFRICA</p>
+          <a href="/" className="flex items-center gap-4">
+            <img src={logo} alt="RAGLA Logo" className="h-16 w-auto" />
+            <div className="hidden sm:block">
+              <h1 className="text-foreground font-black text-xl md:text-2xl leading-tight tracking-tight">
+                ROYAL ACADEMY
+              </h1>
+              <p className="text-primary text-xs md:text-xs font-bold uppercase tracking-wide mt-1">
+                Of Governance & Leadership Africa
+              </p>
             </div>
           </a>
 
