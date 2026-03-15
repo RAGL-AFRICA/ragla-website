@@ -3,12 +3,12 @@ import { Search, User, Menu, X } from "lucide-react";
 import logo from "@/assets/ragla-logo.png";
 
 const navLinks = [
-  { label: "HOME", href: "#" },
-  { label: "ABOUT US", href: "#about" },
-  { label: "MEMBERSHIP", href: "#membership" },
-  { label: "CONTACT US", href: "#contact" },
-  { label: "GALLERY", href: "#gallery" },
-  { label: "UPCOMING", href: "#upcoming" },
+  { label: "HOME", href: "/" },
+  { label: "ABOUT US", href: "/about-us" },
+  { label: "MEMBERSHIP", href: "/membership-benefits" },
+  { label: "CONTACT US", href: "/contact-us" },
+  { label: "GALLERY", href: "/gallery" },
+  { label: "UPCOMING", href: "/#upcoming" },
 ];
 
 const Header = () => {
