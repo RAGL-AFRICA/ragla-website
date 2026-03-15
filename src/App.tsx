@@ -10,6 +10,12 @@ import ContactUs from "./pages/ContactUs.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import Gallery from "./pages/Gallery.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import AdminLayout from "./layouts/AdminLayout.tsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
+import ManageEvents from "./pages/admin/ManageEvents.tsx";
+import ManageGallery from "./pages/admin/ManageGallery.tsx";
+import ManageMessages from "./pages/admin/ManageMessages.tsx";
+import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +32,14 @@ const App = () => (
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/gallery" element={<Gallery />} />
+          
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="events" element={<ManageEvents />} />
+            <Route path="gallery" element={<ManageGallery />} />
+            <Route path="messages" element={<ManageMessages />} />
+          </Route>
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

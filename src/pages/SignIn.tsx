@@ -1,7 +1,10 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
+import { useNavigate, useLocation } from "react-router-dom";
 
 type Tab = "login" | "register" | "recover";
 
@@ -16,22 +19,84 @@ const SignIn = () => {
   // Recover form
   const [recoverEmail, setRecoverEmail] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/admin";
+
+  useEffect(() => {
+    // Check if Already Logged In
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate(from, { replace: true });
+      }
+    };
+    checkSession();
+  }, [navigate, from]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Ready for Supabase auth
-    console.log("Login:", loginForm);
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginForm.email,
+        password: loginForm.password,
+      });
+
+      if (error) throw error;
+      
+      toast.success("Logged in successfully");
+      navigate(from, { replace: true });
+    } catch (error: any) {
+      toast.error(error.message || "Failed to log in");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Ready for Supabase auth
-    console.log("Register:", registerForm);
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: registerForm.email,
+        password: registerForm.password,
+        options: {
+          data: {
+            username: registerForm.username,
+            first_name: registerForm.firstName,
+            last_name: registerForm.lastName,
+          }
+        }
+      });
+
+      if (error) throw error;
+      
+      toast.success("Registration successful! Check your email to verify.");
+      setTab("login");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to register");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRecover = (e: React.FormEvent) => {
+  const handleRecover = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Ready for Supabase auth
-    console.log("Recover:", recoverEmail);
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(recoverEmail);
+      
+      if (error) throw error;
+      
+      toast.success("Password recovery email sent!");
+      setTab("login");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send recovery email");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -70,8 +135,8 @@ const SignIn = () => {
                   <input type="checkbox" checked={loginForm.remember} onChange={(e) => setLoginForm({ ...loginForm, remember: e.target.checked })} className="accent-primary" />
                   Remember Me
                 </label>
-                <button type="submit" className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all">
-                  Log In
+                <button type="submit" disabled={isLoading} className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all disabled:opacity-70">
+                  {isLoading ? "Logging in..." : "Log In"}
                 </button>
                 <button type="button" onClick={() => setTab("recover")} className="text-primary text-sm hover:underline block mx-auto">
                   Recover Password
@@ -107,8 +172,8 @@ const SignIn = () => {
                   <input type="checkbox" required checked={registerForm.agreeTerms} onChange={(e) => setRegisterForm({ ...registerForm, agreeTerms: e.target.checked })} className="accent-primary" />
                   I agree with all terms & conditions *
                 </label>
-                <button type="submit" className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all">
-                  Register
+                <button type="submit" disabled={isLoading} className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all disabled:opacity-70">
+                  {isLoading ? "Registering..." : "Register"}
                 </button>
                 <p className="text-center text-muted-foreground text-sm">
                   Already have an account?{" "}
@@ -125,8 +190,8 @@ const SignIn = () => {
                 <h2 className="text-2xl font-bold text-foreground text-center mb-4">Recover Password</h2>
                 <p className="text-muted-foreground text-sm text-center">Please enter your email address. You will receive a link to create a new password via email.</p>
                 <input type="email" placeholder="E-mail" required value={recoverEmail} onChange={(e) => setRecoverEmail(e.target.value)} className="w-full bg-background border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
-                <button type="submit" className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all">
-                  Get New Password
+                <button type="submit" disabled={isLoading} className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all disabled:opacity-70">
+                  {isLoading ? "Sending..." : "Get New Password"}
                 </button>
                 <button type="button" onClick={() => setTab("login")} className="text-primary text-sm hover:underline block mx-auto">
                   Back to Login

@@ -3,16 +3,37 @@ import Footer from "@/components/Footer";
 import { Phone, MapPin, Mail } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
 const ContactUs = () => {
   const { toast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Ready for Supabase integration
-    toast({ title: "Message sent!", description: "We'll get back to you soon." });
-    setForm({ name: "", email: "", subject: "", message: "" });
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("contact_messages")
+        .insert([form]);
+
+      if (error) throw error;
+
+      toast({ 
+        title: "Message sent!", 
+        description: "Thank you for reaching out. We will get back to you soon." 
+      });
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (error: any) {
+       toast({ 
+        title: "Error sending message", 
+        description: error.message || "Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -101,9 +122,10 @@ const ContactUs = () => {
             </div>
             <button
               type="submit"
-              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:brightness-110 transition-all uppercase tracking-wider text-sm w-full"
+              disabled={isSubmitting}
+              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:brightness-110 transition-all uppercase tracking-wider text-sm w-full disabled:opacity-70"
             >
-              Send Message
+              {isSubmitting ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>

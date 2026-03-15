@@ -196,7 +196,7 @@ const MembershipBenefits = () => {
             ))}
           </div>
           <div className="text-center mt-12">
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdk8sP-RagcTtUhWOMolVX7unaXpBOfdF0c4fiPhuWAE45UcA/viewform" target="_blank" rel="noopener noreferrer" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:brightness-110 transition-all uppercase tracking-wider text-sm">
+            <a href="/sign-in" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:brightness-110 transition-all uppercase tracking-wider text-sm">
               Join Our Membership
             </a>
           </div>
