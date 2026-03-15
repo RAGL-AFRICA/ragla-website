@@ -3,12 +3,12 @@ import { Search, User, Menu, X } from "lucide-react";
 import logo from "@/assets/ragla-logo.png";
 
 const navLinks = [
-  { label: "HOME", href: "#" },
-  { label: "ABOUT US", href: "#about" },
-  { label: "MEMBERSHIP", href: "#membership" },
-  { label: "CONTACT US", href: "#contact" },
-  { label: "GALLERY", href: "#gallery" },
-  { label: "UPCOMING", href: "#upcoming" },
+  { label: "HOME", href: "/" },
+  { label: "ABOUT US", href: "/about-us" },
+  { label: "MEMBERSHIP", href: "/membership-benefits" },
+  { label: "CONTACT US", href: "/contact-us" },
+  { label: "GALLERY", href: "/gallery" },
+  { label: "UPCOMING", href: "/#upcoming" },
 ];
 
 const Header = () => {
@@ -24,12 +24,12 @@ const Header = () => {
           </a>
 
           <div className="flex items-center gap-6">
-            <a href="#" className="hidden md:flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm">
+            <a href="/sign-in" className="hidden md:flex items-center gap-2 text-foreground hover:text-primary transition-colors text-sm">
               <User className="w-4 h-4" />
               Login
             </a>
             <a
-              href="#membership"
+              href="/membership-benefits"
               className="hidden md:inline-flex bg-primary text-primary-foreground px-6 py-2.5 rounded-full text-sm font-semibold hover:brightness-110 transition-all duration-200"
             >
               Join today
@@ -87,7 +87,7 @@ const Header = () => {
               </li>
             ))}
             <li className="pt-4">
-              <a href="#" className="flex items-center gap-2 text-primary text-lg font-semibold">
+              <a href="/sign-in" className="flex items-center gap-2 text-primary text-lg font-semibold">
                 <User className="w-5 h-5" />
                 Login
               </a>
