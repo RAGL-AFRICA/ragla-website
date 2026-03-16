@@ -59,9 +59,7 @@ const MembershipSection = () => {
           className="text-center mt-12"
         >
           <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSdk8sP-RagcTtUhWOMolVX7unaXpBOfdF0c4fiPhuWAE45UcA/viewform?usp=header"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/apply"
             className="inline-block bg-primary text-primary-foreground py-3 px-10 rounded-lg font-bold hover:brightness-110 transition-all duration-200 uppercase tracking-wider text-sm"
           >
             Join Us Now

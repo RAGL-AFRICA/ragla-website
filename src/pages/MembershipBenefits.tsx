@@ -168,7 +168,7 @@ const MembershipBenefits = () => {
                   </li>
                 ))}
               </ul>
-              <a href="/sign-in" className="mt-6 block text-center bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all text-sm">
+              <a href="/apply" className="mt-6 block text-center bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all text-sm">
                 Join Now
               </a>
             </div>
@@ -196,7 +196,7 @@ const MembershipBenefits = () => {
             ))}
           </div>
           <div className="text-center mt-12">
-            <a href="/sign-in" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:brightness-110 transition-all uppercase tracking-wider text-sm">
+            <a href="/apply" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:brightness-110 transition-all uppercase tracking-wider text-sm">
               Join Our Membership
             </a>
           </div>

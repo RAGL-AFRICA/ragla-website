@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Image as ImageIcon, LogOut, ChevronLeft, Mail } from "lucide-react";
+import { LayoutDashboard, Calendar, Image as ImageIcon, LogOut, ChevronLeft, Mail, FileText } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ const AdminLayout = () => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
+    { icon: FileText, label: "Applications", path: "/admin/applications" },
     { icon: Calendar, label: "Manage Events", path: "/admin/events" },
     { icon: ImageIcon, label: "Manage Gallery", path: "/admin/gallery" },
     { icon: Mail, label: "Messages", path: "/admin/messages" },

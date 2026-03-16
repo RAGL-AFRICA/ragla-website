@@ -15,7 +15,9 @@ import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
 import ManageEvents from "./pages/admin/ManageEvents.tsx";
 import ManageGallery from "./pages/admin/ManageGallery.tsx";
 import ManageMessages from "./pages/admin/ManageMessages.tsx";
+import ManageApplications from "./pages/admin/ManageApplications.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
+import Apply from "./pages/Apply.tsx";
 
 const queryClient = new QueryClient();
 
@@ -29,12 +31,15 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/membership-benefits" element={<MembershipBenefits />} />
+          <Route path="/membership" element={<MembershipBenefits />} />
+          <Route path="/apply" element={<Apply />} />
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/gallery" element={<Gallery />} />
           
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
+            <Route path="applications" element={<ManageApplications />} />
             <Route path="events" element={<ManageEvents />} />
             <Route path="gallery" element={<ManageGallery />} />
             <Route path="messages" element={<ManageMessages />} />

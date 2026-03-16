@@ -8,13 +8,15 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsAuthenticated(!!session);
+      const isAuthorized = session?.user?.email === "admin@ragl-africa.org";
+      setIsAuthenticated(isAuthorized);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
+      const isAuthorized = session?.user?.email === "admin@ragl-africa.org";
+      setIsAuthenticated(isAuthorized);
     });
 
     return () => subscription.unsubscribe();
