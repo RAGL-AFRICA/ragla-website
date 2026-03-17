@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 type GalleryImage = {
   id: string;
@@ -14,6 +14,23 @@ type GalleryImage = {
 const Gallery = () => {
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const openLightbox = (index: number) => setLightboxIndex(index);
+  const closeLightbox = () => setLightboxIndex(null);
+  const prevImage = () => setLightboxIndex((i) => (i !== null ? (i - 1 + images.length) % images.length : null));
+  const nextImage = () => setLightboxIndex((i) => (i !== null ? (i + 1) % images.length : null));
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (lightboxIndex === null) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") prevImage();
+      if (e.key === "ArrowRight") nextImage();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [lightboxIndex, images.length]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -66,23 +83,70 @@ const Gallery = () => {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((img, i) => (
-                <div key={img.id} className="rounded-xl overflow-hidden card-shadow aspect-square group relative">
+                <div
+                  key={img.id}
+                  className="rounded-xl overflow-hidden card-shadow aspect-square cursor-pointer group"
+                  onClick={() => openLightbox(i)}
+                >
                   <img
                     src={img.image_url}
                     alt={img.title || `Gallery image ${i + 1}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
-                  {img.title && (
-                    <div className="absolute inset-x-0 bottom-0 bg-black/50 text-white text-xs px-3 py-2 truncate">
-                      {img.title}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
           )}
         </div>
       </section>
+
+      {/* Lightbox */}
+      {lightboxIndex !== null && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          onClick={closeLightbox}
+        >
+          {/* Close button */}
+          <button
+            className="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+            onClick={closeLightbox}
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          {/* Prev button */}
+          {images.length > 1 && (
+            <button
+              className="absolute left-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+          )}
+
+          {/* Image */}
+          <div
+            className="w-[50vw] h-[50vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={images[lightboxIndex].image_url}
+              alt={images[lightboxIndex].title || `Gallery image ${lightboxIndex + 1}`}
+              className="w-full h-full rounded-xl object-contain shadow-2xl"
+            />
+          </div>
+
+          {/* Next button */}
+          {images.length > 1 && (
+            <button
+              className="absolute right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          )}
+        </div>
+      )}
 
       <Footer />
     </div>
