@@ -13,6 +13,12 @@ const MEMBERSHIP_CATEGORIES = [
   "Fellow Membership"
 ];
 
+const MEMBERSHIP_BUCKET_CANDIDATES = [
+  "membership_applications",
+  "membership-applications",
+  "applications",
+];
+
 const Apply = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,20 +62,32 @@ const Apply = () => {
 
   const uploadFile = async (file: File, folder: string) => {
     const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${folder}/${fileName}`;
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('membership_applications')
-      .upload(filePath, file);
+    for (const bucketName of MEMBERSHIP_BUCKET_CANDIDATES) {
+      const filePath = `${folder}/${fileName}`;
+      const { error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(filePath, file);
 
-    if (uploadError) throw uploadError;
-    
-    const { data: { publicUrl } } = supabase.storage
-      .from('membership_applications')
-      .getPublicUrl(filePath);
-      
-    return publicUrl;
+      if (!uploadError) {
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+        return publicUrl;
+      }
+
+      const message = uploadError.message?.toLowerCase() || "";
+      const isMissingBucket = uploadError.name === "StorageApiError" && message.includes("bucket not found");
+
+      if (!isMissingBucket) {
+        throw uploadError;
+      }
+    }
+
+    throw new Error(
+      "Storage bucket for applications was not found. Please create one of these buckets in Supabase: membership_applications, membership-applications, or applications."
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,11 +129,18 @@ const Apply = () => {
       setTimeout(() => window.location.reload(), 2000); // Simplest reset for massive forms
 
     } catch (error: any) {
+       const message = error.message || "Please check your inputs and try again.";
        toast({ 
         title: "Submission Error", 
-        description: error.message || "Please check your inputs and try again.",
+        description: message,
         variant: "destructive"
       });
+
+      if (message.toLowerCase().includes("bucket")) {
+        console.error("Application upload failed because storage bucket is missing.", {
+          expectedBuckets: MEMBERSHIP_BUCKET_CANDIDATES,
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }

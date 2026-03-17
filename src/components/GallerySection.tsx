@@ -21,7 +21,7 @@ type GalleryImage = {
 const GallerySection = () => {
   const [folders, setFolders] = useState<GalleryFolder[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
-  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+  const [activeFolderId, setActiveFolderId] = useState<string>("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,21 +42,7 @@ const GallerySection = () => {
       const fetchedFolders = folderData || [];
       setFolders(fetchedFolders);
 
-      // If we have folders, set the first one as active and fetch its images
-      if (fetchedFolders.length > 0) {
-        setActiveFolderId(fetchedFolders[0].id);
-        await fetchImagesForFolder(fetchedFolders[0].id);
-      } else {
-        // Fallback: fetch any images that might not be in a folder (legacy)
-        const { data: imageData, error: imageError } = await supabase
-          .from("gallery_images")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(8);
-          
-        if (imageError) throw imageError;
-        setImages(imageData || []);
-      }
+      await fetchImages();
     } catch (error) {
       console.error("Error fetching gallery data:", error);
     } finally {
@@ -64,13 +50,19 @@ const GallerySection = () => {
     }
   };
 
-  const fetchImagesForFolder = async (folderId: string) => {
+  const fetchImages = async (folderId?: string) => {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("gallery_images")
         .select("*")
-        .eq('folder_id', folderId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(24);
+
+      if (folderId) {
+        query = query.eq("folder_id", folderId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setImages(data || []);
@@ -81,7 +73,12 @@ const GallerySection = () => {
 
   const handleFolderClick = async (folderId: string) => {
     setActiveFolderId(folderId);
-    await fetchImagesForFolder(folderId);
+    if (folderId === "all") {
+      await fetchImages();
+      return;
+    }
+
+    await fetchImages(folderId);
   };
 
   if (loading) {
@@ -120,6 +117,17 @@ const GallerySection = () => {
         {/* Folder navigation (Tabs) */}
         {folders.length > 0 && (
           <div className="flex flex-wrap justify-center gap-3 mb-10">
+            <button
+              onClick={() => handleFolderClick("all")}
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${
+                activeFolderId === "all"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "bg-background/50 text-foreground hover:bg-background border border-border"
+              }`}
+            >
+              <ImageIcon className="w-4 h-4" />
+              All Photos
+            </button>
             {folders.map((folder) => (
               <button
                 key={folder.id}

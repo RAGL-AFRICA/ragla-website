@@ -75,9 +75,18 @@ CREATE TABLE membership_applications (
   academic_referee TEXT,
   statement_of_purpose TEXT NOT NULL,
   certificates_url TEXT NOT NULL,
+  membership_code TEXT UNIQUE,
   status TEXT DEFAULT 'pending',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Safe migration for existing databases
+ALTER TABLE membership_applications
+ADD COLUMN IF NOT EXISTS membership_code TEXT;
+
+CREATE UNIQUE INDEX IF NOT EXISTS membership_applications_membership_code_key
+ON membership_applications (membership_code)
+WHERE membership_code IS NOT NULL;
 
 -- Enable RLS
 ALTER TABLE membership_applications ENABLE ROW LEVEL SECURITY;
@@ -93,3 +102,62 @@ CREATE POLICY "Enable update for authenticated users only" ON membership_applica
 
 -- Allow only authenticated users to delete
 CREATE POLICY "Enable delete for authenticated users only" ON membership_applications FOR DELETE TO authenticated USING (true);
+
+-- Storage buckets used by the website uploads
+INSERT INTO storage.buckets (id, name, public)
+VALUES
+  ('events', 'events', true),
+  ('gallery', 'gallery', true),
+  ('membership_applications', 'membership_applications', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Public read access so visitors can see uploaded flyers/gallery images/files
+CREATE POLICY "Public read events bucket"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'events');
+
+CREATE POLICY "Public read gallery bucket"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'gallery');
+
+CREATE POLICY "Public read membership bucket"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'membership_applications');
+
+-- Authenticated admins can upload and manage objects
+CREATE POLICY "Authenticated write events bucket"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'events');
+
+CREATE POLICY "Authenticated update events bucket"
+ON storage.objects FOR UPDATE TO authenticated
+USING (bucket_id = 'events');
+
+CREATE POLICY "Authenticated delete events bucket"
+ON storage.objects FOR DELETE TO authenticated
+USING (bucket_id = 'events');
+
+CREATE POLICY "Authenticated write gallery bucket"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (bucket_id = 'gallery');
+
+CREATE POLICY "Authenticated update gallery bucket"
+ON storage.objects FOR UPDATE TO authenticated
+USING (bucket_id = 'gallery');
+
+CREATE POLICY "Authenticated delete gallery bucket"
+ON storage.objects FOR DELETE TO authenticated
+USING (bucket_id = 'gallery');
+
+-- Public form submissions need to upload application files
+CREATE POLICY "Public write membership bucket"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'membership_applications');
+
+CREATE POLICY "Public update membership bucket"
+ON storage.objects FOR UPDATE
+USING (bucket_id = 'membership_applications');
+
+CREATE POLICY "Public delete membership bucket"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'membership_applications');
