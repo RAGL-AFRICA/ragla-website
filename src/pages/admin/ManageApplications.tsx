@@ -12,6 +12,7 @@ type MembershipApplication = {
   profession: string;
   membership_category: string;
   status: string;
+  membership_code: string | null;
   created_at: string;
   
   // Files
@@ -35,10 +36,21 @@ type MembershipApplication = {
   statement_of_purpose: string;
 };
 
+const RESERVED_MEMBERSHIP_CODES = new Set<string>([
+  "337422", "616922", "200322", "285622", "610422", "912822", "497322", "750222", "378622", "612822",
+  "133322", "630622", "132022", "177722", "690722", "344522", "900622", "198022", "547922", "736222",
+  "483422", "541722", "479322", "890122", "111022", "551222", "936722", "505122", "292222", "881622",
+  "420522", "979322", "392222", "388522", "781822", "703722", "852922", "931722", "858922", "153722",
+  "439122", "509822", "165122", "473022", "733822", "458222", "305122", "976222", "130222", "416022",
+  "859622", "905422", "129022", "342822", "215422", "167322", "786022", "332122", "323222", "570922",
+  "500922", "312122", "609122", "765423", "432523", "876123", "682623", "384423"
+]);
+
 const ManageApplications = () => {
   const [apps, setApps] = useState<MembershipApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchApplications();
@@ -61,19 +73,117 @@ const ManageApplications = () => {
     }
   };
 
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
+  const getYearSuffix = (isoDate: string) => {
+    const year = new Date(isoDate).getFullYear();
+    const yearSuffix = Number.isFinite(year) ? year % 100 : new Date().getFullYear() % 100;
+    return String(yearSuffix).padStart(2, "0");
+  };
+
+  const getCandidateMembershipCode = (yearSuffix: string) => {
+    const fourDigits = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+    return `${fourDigits}${yearSuffix}`;
+  };
+
+  const generateUniqueMembershipCode = async (app: MembershipApplication) => {
+    const usedCodes = new Set<string>(RESERVED_MEMBERSHIP_CODES);
+
+    for (const item of apps) {
+      if (item.membership_code) usedCodes.add(item.membership_code);
+    }
+
+    const yearSuffix = getYearSuffix(app.created_at);
+
+    for (let i = 0; i < 200; i += 1) {
+      const candidate = getCandidateMembershipCode(yearSuffix);
+      if (usedCodes.has(candidate)) continue;
+
+      const { data, error } = await supabase
+        .from("membership_applications")
+        .select("id")
+        .eq("membership_code", candidate)
+        .limit(1);
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        return candidate;
+      }
+    }
+
+    throw new Error("Failed to generate a unique membership code. Please try again.");
+  };
+
+  const sendApprovalEmail = async (app: MembershipApplication, membershipCode: string) => {
+    const { data: refreshedData, error: refreshError } = await supabase.auth.refreshSession();
+    if (refreshError && !refreshedData.session?.access_token) {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!sessionData.session?.access_token) {
+        throw new Error("Your admin session has expired. Please sign in again.");
+      }
+    }
+
+    const { data: latestSessionData, error: latestSessionError } = await supabase.auth.getSession();
+    if (latestSessionError) throw latestSessionError;
+
+    const accessToken = latestSessionData.session?.access_token;
+    if (!accessToken) {
+      throw new Error("Your admin session has expired. Please sign in again.");
+    }
+
+    const { error } = await supabase.functions.invoke("send-approval-email", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: {
+        to: app.email,
+        applicantName: app.name,
+        membershipCode,
+      },
+    });
+
+    if (error) throw error;
+  };
+
+  const handleUpdateStatus = async (app: MembershipApplication, newStatus: string) => {
     try {
+      if (newStatus === "approved") {
+        setApprovingId(app.id);
+      }
+
+      const updatePayload: { status: string; membership_code?: string } = {
+        status: newStatus,
+      };
+
+      let generatedCode = app.membership_code;
+      if (newStatus === "approved" && !generatedCode) {
+        generatedCode = await generateUniqueMembershipCode(app);
+        updatePayload.membership_code = generatedCode;
+      }
+
       const { error } = await supabase
         .from("membership_applications")
-        .update({ status: newStatus })
-        .eq("id", id);
+        .update(updatePayload)
+        .eq("id", app.id);
         
       if (error) throw error;
-      
-      setApps(apps.map(app => app.id === id ? { ...app, status: newStatus } : app));
-      toast.success(`Application marked as ${newStatus}`);
+
+      setApps(apps.map((item) => item.id === app.id ? { ...item, status: newStatus, membership_code: generatedCode || item.membership_code } : item));
+
+      if (newStatus === "approved" && generatedCode) {
+        try {
+          await sendApprovalEmail(app, generatedCode);
+          toast.success(`Application approved. Membership code ${generatedCode} emailed successfully.`);
+        } catch (emailError: any) {
+          toast.warning(`Application approved with code ${generatedCode}, but email failed: ${emailError?.message || "Unknown error"}`);
+        }
+      } else {
+        toast.success(`Application marked as ${newStatus}`);
+      }
     } catch (error: any) {
       toast.error("Failed to update status: " + error.message);
+    } finally {
+      setApprovingId(null);
     }
   };
 
@@ -156,14 +266,14 @@ const ManageApplications = () => {
                   
                   {/* Action Buttons */}
                   <div className="flex gap-3 justify-end pb-4 border-b border-border">
-                    <Button variant="outline" size="sm" onClick={() => handleUpdateStatus(app.id, 'pending')} disabled={app.status === 'pending'}>
+                    <Button variant="outline" size="sm" onClick={() => handleUpdateStatus(app, 'pending')} disabled={app.status === 'pending'}>
                       <Clock className="w-4 h-4 mr-2" /> Mark Pending
                     </Button>
-                    <Button variant="destructive" size="sm" onClick={() => handleUpdateStatus(app.id, 'rejected')} disabled={app.status === 'rejected'}>
+                    <Button variant="destructive" size="sm" onClick={() => handleUpdateStatus(app, 'rejected')} disabled={app.status === 'rejected'}>
                       <XCircle className="w-4 h-4 mr-2" /> Reject
                     </Button>
-                    <Button variant="default" size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleUpdateStatus(app.id, 'approved')} disabled={app.status === 'approved'}>
-                      <UserCheck className="w-4 h-4 mr-2" /> Approve
+                    <Button variant="default" size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleUpdateStatus(app, 'approved')} disabled={app.status === 'approved' || approvingId === app.id}>
+                      <UserCheck className="w-4 h-4 mr-2" /> {approvingId === app.id ? "Approving..." : "Approve"}
                     </Button>
                   </div>
 
@@ -210,6 +320,7 @@ const ManageApplications = () => {
                           <p><span className="text-muted-foreground">Added Qualification:</span> {app.added_qualification || 'None'}</p>
                           <p><span className="text-muted-foreground">RAGLA Number (if any):</span> {app.ragla_number || 'N/A'}</p>
                           <p><span className="text-muted-foreground">Other Memberships:</span> {app.other_membership || 'None'}</p>
+                          <p><span className="text-muted-foreground">Membership Code/ID:</span> {app.membership_code || 'Will be generated on approval'}</p>
                         </div>
                       </div>
 

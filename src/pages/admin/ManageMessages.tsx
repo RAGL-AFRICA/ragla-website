@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Mail, Trash2, CheckCircle, Clock } from "lucide-react";
+import { Mail, Trash2, CheckCircle, Clock, Reply } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 type ContactMessage = {
   id: string;
@@ -17,6 +26,10 @@ type ContactMessage = {
 const ManageMessages = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [replyingTo, setReplyingTo] = useState<ContactMessage | null>(null);
+  const [replySubject, setReplySubject] = useState("");
+  const [replyBody, setReplyBody] = useState("");
+  const [isSendingReply, setIsSendingReply] = useState(false);
 
   useEffect(() => {
     fetchMessages();
@@ -53,6 +66,72 @@ const ManageMessages = () => {
       toast.success(`Message marked as ${newStatus}`);
     } catch (error: any) {
       toast.error("Failed to update status: " + error.message);
+    }
+  };
+
+  const openReplyDialog = (msg: ContactMessage) => {
+    setReplyingTo(msg);
+    setReplySubject(`Re: ${msg.subject || "Your Inquiry"}`);
+    setReplyBody("");
+  };
+
+  const handleSendReply = async () => {
+    if (!replyingTo) return;
+    if (!replyBody.trim()) {
+      toast.error("Reply message cannot be empty.");
+      return;
+    }
+    if (!replySubject.trim()) {
+      toast.error("Reply subject cannot be empty.");
+      return;
+    }
+
+    try {
+      setIsSendingReply(true);
+
+      const { data: refreshedData, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError) {
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        if (!sessionData.session?.access_token) throw refreshError;
+      }
+
+      const { data: latestSessionData, error: latestSessionError } = await supabase.auth.getSession();
+      if (latestSessionError) throw latestSessionError;
+
+      const accessToken = latestSessionData.session?.access_token;
+      if (!accessToken) {
+        throw new Error("Your admin session has expired. Please sign in again.");
+      }
+
+      const { error } = await supabase.functions.invoke("send-reply-email", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: {
+          to: replyingTo.email,
+          subject: replySubject.trim(),
+          reply: replyBody.trim(),
+          recipientName: replyingTo.name,
+          originalSubject: replyingTo.subject,
+          originalMessage: replyingTo.message,
+        },
+      });
+
+      if (error) throw error;
+
+      // Auto-mark as read after replying
+      if (replyingTo.status === "unread") {
+        await handleUpdateStatus(replyingTo.id, replyingTo.status);
+      }
+
+      setReplyingTo(null);
+      setReplyBody("");
+      toast.success("Reply sent successfully.");
+    } catch (error: any) {
+      toast.error("Failed to send reply: " + (error?.message || "Unknown error"));
+    } finally {
+      setIsSendingReply(false);
     }
   };
 
@@ -129,6 +208,16 @@ const ManageMessages = () => {
                   </span>
                   
                   <div className="flex gap-2 ml-4">
+                    <Button
+                      size="sm"
+                      variant="default"
+                      onClick={() => openReplyDialog(msg)}
+                      title="Reply to this message"
+                      className="gap-1.5"
+                    >
+                      <Reply className="w-4 h-4" />
+                      Reply
+                    </Button>
                     <Button 
                       size="sm" 
                       variant={msg.status === 'unread' ? 'outline' : 'secondary'} 
@@ -155,6 +244,61 @@ const ManageMessages = () => {
           ))}
         </div>
       )}
+
+      {/* Reply Dialog */}
+      <Dialog open={!!replyingTo} onOpenChange={(open) => { if (!open) setReplyingTo(null); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Reply className="w-5 h-5" />
+              Reply to {replyingTo?.name}
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-2">
+            <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
+              <span className="font-medium">To:</span> {replyingTo?.email}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="reply-subject">Subject</Label>
+              <Input
+                id="reply-subject"
+                value={replySubject}
+                onChange={(e) => setReplySubject(e.target.value)}
+              />
+            </div>
+
+            {replyingTo?.message && (
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Original Message</Label>
+                <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 border-l-2 border-primary/40 whitespace-pre-wrap max-h-28 overflow-y-auto">
+                  {replyingTo.message}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="reply-body">Your Reply *</Label>
+              <Textarea
+                id="reply-body"
+                placeholder="Type your reply here..."
+                value={replyBody}
+                onChange={(e) => setReplyBody(e.target.value)}
+                rows={6}
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <Button variant="outline" onClick={() => setReplyingTo(null)} disabled={isSendingReply}>Cancel</Button>
+              <Button onClick={handleSendReply} className="gap-2" disabled={isSendingReply}>
+                <Reply className="w-4 h-4" />
+                {isSendingReply ? "Sending..." : "Send Reply"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

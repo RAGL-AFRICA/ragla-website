@@ -28,6 +28,8 @@ type GalleryImage = {
   created_at: string;
 };
 
+const GALLERY_BUCKET_CANDIDATES = ["gallery", "gallery-images", "images"];
+
 const ManageGallery = () => {
   // State
   const [folders, setFolders] = useState<GalleryFolder[]>([]);
@@ -173,23 +175,40 @@ const ManageGallery = () => {
     // Process uploads in sequence to avoid overwhelming the server
     for (const file of files) {
       try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
+        const fileExt = file.name.split('.').pop() || 'jpg';
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
         const filePath = `${activeFolder.id}/${fileName}`;
 
-        // 1. Upload to Storage
-        const { error: uploadError } = await supabase.storage
-          .from('gallery')
-          .upload(filePath, file);
+        // 1. Upload to Storage — try each bucket candidate
+        let uploadedBucket: string | null = null;
+        let publicUrl = '';
 
-        if (uploadError) throw uploadError;
-        
-        // 2. Get Public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('gallery')
-          .getPublicUrl(filePath);
+        for (const bucketName of GALLERY_BUCKET_CANDIDATES) {
+          const { error: uploadError } = await supabase.storage
+            .from(bucketName)
+            .upload(filePath, file);
 
-        // 3. Insert Database Record
+          if (!uploadError) {
+            uploadedBucket = bucketName;
+            const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+            publicUrl = data.publicUrl;
+            break;
+          }
+
+          const msg = uploadError.message?.toLowerCase() || '';
+          const isMissingBucket =
+            uploadError.name === 'StorageApiError' && msg.includes('bucket not found');
+
+          if (!isMissingBucket) throw uploadError;
+        }
+
+        if (!uploadedBucket) {
+          throw new Error(
+            `Gallery storage bucket not found. Create one in Supabase: ${GALLERY_BUCKET_CANDIDATES.join(', ')}.`
+          );
+        }
+
+        // 2. Insert Database Record
         const { error: dbError } = await supabase
           .from("gallery_images")
           .insert([{ 
@@ -202,7 +221,7 @@ const ManageGallery = () => {
         successCount++;
       } catch (err: any) {
         console.error("Error uploading file:", file.name, err);
-        toast.error(`Failed to upload ${file.name}`);
+        toast.error(`Failed to upload ${file.name}: ${err.message}`);
       }
     }
 
@@ -230,13 +249,12 @@ const ManageGallery = () => {
       setImages(images.filter(img => img.id !== id));
       toast.success("Image deleted");
 
-      // 2. Try deleting from storage if it's hosted there (clean up)
-      if (url.includes('supabase.co/storage/v1/object/public/gallery/')) {
-        const pathMatch = url.split('/gallery/')[1];
-        if (pathMatch) {
-          // ignore error if it fails (not fatal to the user intent)
-          await supabase.storage.from('gallery').remove([pathMatch]);
-        }
+      // 2. Try deleting from storage if it's a Supabase-hosted URL
+      const storageMatch = url.match(/\/object\/public\/([^/]+)\/(.+)$/);
+      if (storageMatch) {
+        const [, bucketName, filePath] = storageMatch;
+        // ignore error — not fatal to user intent
+        await supabase.storage.from(bucketName).remove([filePath]);
       }
 
     } catch (error: any) {

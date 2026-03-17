@@ -1,26 +1,35 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Calendar, Image as ImageIcon, Users } from "lucide-react";
+import { Calendar, FileText, Image as ImageIcon, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     events: 0,
     gallery: 0,
+    applications: 0,
+    pendingApplications: 0,
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [eventsRes, galleryRes] = await Promise.all([
+        const [eventsRes, galleryRes, applicationsRes, pendingApplicationsRes] = await Promise.all([
           supabase.from("events").select("*", { count: "exact", head: true }),
-          supabase.from("gallery_images").select("*", { count: "exact", head: true })
+          supabase.from("gallery_images").select("*", { count: "exact", head: true }),
+          supabase.from("membership_applications").select("*", { count: "exact", head: true }),
+          supabase
+            .from("membership_applications")
+            .select("*", { count: "exact", head: true })
+            .eq("status", "pending"),
         ]);
 
         setStats({
           events: eventsRes.count || 0,
           gallery: galleryRes.count || 0,
+          applications: applicationsRes.count || 0,
+          pendingApplications: pendingApplicationsRes.count || 0,
         });
       } catch (error) {
         console.error("Error fetching stats:", error);
@@ -45,7 +54,20 @@ const AdminDashboard = () => {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Membership Applications</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.applications}</div>
+            <p className="text-xs text-muted-foreground">
+              {stats.pendingApplications} pending review
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Events Stat Card */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
