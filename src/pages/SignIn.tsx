@@ -22,14 +22,15 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/admin";
+  const from = location.state?.from?.pathname || "/student";
 
   useEffect(() => {
-    // Check if Already Logged In
+    // If user is already logged in, redirect them to the right place
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate(from, { replace: true });
+        const destination = session.user?.email === "admin@ragl-africa.org" ? "/admin" : "/student";
+        navigate(destination, { replace: true });
       }
     };
     checkSession();
@@ -39,7 +40,7 @@ const SignIn = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: loginForm.email,
         password: loginForm.password,
       });
@@ -47,7 +48,9 @@ const SignIn = () => {
       if (error) throw error;
       
       toast.success("Logged in successfully");
-      navigate(from, { replace: true });
+      // Route based on role
+      const destination = data.user?.email === "admin@ragl-africa.org" ? "/admin" : "/student";
+      navigate(destination, { replace: true });
     } catch (error: any) {
       toast.error(error.message || "Failed to log in");
     } finally {
