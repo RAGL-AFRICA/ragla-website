@@ -53,12 +53,19 @@ const MyProfile = () => {
         full_name: profile.full_name?.trim() || null,
       };
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("user_profiles")
         .update(payload)
-        .eq("id", userId);
+        .eq("id", userId)
+        .select("id");
 
       if (error) throw error;
+
+      if (!data || data.length === 0) {
+        toast.error("Profile record not found. Please contact admin to initialize your profile.");
+        return;
+      }
+
       toast.success("Profile updated successfully!");
     } catch (err: any) {
       toast.error(err.message || "Failed to save profile");
