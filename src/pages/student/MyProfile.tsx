@@ -21,7 +21,10 @@ const MyProfile = () => {
   useEffect(() => {
     const loadProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        setLoading(false);
+        return;
+      }
       const uid = session.user.id;
       setUserId(uid);
       setUserEmail(session.user.email || "");
@@ -39,11 +42,21 @@ const MyProfile = () => {
   }, []);
 
   const handleSave = async () => {
+    if (!userId) {
+      toast.error("You must be signed in to update your profile");
+      return;
+    }
+
     setSaving(true);
     try {
+      const payload = {
+        full_name: profile.full_name?.trim() || null,
+      };
+
       const { error } = await supabase
         .from("user_profiles")
-        .upsert({ id: userId, ...profile });
+        .update(payload)
+        .eq("id", userId);
 
       if (error) throw error;
       toast.success("Profile updated successfully!");
