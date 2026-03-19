@@ -161,3 +161,26 @@ USING (bucket_id = 'membership_applications');
 CREATE POLICY "Public delete membership bucket"
 ON storage.objects FOR DELETE
 USING (bucket_id = 'membership_applications');
+
+-- News and posts table (for homepage updates + dedicated pages)
+CREATE TABLE IF NOT EXISTS news_posts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT,
+  category TEXT NOT NULL CHECK (category IN ('news', 'post')),
+  image_url TEXT,
+  published_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE news_posts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Enable read access for all users" ON news_posts;
+DROP POLICY IF EXISTS "Enable insert for authenticated users only" ON news_posts;
+DROP POLICY IF EXISTS "Enable update for authenticated users only" ON news_posts;
+DROP POLICY IF EXISTS "Enable delete for authenticated users only" ON news_posts;
+
+CREATE POLICY "Enable read access for all users" ON news_posts FOR SELECT USING (true);
+CREATE POLICY "Enable insert for authenticated users only" ON news_posts FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Enable update for authenticated users only" ON news_posts FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Enable delete for authenticated users only" ON news_posts FOR DELETE TO authenticated USING (true);

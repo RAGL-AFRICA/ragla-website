@@ -9,11 +9,15 @@ import MembershipBenefits from "./pages/MembershipBenefits.tsx";
 import ContactUs from "./pages/ContactUs.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import Gallery from "./pages/Gallery.tsx";
+import Events from "./pages/Events.tsx";
+import News from "./pages/News.tsx";
+import Posts from "./pages/Posts.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import AdminLayout from "./layouts/AdminLayout.tsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
 import ManageEvents from "./pages/admin/ManageEvents.tsx";
 import ManageGallery from "./pages/admin/ManageGallery.tsx";
+import ManageNewsPosts from "./pages/admin/ManageNewsPosts.tsx";
 import ManageMessages from "./pages/admin/ManageMessages.tsx";
 import ManageApplications from "./pages/admin/ManageApplications.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
@@ -45,11 +49,15 @@ const App = () => (
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/posts" element={<Posts />} />
           
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
             <Route path="applications" element={<ManageApplications />} />
             <Route path="events" element={<ManageEvents />} />
+            <Route path="news-posts" element={<ManageNewsPosts />} />
             <Route path="gallery" element={<ManageGallery />} />
             <Route path="messages" element={<ManageMessages />} />
           </Route>

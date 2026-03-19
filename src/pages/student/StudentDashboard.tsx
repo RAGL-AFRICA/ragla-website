@@ -70,13 +70,18 @@ const actionCards = [
 const StudentDashboard = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userEmail, setUserEmail] = useState<string>("");
+  const [metaFullName, setMetaFullName] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        setLoading(false);
+        return;
+      }
       setUserEmail(session.user.email || "");
+      setMetaFullName((session.user.user_metadata?.full_name as string) || "");
 
       const { data } = await supabase
         .from("user_profiles")
@@ -90,7 +95,7 @@ const StudentDashboard = () => {
     loadData();
   }, []);
 
-  const displayName = profile?.full_name || userEmail.split("@")[0] || "Member";
+  const displayName = profile?.full_name?.trim() || metaFullName.trim() || "Student";
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening";
 
