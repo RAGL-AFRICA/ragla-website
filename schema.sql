@@ -184,3 +184,55 @@ CREATE POLICY "Enable read access for all users" ON news_posts FOR SELECT USING 
 CREATE POLICY "Enable insert for authenticated users only" ON news_posts FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Enable update for authenticated users only" ON news_posts FOR UPDATE TO authenticated USING (true);
 CREATE POLICY "Enable delete for authenticated users only" ON news_posts FOR DELETE TO authenticated USING (true);
+
+-- Student user profile table (used by MyProfile + Student Dashboard greeting)
+CREATE TABLE IF NOT EXISTS user_profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  full_name TEXT,
+  membership_category TEXT,
+  membership_status TEXT DEFAULT 'pending',
+  membership_number TEXT,
+  avatar_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
+
+CREATE POLICY "Users can view own profile"
+ON user_profiles FOR SELECT
+TO authenticated
+USING (id = auth.uid());
+
+CREATE POLICY "Users can insert own profile"
+ON user_profiles FOR INSERT
+TO authenticated
+WITH CHECK (id = auth.uid());
+
+CREATE POLICY "Users can update own profile"
+ON user_profiles FOR UPDATE
+TO authenticated
+USING (id = auth.uid())
+WITH CHECK (id = auth.uid());
+
+-- Auto-create profile row for each newly signed-up user
+CREATE OR REPLACE FUNCTION public.handle_new_user_profile()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.user_profiles (id, full_name)
+  VALUES (NEW.id, NEW.raw_user_meta_data ->> 'full_name')
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created_profile ON auth.users;
+
+CREATE TRIGGER on_auth_user_created_profile
+AFTER INSERT ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION public.handle_new_user_profile();
