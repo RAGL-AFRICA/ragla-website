@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Calendar, Image as ImageIcon, LogOut, ChevronLeft, Mail, FileText } from "lucide-react";
+import { LayoutDashboard, Calendar, Image as ImageIcon, LogOut, ChevronLeft, Mail, FileText, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";

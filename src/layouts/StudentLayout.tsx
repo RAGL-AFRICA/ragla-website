@@ -19,8 +19,8 @@ type UserProfile = {
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard",     path: "/student" },
   { icon: GraduationCap,   label: "My Courses",    path: "/student/courses" },
-  { icon: BookOpen,        label: "Library",        path: "/student/library" },
-  { icon: CreditCard,      label: "Pay Fees",       path: "/student/fees" },
+  { icon: BookOpen,        label: "Library",        path: "https://student.ragl-africa.org/library", isExternal: true },
+  { icon: CreditCard,      label: "Pay Fees",       path: "https://student.ragl-africa.org/portal/ea314d20-92cc-4ddf-aa3a-e689138881cd", isExternal: true },
   { icon: Bell,            label: "Announcements",  path: "/student/announcements" },
   { icon: User,            label: "My Profile",     path: "/student/profile" },
 ];
@@ -114,6 +114,22 @@ const StudentLayout = () => {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.path);
+          
+          if (item.isExternal) {
+            return (
+              <a
+                key={item.path}
+                href={item.path}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-secondary group"
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                <span className="flex-1">{item.label}</span>
+              </a>
+            );
+          }
+
           return (
             <Link
               key={item.path}

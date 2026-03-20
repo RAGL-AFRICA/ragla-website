@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { externalSupabase } from "@/lib/external_supabase";
 import { toast } from "sonner";
 import { User, Save } from "lucide-react";
 
@@ -32,7 +33,23 @@ const MyProfile = () => {
         .eq("id", uid)
         .single();
 
-      if (data) setProfile(data);
+      if (data) {
+        // If avatar_url is missing in local profile, fetch from master record
+        if (!data.avatar_url && data.membership_number) {
+          const { data: extData } = await externalSupabase
+            .from("students")
+            .select("photo_url")
+            .eq("student_id", data.membership_number)
+            .maybeSingle();
+          
+          if (extData?.photo_url) {
+            data.avatar_url = extData.photo_url;
+            // Optionally update local cache for faster next load
+            supabase.from("user_profiles").update({ avatar_url: extData.photo_url }).eq("id", uid).then(() => {});
+          }
+        }
+        setProfile(data);
+      }
       setLoading(false);
     };
     loadProfile();
@@ -72,18 +89,31 @@ const MyProfile = () => {
       </div>
 
       {/* Avatar */}
-      <div className="flex items-center gap-5">
-        <div className="w-20 h-20 rounded-2xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
-          <span className="text-primary font-black text-3xl">
-            {(profile.full_name || userEmail)?.[0]?.toUpperCase() || "M"}
-          </span>
+      <div className="flex items-center gap-6">
+        <div className="relative group">
+          <div className="w-24 h-24 rounded-2xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+            {profile.avatar_url ? (
+              <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-primary font-black text-4xl">
+                {(profile.full_name || userEmail)?.[0]?.toUpperCase() || "M"}
+              </span>
+            )}
+          </div>
         </div>
         <div>
-          <p className="font-bold text-lg text-foreground">{profile.full_name || "No name set"}</p>
-          <p className="text-sm text-muted-foreground">{userEmail}</p>
-          <span className="mt-1.5 inline-block text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 uppercase tracking-wider">
-            {profile.membership_status || "Pending"}
-          </span>
+          <p className="font-bold text-xl text-foreground">{profile.full_name || "No name set"}</p>
+          <p className="text-sm text-muted-foreground mb-2">{userEmail}</p>
+          <div className="flex flex-wrap gap-2">
+            <span className="inline-block text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 uppercase tracking-wider">
+              {profile.membership_status || "Pending"}
+            </span>
+            {profile.membership_number && (
+              <span className="inline-block text-[10px] font-bold px-2.5 py-1 rounded-full bg-secondary text-muted-foreground border border-border uppercase tracking-wider font-mono">
+                ID: {profile.membership_number}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

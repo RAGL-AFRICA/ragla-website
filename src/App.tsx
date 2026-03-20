@@ -14,16 +14,14 @@ import AdminLayout from "./layouts/AdminLayout.tsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
 import ManageEvents from "./pages/admin/ManageEvents.tsx";
 import ManageGallery from "./pages/admin/ManageGallery.tsx";
-import ManageMessages from "./pages/admin/ManageMessages.tsx";
 import ManageApplications from "./pages/admin/ManageApplications.tsx";
+import ManageMessages from "./pages/admin/ManageMessages.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 import Apply from "./pages/Apply.tsx";
 // Student Portal
 import StudentLayout from "./layouts/StudentLayout.tsx";
 import { StudentRoute } from "./components/StudentRoute.tsx";
 import StudentDashboard from "./pages/student/StudentDashboard.tsx";
-import PayFees from "./pages/student/PayFees.tsx";
-import Library from "./pages/student/Library.tsx";
 import MyCourses from "./pages/student/MyCourses.tsx";
 import Announcements from "./pages/student/Announcements.tsx";
 import MyProfile from "./pages/student/MyProfile.tsx";
@@ -57,8 +55,6 @@ const App = () => (
           <Route path="/student" element={<StudentRoute><StudentLayout /></StudentRoute>}>
             <Route index element={<StudentDashboard />} />
             <Route path="courses" element={<MyCourses />} />
-            <Route path="library" element={<Library />} />
-            <Route path="fees" element={<PayFees />} />
             <Route path="announcements" element={<Announcements />} />
             <Route path="profile" element={<MyProfile />} />
           </Route>
