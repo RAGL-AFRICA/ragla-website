@@ -22,7 +22,10 @@ const MyProfile = () => {
   useEffect(() => {
     const loadProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        setLoading(false);
+        return;
+      }
       const uid = session.user.id;
       setUserId(uid);
       setUserEmail(session.user.email || "");
@@ -56,13 +59,30 @@ const MyProfile = () => {
   }, []);
 
   const handleSave = async () => {
+    if (!userId) {
+      toast.error("You must be signed in to update your profile");
+      return;
+    }
+
     setSaving(true);
     try {
-      const { error } = await supabase
+      const payload = {
+        full_name: profile.full_name?.trim() || null,
+      };
+
+      const { data, error } = await supabase
         .from("user_profiles")
-        .upsert({ id: userId, ...profile });
+        .update(payload)
+        .eq("id", userId)
+        .select("id");
 
       if (error) throw error;
+
+      if (!data || data.length === 0) {
+        toast.error("Profile record not found. Please contact admin to initialize your profile.");
+        return;
+      }
+
       toast.success("Profile updated successfully!");
     } catch (err: any) {
       toast.error(err.message || "Failed to save profile");
