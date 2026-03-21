@@ -61,7 +61,7 @@ const Gallery = () => {
         <div className="container-main text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground">Gallery</h1>
           <p className="text-muted-foreground mt-3">
-            Published photos uploaded from the admin panel.
+            All published photos from our community events.
           </p>
         </div>
       </section>

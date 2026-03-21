@@ -151,13 +151,13 @@ const StudentDashboard = () => {
         transition={{ duration: 0.5 }}
         className="pb-6 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-6"
       >
-        <div className="flex-1">
+        <div className="flex-1 text-center md:text-left">
           <p className="text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-2 opacity-80">
             {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
           </p>
-          <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight leading-tight">
-            {greeting}, <br className="md:hidden" />
-            <span className="text-primary capitalize">{displayName}</span> 👋
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tight leading-snug break-words">
+            {greeting},
+            <span className="text-primary capitalize block md:inline md:ml-1">{displayName}</span> 👋
           </h1>
           <p className="text-muted-foreground mt-3 text-base max-w-xl">
             Welcome to your RAGLA Student Portal. Here you can manage everything in one place.

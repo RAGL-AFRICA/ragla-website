@@ -24,9 +24,9 @@ const FeaturedSection = () => {
           .eq("is_featured", true)
           .order("created_at", { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') throw error;
+        if (error) throw error;
         setFeaturedEvent(data);
       } catch (error) {
         console.error("Error fetching featured event:", error);
