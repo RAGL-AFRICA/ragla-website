@@ -20,13 +20,13 @@ const MEMBERSHIP_BUCKET_CANDIDATES = [
   "applications",
 ];
 
-const AdmissionPaymentStep = ({ applicantEmail, onPaymentVerified }: { applicantEmail: string, onPaymentVerified: (paymentId: string, proofUrl: string) => void }) => {
+const AdmissionPaymentStep = ({ applicantEmail, onPaymentVerified }: { applicantEmail: string, onPaymentVerified: (paymentId: string) => void }) => {
   useEffect(() => {
     const handleIframeMessage = (event: MessageEvent) => {
       // In production, verify event.origin is exactly "https://student.ragl-africa.org"
       if (event.origin === "https://student.ragl-africa.org" && event.data?.type === 'PAYMENT_COMPLETE' && event.data?.status === 'success') {
         console.log("Payment Confirmed! ID:", event.data.paymentId);
-        onPaymentVerified(event.data.paymentId, event.data.proofUrl);
+        onPaymentVerified(event.data.paymentId);
       }
     };
 
@@ -127,7 +127,7 @@ const Apply = () => {
       }
     }
     if (currentStep === 2) {
-      if (!form.payment_evidence_url && !files.payment_evidence) {
+      if (!form.payment_id && !form.payment_evidence_url && !files.payment_evidence) {
         toast({ title: "Payment Proof Required", description: "Please complete the payment below or manually upload your proof of payment to continue.", variant: "destructive" });
         return false;
       }
@@ -177,7 +177,7 @@ const Apply = () => {
     try {
       // 1. Upload all files concurrently
       const [paymentUrl, photoUrl, resumeUrl, certificatesUrl] = await Promise.all([
-        files.payment_evidence ? uploadFile(files.payment_evidence, 'payments') : Promise.resolve(form.payment_evidence_url),
+        files.payment_evidence ? uploadFile(files.payment_evidence, 'payments') : Promise.resolve(form.payment_evidence_url || `verified-${form.payment_id}`),
         uploadFile(files.passport_photo!, 'photos'),
         uploadFile(files.resume!, 'resumes'),
         uploadFile(files.certificates!, 'certificates')
@@ -319,7 +319,7 @@ const Apply = () => {
                     <p className="text-muted-foreground text-sm">A registration fee is required to process your certified membership.</p>
                   </div>
                   
-                  {form.payment_evidence_url ? (
+                  {form.payment_id || form.payment_evidence_url ? (
                     <div className="bg-primary/5 border border-primary/20 rounded-2xl p-8 space-y-6">
                       <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Check className="w-8 h-8 text-primary" />
@@ -334,8 +334,8 @@ const Apply = () => {
                       {/* Payment Widget Form */}
                       <AdmissionPaymentStep 
                         applicantEmail={form.email || 'applicant@example.com'} 
-                        onPaymentVerified={(paymentId, proofUrl) => {
-                          setForm(prev => ({ ...prev, payment_id: paymentId, payment_evidence_url: proofUrl }));
+                        onPaymentVerified={(paymentId) => {
+                          setForm(prev => ({ ...prev, payment_id: paymentId }));
                           toast({ title: "Payment Successful", description: "Your payment has been verified." });
                           setCurrentStep(3);
                           window.scrollTo(0, 0);
