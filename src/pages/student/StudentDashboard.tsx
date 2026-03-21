@@ -103,9 +103,13 @@ const StudentDashboard = () => {
             .maybeSingle();
           
           if (extData?.photo_url) {
-            data.avatar_url = extData.photo_url;
+            let finalPhoto = extData.photo_url;
+            if (!finalPhoto.startsWith('http') && !finalPhoto.startsWith('data:')) {
+              finalPhoto = `https://mgjqoyoparpxisabhzgi.supabase.co/storage/v1/object/public/students/${finalPhoto}`;
+            }
+            data.avatar_url = finalPhoto;
             // Optionally update local cache for faster next load
-            supabase.from("user_profiles").update({ avatar_url: extData.photo_url }).eq("id", session.user.id).then(() => {});
+            supabase.from("user_profiles").update({ avatar_url: finalPhoto }).eq("id", session.user.id).then(() => {});
           }
         }
         setProfile(data);

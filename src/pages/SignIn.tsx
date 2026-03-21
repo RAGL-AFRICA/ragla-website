@@ -102,10 +102,23 @@ const SignIn = () => {
           return;
         }
 
+        // Helper to get the best possible photo URL
+        const rawPhoto = extData.photo_url;
+        let finalPhoto = null;
+        
+        if (rawPhoto) {
+          // If it's just a filename or relative path, prefix with external storage base
+          if (!rawPhoto.startsWith('http') && !rawPhoto.startsWith('data:')) {
+             finalPhoto = `https://mgjqoyoparpxisabhzgi.supabase.co/storage/v1/object/public/students/${rawPhoto}`;
+          } else {
+             finalPhoto = rawPhoto;
+          }
+        }
+
         // We found them in master records! Set the base preview immediately
         const basePreview = {
           name: extData.full_name,
-          photo: extData.photo_url,
+          photo: finalPhoto,
           studentId: extData.student_id,
           email: null as string | null
         };
@@ -207,16 +220,27 @@ const SignIn = () => {
 
       setIsValidatingId(true);
       try {
-        const { data, error } = await externalSupabase
+        const { data } = await externalSupabase
           .from("students")
           .select("full_name, photo_url")
           .eq("student_id", sid)
           .maybeSingle();
 
         if (data) {
+          const rawPhoto = data.photo_url;
+          let finalPhoto = null;
+          
+          if (rawPhoto) {
+            if (!rawPhoto.startsWith('http') && !rawPhoto.startsWith('data:')) {
+               finalPhoto = `https://mgjqoyoparpxisabhzgi.supabase.co/storage/v1/object/public/students/${rawPhoto}`;
+            } else {
+               finalPhoto = rawPhoto;
+            }
+          }
+
           setStudentPreview({
             name: data.full_name,
-            photo: data.photo_url
+            photo: finalPhoto
           });
         } else {
           setStudentPreview(null);
