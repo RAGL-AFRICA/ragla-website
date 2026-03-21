@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Link } from "react-router-dom";
 import { Shield, Award, Users, BookOpen, Target, Handshake, GraduationCap, Star, Globe, Leaf } from "lucide-react";
 
 const missionAreas = [
@@ -163,9 +164,9 @@ const AboutUs = () => {
             ))}
           </div>
           <div className="text-center mt-12">
-            <a href="/membership-benefits" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:brightness-110 transition-all uppercase tracking-wider text-sm">
+            <Link to="/membership-benefits" className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-semibold hover:brightness-110 transition-all uppercase tracking-wider text-sm">
               Join Our Membership
-            </a>
+            </Link>
           </div>
         </div>
       </section>
