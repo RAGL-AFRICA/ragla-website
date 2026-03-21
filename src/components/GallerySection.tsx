@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { Image as ImageIcon, FolderOpen } from "lucide-react";
+import { Image as ImageIcon, FolderOpen, ArrowRight } from "lucide-react";
 
 type GalleryFolder = {
   id: string;
@@ -57,7 +58,7 @@ const GallerySection = () => {
         .from("gallery_images")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(24);
+        .limit(12);
 
       if (folderId) {
         query = query.eq("folder_id", folderId);
@@ -161,14 +162,14 @@ const GallerySection = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {images.map((img, i) => (
                 <motion.div
                   key={img.id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: (i % 4) * 0.05 }}
-                  className="rounded-xl overflow-hidden aspect-[3/2] group relative bg-background/20 cursor-pointer"
+                  transition={{ duration: 0.4, delay: (i % 3) * 0.05 }}
+                  className="rounded-2xl overflow-hidden aspect-[4/3] group relative bg-background/20 cursor-pointer shadow-lg"
                   onMouseEnter={() => setExpandedImg(img)}
                   onMouseLeave={() => setExpandedImg(null)}
                   onClick={() => setExpandedImg(expandedImg?.id === img.id ? null : img)}
@@ -176,7 +177,7 @@ const GallerySection = () => {
                   <img
                     src={img.image_url}
                     alt={img.title || `Gallery image ${i + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 group-hover:brightness-110"
                   />
                 </motion.div>
               ))}
@@ -195,11 +196,22 @@ const GallerySection = () => {
                   <img
                     src={expandedImg.image_url}
                     alt={expandedImg.title || "Gallery image"}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover brightness-110"
                   />
                 </div>
               </div>
             )}
+
+            {/* View all gallery link */}
+            <div className="mt-8 flex justify-center">
+              <Link
+                to="/gallery"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:brightness-110 transition-all shadow-lg shadow-primary/20"
+              >
+                View All Gallery
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </>
         )}
       </div>
