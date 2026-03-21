@@ -20,7 +20,6 @@ import ManageGallery from "./pages/admin/ManageGallery.tsx";
 import ManageNewsPosts from "./pages/admin/ManageNewsPosts.tsx";
 import ManageMessages from "./pages/admin/ManageMessages.tsx";
 import ManageApplications from "./pages/admin/ManageApplications.tsx";
-import ManageMessages from "./pages/admin/ManageMessages.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 import Apply from "./pages/Apply.tsx";
 // Student Portal

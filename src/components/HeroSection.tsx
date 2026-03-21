@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
@@ -44,18 +45,18 @@ const HeroSection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <a
-              href="/apply"
+            <Link
+              to="/apply"
               className="bg-primary text-primary-foreground text-center py-4 px-8 rounded-xl font-bold shadow-lg shadow-primary/20 hover:-translate-y-1 hover:shadow-primary/40 transition-all duration-300 uppercase tracking-wider text-sm flex-1"
             >
               Apply for Membership
-            </a>
-            <a
-              href="/about-us"
+            </Link>
+            <Link
+              to="/about-us"
               className="bg-secondary text-foreground border border-border text-center py-4 px-8 rounded-xl font-bold hover:bg-secondary/80 hover:-translate-y-1 transition-all duration-300 uppercase tracking-wider text-sm flex-1"
             >
               Discover RAGLA
-            </a>
+            </Link>
           </div>
         </motion.div>
       </div>

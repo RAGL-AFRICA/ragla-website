@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Award, BookOpen, BarChart3, Handshake, Lightbulb } from "lucide-react";
 
 const pillars = [
@@ -86,12 +87,12 @@ const AboutSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <a
-              href="/about-us"
+            <Link
+              to="/about-us"
               className="inline-block border border-primary text-primary py-3 px-8 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 uppercase tracking-wider text-sm"
             >
               More About Us
-            </a>
+            </Link>
           </motion.div>
 
           {/* Right: Stat */}

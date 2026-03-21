@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { ArrowRight, Star } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -92,19 +93,19 @@ const FeaturedSection = () => {
             )}
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="/gallery"
+              <Link
+                to="/gallery"
                 className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 px-8 rounded-lg font-semibold hover:brightness-110 transition-all duration-200 uppercase tracking-wider text-sm w-full sm:w-auto"
               >
                 View Gallery
                 <ArrowRight className="w-4 h-4" />
-              </a>
-              <a
-                href="/about-us"
+              </Link>
+              <Link
+                to="/about-us"
                 className="inline-flex items-center justify-center gap-2 border border-primary text-primary py-3 px-8 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 uppercase tracking-wider text-sm w-full sm:w-auto"
               >
                 Learn More
-              </a>
+              </Link>
             </div>
           </motion.div>
         </div>

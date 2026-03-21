@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const categories = [
   { code: "FM-RAGLA", title: "Foundational Member (FM-RAGLA)", members: "55+" },
@@ -41,12 +42,12 @@ const MembershipSection = () => {
               <h3 className="text-primary text-lg font-bold mb-2">{cat.code}</h3>
               <h4 className="text-foreground font-semibold mb-4">{cat.title}</h4>
               <p className="text-muted-foreground text-sm mb-6">{cat.members} Members</p>
-              <a
-                href="/membership-benefits"
+              <Link
+                to="/membership-benefits"
                 className="inline-block border border-primary text-primary py-2 px-6 rounded-lg text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 uppercase tracking-wider"
               >
                 Criteria & Benefits
-              </a>
+              </Link>
             </motion.div>
           ))}
         </div>
@@ -58,12 +59,12 @@ const MembershipSection = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center mt-12"
         >
-          <a
-            href="/apply"
+          <Link
+            to="/apply"
             className="inline-block bg-primary text-primary-foreground py-3 px-10 rounded-lg font-bold hover:brightness-110 transition-all duration-200 uppercase tracking-wider text-sm"
           >
             Join Us Now
-          </a>
+          </Link>
         </motion.div>
       </div>
     </section>
