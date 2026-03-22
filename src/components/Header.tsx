@@ -26,14 +26,14 @@ const Header = () => {
         <div className="container-main flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
           
           {/* Logo & Brand */}
-          <Link to="/" className="flex items-center gap-2 md:gap-3 flex-shrink-0">
-            <img src={logo} alt="RAGLA Logo" className="h-10 md:h-14 w-auto drop-shadow-sm" />
-            <div className="hidden sm:block">
-              <h1 className="text-foreground font-black text-sm md:text-base leading-tight tracking-tight uppercase">
+          <Link to="/" className="flex items-center gap-3 md:gap-4 z-50">
+            <img src={logo} alt="RAGLA Logo" className="h-12 md:h-16 w-auto drop-shadow-sm" />
+            <div className="hidden lg:flex flex-col items-center justify-center">
+              <h1 className="text-foreground font-black text-[1.7rem] leading-none uppercase tracking-normal">
                 Royal Academy
               </h1>
-              <p className="text-primary text-[8px] md:text-[9px] font-bold uppercase tracking-widest">
-                Governance & Leadership Africa
+              <p className="text-primary text-[0.67rem] font-extrabold uppercase tracking-normal mt-0.5 opacity-90">
+                Of Governance & Leadership Africa
               </p>
             </div>
           </Link>

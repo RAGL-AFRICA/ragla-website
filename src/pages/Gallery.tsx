@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Image as ImageIcon, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 type GalleryImage = {
   id: string;
@@ -59,9 +60,9 @@ const Gallery = () => {
 
       <section className="section-padding bg-secondary">
         <div className="container-main text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground">Gallery</h1>
-          <p className="text-muted-foreground mt-3">
-            All published photos from our community events.
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Gallery</h1>
+          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
+            Explore the visual journey of our vibrant Pan-African community, leadership events, and historical milestones.
           </p>
         </div>
       </section>
@@ -91,7 +92,9 @@ const Gallery = () => {
                   <img
                     src={img.image_url}
                     alt={img.title || `Gallery image ${i + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 select-none"
+                    onContextMenu={(e) => e.preventDefault()}
+                    onDragStart={(e) => e.preventDefault()}
                   />
                 </div>
               ))}
@@ -101,52 +104,63 @@ const Gallery = () => {
       </section>
 
       {/* Lightbox */}
-      {lightboxIndex !== null && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
-          onClick={closeLightbox}
-        >
-          {/* Close button */}
-          <button
-            className="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm"
             onClick={closeLightbox}
           >
-            <X className="w-6 h-6" />
-          </button>
-
-          {/* Prev button */}
-          {images.length > 1 && (
+            {/* Close button */}
             <button
-              className="absolute left-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
-              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              className="absolute top-4 right-4 md:top-8 md:right-8 z-50 text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors"
+              onClick={closeLightbox}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <X className="w-6 h-6 md:w-8 md:h-8" />
             </button>
-          )}
 
-          {/* Image */}
-          <div
-            className="w-[50vw] h-[50vh] flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={images[lightboxIndex].image_url}
-              alt={images[lightboxIndex].title || `Gallery image ${lightboxIndex + 1}`}
-              className="w-full h-full rounded-xl object-contain shadow-2xl"
-            />
-          </div>
+            {/* Prev button */}
+            {images.length > 1 && (
+              <button
+                className="absolute left-2 md:left-8 z-50 text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors"
+                onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              >
+                <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
+              </button>
+            )}
 
-          {/* Next button */}
-          {images.length > 1 && (
-            <button
-              className="absolute right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
-              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            {/* Image Container */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-[100vw] h-[100vh] flex items-center justify-center pointer-events-none p-4 md:p-12"
+              onClick={(e) => e.stopPropagation()}
             >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          )}
-        </div>
-      )}
+              <img
+                src={images[lightboxIndex].image_url}
+                alt="Gallery image"
+                className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.5)] select-none pointer-events-auto"
+                onContextMenu={(e) => e.preventDefault()}
+                onDragStart={(e) => e.preventDefault()}
+              />
+            </motion.div>
+
+            {/* Next button */}
+            {images.length > 1 && (
+              <button
+                className="absolute right-2 md:right-8 z-50 text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors"
+                onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              >
+                <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>
