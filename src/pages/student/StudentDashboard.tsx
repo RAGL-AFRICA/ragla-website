@@ -20,13 +20,12 @@ const actionCards = [
   {
     id: "fees",
     icon: CreditCard,
-    label: "Pay Fees",
-    description: "View your fee balance and make payments",
-    href: "https://student.ragl-africa.org/portal/ea314d20-92cc-4ddf-aa3a-e689138881cd",
-    isExternal: true,
+    label: "Payments & Fees",
+    description: "View your fee history and make secure payments",
+    href: "/student/payments",
     gradient: "from-blue-600 to-blue-700",
     glow: "group-hover:shadow-blue-500/30",
-    badge: null,
+    badge: "Instant",
   },
   {
     id: "library",
@@ -94,24 +93,92 @@ const StudentDashboard = () => {
         .single();
 
       if (data) {
-        // If avatar_url is missing in local profile, fetch from master record
-        if (!data.avatar_url && data.membership_number) {
-          const { data: extData } = await externalSupabase
-            .from("students")
-            .select("photo_url")
-            .eq("student_id", data.membership_number)
-            .maybeSingle();
-          
-          if (extData?.photo_url) {
-            let finalPhoto = extData.photo_url;
-            if (!finalPhoto.startsWith('http') && !finalPhoto.startsWith('data:')) {
-              finalPhoto = `https://mgjqoyoparpxisabhzgi.supabase.co/storage/v1/object/public/students/${finalPhoto}`;
+        // A. Authoritative Identity Sync (from RAGLA Students Table)
+        if (data.membership_number) {
+          try {
+            const { data: extStudent } = await externalSupabase
+              .from("students")
+              .select("full_name, photo_url")
+              .eq("student_id", data.membership_number)
+              .maybeSingle();
+            
+            if (extStudent) {
+              data.full_name = extStudent.full_name || data.full_name;
+              
+              if (extStudent.photo_url) {
+                 let finalPhoto = extStudent.photo_url;
+                 if (!finalPhoto.startsWith('http') && !finalPhoto.startsWith('data:')) {
+                   finalPhoto = `https://mgjqoyoparpxisabhzgi.supabase.co/storage/v1/object/public/students/${finalPhoto}`;
+                 }
+                 data.avatar_url = finalPhoto;
+              }
+              
+              // Silent sync back to local
+              supabase.from("user_profiles").update({ 
+                full_name: data.full_name,
+                avatar_url: data.avatar_url 
+              }).eq("id", session.user.id).then(() => {});
             }
-            data.avatar_url = finalPhoto;
-            // Optionally update local cache for faster next load
-            supabase.from("user_profiles").update({ avatar_url: finalPhoto }).eq("id", session.user.id).then(() => {});
+          } catch (err) {
+            console.warn("External student sync error:", err);
           }
         }
+
+        // FETCH LATEST PAYMENT STATUS (External RAGLA Source of Truth)
+        try {
+          let allPayments = [];
+          
+          // 1. Try by Student ID
+          if (data.membership_number) {
+            const { data: idPayments } = await externalSupabase
+              .from("payments")
+              .select("status, fee_types(name), student_data")
+              .filter("student_data->>student_id", "eq", data.membership_number)
+              .eq("status", "success");
+            if (idPayments) allPayments = idPayments;
+          }
+
+          // 2. Fallback to Email (Search both payer_email and student_data->>email)
+          if (allPayments.length === 0 && session.user.email) {
+            const { data: emailPayments } = await externalSupabase
+              .from("payments")
+              .select("status, fee_types(id, name), student_data, payer_email")
+              .or(`payer_email.ilike.${session.user.email},student_data->>email.ilike.${session.user.email}`)
+              .eq("status", "success");
+            if (emailPayments) allPayments = emailPayments;
+          }
+
+          if (allPayments && allPayments.length > 0) {
+            data.membership_status = "active";
+            
+            // Resolve Student ID if missing locally
+            const resolvedSid = allPayments.find(p => (p.student_data as any)?.student_id)?.student_data?.student_id;
+            if (resolvedSid && !data.membership_number) {
+              data.membership_number = resolvedSid;
+            }
+
+            // COLLECT ALL UNIQUE CATEGORIES
+            const categories = Array.from(new Set(
+              allPayments
+                .map(p => (p.fee_types as any)?.name)
+                .filter(name => !!name)
+            ));
+            
+            if (categories.length > 0) {
+              data.membership_category = categories.join(", ");
+            }
+            
+            // Sync resolved data back to local profile
+            supabase.from("user_profiles").update({ 
+              membership_status: "active",
+              membership_category: data.membership_category,
+              membership_number: data.membership_number
+            }).eq("id", session.user.id).then(() => {});
+          }
+        } catch (err) {
+          console.warn("Status sync error:", err);
+        }
+
         setProfile(data);
       }
       setLoading(false);
@@ -188,7 +255,7 @@ const StudentDashboard = () => {
       </motion.div>
 
       {/* Membership Status Banner */}
-      {!loading && (
+      {!loading && profile?.membership_status !== "active" && (
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -210,14 +277,12 @@ const StudentDashboard = () => {
             </div>
           </div>
           {(profile?.membership_status === "pending" || !profile?.membership_status) && (
-            <a
-              href="https://student.ragl-africa.org/portal/ea314d20-92cc-4ddf-aa3a-e689138881cd"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to={`/student/payments?student_id=${profile?.membership_number || ""}`}
               className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-sm font-bold hover:brightness-110 transition-all whitespace-nowrap shadow-lg shadow-primary/20"
             >
               Complete Payment <ArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
           )}
         </motion.div>
       )}
@@ -263,7 +328,7 @@ const StudentDashboard = () => {
                   </a>
                 ) : (
                   <Link
-                    to={card.href}
+                    to={card.id === "fees" ? `/student/payments?student_id=${profile?.membership_number || ""}` : card.href}
                     className={`group relative flex flex-col p-6 rounded-2xl border border-border bg-card hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${card.glow} overflow-hidden h-full`}
                   >
                     <div className={`absolute top-0 right-0 w-32 h-32 rounded-bl-full bg-gradient-to-br ${card.gradient} opacity-[0.06] group-hover:opacity-10 transition-opacity`} />

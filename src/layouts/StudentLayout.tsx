@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { externalSupabase } from "@/lib/external_supabase";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import {
@@ -18,9 +19,9 @@ type UserProfile = {
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard",     path: "/student" },
+  { icon: CreditCard,      label: "Payments",      path: "/student/payments" },
   { icon: GraduationCap,   label: "My Courses",    path: "/student/courses" },
   { icon: BookOpen,        label: "Library",        path: "https://student.ragl-africa.org/library", isExternal: true },
-  { icon: CreditCard,      label: "Pay Fees",       path: "https://student.ragl-africa.org/portal/ea314d20-92cc-4ddf-aa3a-e689138881cd", isExternal: true },
   { icon: Bell,            label: "Announcements",  path: "/student/announcements" },
   { icon: User,            label: "My Profile",     path: "/student/profile" },
 ];
@@ -44,7 +45,80 @@ const StudentLayout = () => {
         .eq("id", session.user.id)
         .single();
 
-      setProfile(data);
+      if (data) {
+        // A. Authoritative Identity Sync (from RAGLA Students Table)
+        if (data.membership_number) {
+          try {
+            const { data: extStudent } = await externalSupabase
+              .from("students")
+              .select("full_name")
+              .eq("student_id", data.membership_number)
+              .maybeSingle();
+            
+            if (extStudent) {
+              data.full_name = extStudent.full_name || data.full_name;
+              // Silent sync back to local
+              supabase.from("user_profiles").update({ 
+                full_name: data.full_name
+              }).eq("id", session.user.id).then(() => {});
+            }
+          } catch (err) {
+            console.warn("External student name sync error:", err);
+          }
+        }
+
+        // B. SELF-HEALING: If pending or missing info, check external DB
+        try {
+          let allPayments = [];
+          
+          // 1. Try by ID
+          if (data.membership_number) {
+            const { data: idPayments } = await externalSupabase
+              .from("payments")
+              .select("status, fee_types(name), student_data")
+              .filter("student_data->>student_id", "eq", data.membership_number)
+              .eq("status", "success");
+            if (idPayments) allPayments = idPayments;
+          }
+
+          // 2. Try by Email (Search both payer_email and student_data->>email)
+          if (allPayments.length === 0 && session.user.email) {
+            const { data: emailPayments } = await externalSupabase
+              .from("payments")
+              .select("status, fee_types(id, name), student_data, payer_email")
+              .or(`payer_email.ilike.${session.user.email},student_data->>email.ilike.${session.user.email}`)
+              .eq("status", "success");
+            if (emailPayments) allPayments = emailPayments;
+          }
+
+          if (allPayments && allPayments.length > 0) {
+            data.membership_status = "active";
+            
+            // Resolve Student ID if missing locally
+            const resolvedSid = allPayments.find(p => (p.student_data as any)?.student_id)?.student_data?.student_id;
+            if (resolvedSid && !data.membership_number) {
+              data.membership_number = resolvedSid;
+            }
+
+            const categories = Array.from(new Set(
+              allPayments.map(p => (p.fee_types as any)?.name).filter(n => !!n)
+            ));
+            if (categories.length > 0) {
+              data.membership_category = categories.join(", ");
+            }
+
+            // Sync back to local profile (silent)
+            supabase.from("user_profiles").update({ 
+              membership_status: "active",
+              membership_category: data.membership_category,
+              membership_number: data.membership_number
+            }).eq("id", session.user.id).then(() => {});
+          }
+        } catch (err) {
+          console.warn("Layout status sync error:", err);
+        }
+        setProfile(data);
+      }
     };
 
     loadProfile();
@@ -114,6 +188,9 @@ const StudentLayout = () => {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.path);
+          const finalPath = item.label === "Payments" && profile?.membership_number 
+            ? `${item.path}?student_id=${profile.membership_number}`
+            : item.path;
           
           if (item.isExternal) {
             return (
@@ -133,7 +210,7 @@ const StudentLayout = () => {
           return (
             <Link
               key={item.path}
-              to={item.path}
+              to={finalPath}
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 group
                 ${active 

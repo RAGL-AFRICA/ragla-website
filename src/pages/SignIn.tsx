@@ -271,10 +271,11 @@ const SignIn = () => {
     setIsLoading(true);
     try {
       // 1. Validate Student ID using the external supabase
+      const sid = registerForm.studentId.trim();
       const { data: externalStudent, error: checkError } = await externalSupabase
         .from("students")
         .select("student_id, full_name, photo_url")
-        .eq("student_id", registerForm.studentId)
+        .eq("student_id", sid)
         .single();
       
       if (checkError || !externalStudent) {
@@ -287,7 +288,7 @@ const SignIn = () => {
       const { data: existingProfile } = await supabase
         .from("user_profiles")
         .select("id")
-        .eq("membership_number", registerForm.studentId)
+        .eq("membership_number", sid)
         .maybeSingle();
       
       if (existingProfile) {
@@ -296,11 +297,12 @@ const SignIn = () => {
 
       // 2. Perform Supabase Auth Signup
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: registerForm.email,
+        email: registerForm.email.trim(),
         password: registerForm.password,
         options: {
           data: {
-            full_name: registerForm.fullName || masterStudentName || "",
+            full_name: registerForm.fullName || masterStudentName || "Student",
+            student_id: sid, // Store in auth metadata as additional source of truth
           }
         }
       });
@@ -309,14 +311,13 @@ const SignIn = () => {
       if (!authData.user) throw new Error("Signup failed.");
 
       // 3. Update local profile with student data
-      const sid = registerForm.studentId.trim();
       const { error: upsertError } = await supabase
         .from("user_profiles")
         .upsert({ 
           id: authData.user.id,
-          email: registerForm.email.trim(), 
+          // Note: In case 'email' column doesn't exist, we omit it or allow it if schema updated recently
           membership_number: sid,
-          full_name: registerForm.fullName || masterStudentName || "New Member",
+          full_name: registerForm.fullName || masterStudentName || "Student",
           avatar_url: externalStudent.photo_url,
           membership_status: "active" 
         });
@@ -360,6 +361,37 @@ const SignIn = () => {
       <section className="section-padding">
         <div className="container-main max-w-md mx-auto">
           <div className="bg-card rounded-2xl p-8 card-shadow">
+
+            {/* Tab Switcher — only shown for login/register, not recover */}
+            {tab !== "recover" && (
+              <div className="relative flex bg-background rounded-xl p-1 mb-8 border border-border">
+                {/* Animated active pill */}
+                <motion.div
+                  layout
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  className="absolute top-1 bottom-1 rounded-lg bg-primary shadow-lg shadow-primary/20"
+                  style={{
+                    left: tab === "login" ? "4px" : "calc(50% + 0px)",
+                    width: "calc(50% - 4px)",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setTab("login")}
+                  className={`relative z-10 flex-1 py-2.5 text-sm font-bold rounded-lg transition-colors duration-200 ${tab === "login" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTab("register")}
+                  className={`relative z-10 flex-1 py-2.5 text-sm font-bold rounded-lg transition-colors duration-200 ${tab === "register" ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  Register
+                </button>
+              </div>
+            )}
+
             {/* Login */}
             {tab === "login" && (
               <form onSubmit={handleLogin} className="space-y-6">
@@ -513,12 +545,6 @@ const SignIn = () => {
                 >
                   {isLoading ? "Logging in..." : "Continue to Dashboard"}
                 </button>
-                <p className="text-center text-muted-foreground text-sm">
-                  Don't have an account?{" "}
-                  <button type="button" onClick={() => setTab("register")} className="text-primary font-semibold hover:underline">
-                    Register
-                  </button>
-                </p>
               </form>
             )}
 
@@ -581,12 +607,6 @@ const SignIn = () => {
                 <button type="submit" disabled={isLoading} className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:brightness-110 transition-all disabled:opacity-70">
                   {isLoading ? "Registering..." : "Register"}
                 </button>
-                <p className="text-center text-muted-foreground text-sm">
-                  Already have an account?{" "}
-                  <button type="button" onClick={() => setTab("login")} className="text-primary font-semibold hover:underline">
-                    Login
-                  </button>
-                </p>
               </form>
             )}
 
