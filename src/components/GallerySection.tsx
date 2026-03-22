@@ -58,7 +58,7 @@ const GallerySection = () => {
         .from("gallery_images")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(24);
+        .limit(12);
 
       if (folderId) {
         query = query.eq("folder_id", folderId);

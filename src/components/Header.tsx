@@ -9,6 +9,9 @@ const navLinks = [
   { label: "About Us", href: "/about-us" },
   { label: "Membership", href: "/membership-benefits" },
   { label: "Gallery", href: "/gallery" },
+  { label: "Events", href: "/events" },
+  { label: "News", href: "/news" },
+  { label: "Posts", href: "/posts" },
   { label: "Contact Us", href: "/contact-us" },
 ];
 
@@ -19,8 +22,8 @@ const Header = () => {
   return (
     <>
       {/* Unified Sticky Navbar */}
-      <header className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border shadow-sm">
-        <div className="container-main flex items-center justify-between h-20 md:h-24">
+      <header className="fixed top-0 inset-x-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border shadow-lg">
+        <div className="container-main flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
           
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-3 md:gap-4 z-50">
@@ -36,16 +39,16 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8">
-            <ul className="flex items-center gap-6 lg:gap-8">
+          <nav className="hidden lg:flex items-center flex-1 justify-center px-6">
+            <ul className="flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.href || (link.href !== '/' && location.pathname.startsWith(link.href));
                 return (
                   <li key={link.label}>
                     <Link
                       to={link.href}
-                      className={`text-sm font-semibold tracking-wide transition-all duration-200 hover:text-primary relative group py-2
-                        ${isActive ? 'text-primary' : 'text-foreground/80'}
+                      className={`px-3 py-2 text-xs font-semibold tracking-wide transition-all duration-200 hover:text-primary relative group
+                        ${isActive ? 'text-primary' : 'text-foreground/75'}
                       `}
                     >
                       {link.label}
@@ -55,36 +58,59 @@ const Header = () => {
                 );
               })}
             </ul>
-
-            <div className="flex items-center gap-4 pl-4 lg:pl-6 border-l border-border mt-1">
-              <Link to="/sign-in" className="flex items-center gap-2 text-foreground/80 hover:text-primary font-semibold text-sm transition-colors group">
-                <div className="p-1.5 rounded-full bg-secondary group-hover:bg-primary/10 transition-colors">
-                   <User className="w-4 h-4" />
-                </div>
-                <span>Login</span>
-              </Link>
-              <Link
-                to="/apply"
-                className="bg-primary text-primary-foreground px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300"
-              >
-                Join Today
-              </Link>
-            </div>
           </nav>
+
+          {/* Action Buttons */}
+          <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
+            <Link to="/sign-in" className="flex items-center gap-1.5 text-foreground/75 hover:text-primary font-semibold text-xs transition-colors group">
+              <div className="p-1 rounded-full bg-secondary group-hover:bg-primary/10 transition-colors">
+                 <User className="w-3.5 h-3.5" />
+              </div>
+              <span className="hidden lg:inline">Login</span>
+            </Link>
+            <Link
+              to="/apply"
+              className="bg-primary text-primary-foreground px-4 md:px-5 py-2 rounded-full text-xs font-bold shadow-md shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
+            >
+              Join
+            </Link>
+          </div>
 
           {/* Mobile Toggle Button */}
           <button
-            className="md:hidden text-foreground p-2 z-50 rounded-full hover:bg-secondary transition-colors"
+            className="lg:hidden text-foreground p-2 rounded-full hover:bg-secondary transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
+        </div>
+
+        {/* Tablet Navigation (md to lg) */}
+        <div className="hidden md:flex lg:hidden border-t border-border/50">
+          <div className="container-main flex flex-wrap justify-center gap-2 py-3 px-4">
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.href || (link.href !== '/' && location.pathname.startsWith(link.href));
+              return (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className={`px-3 py-1 text-xs font-semibold rounded-full transition-all ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground/70 hover:bg-secondary'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </header>
 
       {/* Spacer to prevent content from jumping due to fixed header */}
-      <div className="h-20 md:h-24"></div>
+      <div className="h-16 md:h-20"></div>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
@@ -94,7 +120,7 @@ const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-background flex flex-col pt-24 pb-8 px-6 md:hidden overflow-y-auto"
+            className="fixed inset-0 z-40 bg-background flex flex-col pt-20 pb-8 px-6 lg:hidden overflow-y-auto"
           >
             <ul className="flex flex-col gap-2">
               {navLinks.map((link) => (
@@ -102,45 +128,46 @@ const Header = () => {
                   key={link.label}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
+                  transition={{ delay: 0.05 }}
                 >
                   <Link
                     to={link.href}
-                    className="flex items-center justify-between text-foreground text-xl font-bold py-4 border-b border-border/50"
+                    className="flex items-center justify-between text-foreground text-lg font-semibold py-3 px-4 rounded-lg hover:bg-secondary transition-colors"
                     onClick={() => setMobileOpen(false)}
                   >
                     {link.label}
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </Link>
                 </motion.li>
               ))}
             </ul>
 
-            <div className="mt-8 flex flex-col gap-4 px-2">
+            <div className="mt-8 flex flex-col gap-3 px-2">
               <Link 
                 to="/sign-in" 
-                className="flex justify-center items-center gap-3 py-4 w-full border border-border rounded-xl text-lg font-bold"
+                className="flex justify-center items-center gap-2 py-3 w-full border border-border rounded-lg text-base font-bold transition-colors hover:bg-secondary"
                 onClick={() => setMobileOpen(false)}
               >
-                <User className="w-5 h-5 text-primary" />
-                Admin / Member Login
+                <User className="w-4 h-4 text-primary" />
+                Login
               </Link>
               <Link
                 to="/apply"
-                className="flex justify-center items-center text-center bg-primary text-primary-foreground py-4 w-full rounded-xl text-lg font-bold shadow-lg shadow-primary/20"
+                className="flex justify-center items-center text-center bg-primary text-primary-foreground py-3 w-full rounded-lg text-base font-bold shadow-md shadow-primary/20"
                 onClick={() => setMobileOpen(false)}
               >
-                Apply for Membership
+                Join Today
               </Link>
             </div>
             
-            <div className="mt-auto pt-8 text-center text-xs text-muted-foreground">
-              © 2026 Royal Academy of Governance & Leadership Africa
+            <div className="mt-auto pt-6 text-center text-xs text-muted-foreground">
+              © 2026 RAGLA
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </>
+
   );
 };
 
