@@ -36,24 +36,87 @@ const MyProfile = () => {
         .eq("id", uid)
         .single();
 
-      if (data) {
-        // If avatar_url is missing in local profile, fetch from master record
-        if (!data.avatar_url && data.membership_number) {
-          const { data: extData } = await externalSupabase
-            .from("students")
-            .select("photo_url")
-            .eq("student_id", data.membership_number)
-            .maybeSingle();
-          
-          if (extData?.photo_url) {
-            let finalPhoto = extData.photo_url;
-            if (!finalPhoto.startsWith('http') && !finalPhoto.startsWith('data:')) {
-              finalPhoto = `https://mgjqoyoparpxisabhzgi.supabase.co/storage/v1/object/public/students/${finalPhoto}`;
+        if (data) {
+          // A. Authoritative Identity Sync (from RAGLA Students Table)
+          if (data.membership_number) {
+            try {
+              const { data: extStudent } = await externalSupabase
+                .from("students")
+                .select("full_name, photo_url")
+                .eq("student_id", data.membership_number)
+                .maybeSingle();
+              
+              if (extStudent) {
+                data.full_name = extStudent.full_name || data.full_name;
+                
+                if (extStudent.photo_url) {
+                   let finalPhoto = extStudent.photo_url;
+                   if (!finalPhoto.startsWith('http') && !finalPhoto.startsWith('data:')) {
+                     finalPhoto = `https://mgjqoyoparpxisabhzgi.supabase.co/storage/v1/object/public/students/${finalPhoto}`;
+                   }
+                   data.avatar_url = finalPhoto;
+                }
+                
+                // Silent sync back to local
+                supabase.from("user_profiles").update({ 
+                  full_name: data.full_name,
+                  avatar_url: data.avatar_url 
+                }).eq("id", uid).then(() => {});
+              }
+            } catch (err) {
+              console.warn("External student sync error:", err);
             }
-            data.avatar_url = finalPhoto;
-            // Optionally update local cache for faster next load
-            supabase.from("user_profiles").update({ avatar_url: finalPhoto }).eq("id", uid).then(() => {});
           }
+
+        // FETCH ALL CATEGORIES FROM PAYMENTS
+        try {
+          let allPayments = [];
+          
+          // 1. Try by ID
+          if (data.membership_number) {
+            const { data: idPayments } = await externalSupabase
+              .from("payments")
+              .select("status, fee_types(name), student_data")
+              .filter("student_data->>student_id", "eq", data.membership_number)
+              .eq("status", "success");
+            if (idPayments) allPayments = idPayments;
+          }
+
+          // 2. Try by Email (Search both payer_email and student_data->>email)
+          if (allPayments.length === 0 && session.user.email) {
+            const { data: emailPayments } = await externalSupabase
+              .from("payments")
+              .select("status, fee_types(id, name), student_data, payer_email")
+              .or(`payer_email.ilike.${session.user.email},student_data->>email.ilike.${session.user.email}`)
+              .eq("status", "success");
+            if (emailPayments) allPayments = emailPayments;
+          }
+
+          if (allPayments && allPayments.length > 0) {
+            data.membership_status = "active";
+            
+            // Resolve Student ID if missing locally
+            const resolvedSid = allPayments.find(p => (p.student_data as any)?.student_id)?.student_data?.student_id;
+            if (resolvedSid && !data.membership_number) {
+              data.membership_number = resolvedSid;
+            }
+
+            const categories = Array.from(new Set(
+              allPayments.map(p => (p.fee_types as any)?.name).filter(n => !!n)
+            ));
+            if (categories.length > 0) {
+              data.membership_category = categories.join(", ");
+            }
+
+            // Sync back to local profile
+            supabase.from("user_profiles").update({ 
+               membership_status: "active",
+               membership_category: data.membership_category,
+               membership_number: data.membership_number
+            }).eq("id", uid).then(() => {});
+          }
+        } catch (err) {
+          console.warn("Profile payment check error:", err);
         }
         setProfile(data);
       }
