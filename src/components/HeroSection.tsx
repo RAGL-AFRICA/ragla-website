@@ -28,8 +28,8 @@ const HeroSection = () => {
             Servitium Integritas Phasellus
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-[4rem] font-black text-foreground leading-[1.1] tracking-tight">
-            Top-notch Pan-African <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#FFD700]">Governance</span> & Leadership
+            Royal Academy of <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#FFD700]">Governance and Leadership</span> Africa
           </h1>
         </motion.div>
 

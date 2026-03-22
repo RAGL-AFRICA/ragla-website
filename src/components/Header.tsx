@@ -25,11 +25,11 @@ const Header = () => {
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-3 md:gap-4 z-50">
             <img src={logo} alt="RAGLA Logo" className="h-12 md:h-16 w-auto drop-shadow-sm" />
-            <div className="hidden lg:block">
-              <h1 className="text-foreground font-black text-xl leading-tight tracking-tight uppercase">
+            <div className="hidden lg:flex flex-col items-center justify-center">
+              <h1 className="text-foreground font-black text-[1.7rem] leading-none uppercase tracking-normal">
                 Royal Academy
               </h1>
-              <p className="text-primary text-[10px] font-bold uppercase tracking-widest mt-0.5">
+              <p className="text-primary text-[0.67rem] font-extrabold uppercase tracking-normal mt-0.5 opacity-90">
                 Of Governance & Leadership Africa
               </p>
             </div>

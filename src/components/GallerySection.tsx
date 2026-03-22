@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { Image as ImageIcon, FolderOpen } from "lucide-react";
+import { Image as ImageIcon, FolderOpen, X } from "lucide-react";
 
 type GalleryFolder = {
   id: string;
@@ -161,45 +162,107 @@ const GallerySection = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {images.map((img, i) => (
-                <motion.div
-                  key={img.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4, delay: (i % 4) * 0.05 }}
-                  className="rounded-xl overflow-hidden aspect-[3/2] group relative bg-background/20 cursor-pointer"
-                  onMouseEnter={() => setExpandedImg(img)}
-                  onMouseLeave={() => setExpandedImg(null)}
-                  onClick={() => setExpandedImg(expandedImg?.id === img.id ? null : img)}
-                >
-                  <img
-                    src={img.image_url}
-                    alt={img.title || `Gallery image ${i + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                </motion.div>
-              ))}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-[150px] md:auto-rows-[220px]">
+              {images.slice(0, 7).map((img, i) => {
+                // Dynamic Mosaic Grid Logic for 7 images (HCI: Aesthetic & Rhythm)
+                let spanClasses = "col-span-1 row-span-1";
+                if (i === 0) spanClasses = "col-span-2 row-span-2"; // Feature large image
+                else if (i === 3) spanClasses = "col-span-1 row-span-2 hidden md:block"; // Tall image (hide on small screens to preserve flow)
+                else if (i === 5) spanClasses = "col-span-2 row-span-1"; // Wide image
+
+                return (
+                  <motion.div
+                    key={img.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: i * 0.08 }}
+                    className={`rounded-xl overflow-hidden group relative bg-background/20 cursor-pointer ${spanClasses}`}
+                    onClick={() => setExpandedImg(img)}
+                  >
+                    <img
+                      src={img.image_url}
+                      alt={img.title || `Gallery image ${i + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 select-none"
+                      onContextMenu={(e) => e.preventDefault()}
+                      onDragStart={(e) => e.preventDefault()}
+                    />
+                    
+                    {/* Hover Info Overlay (HCI: Feedback & Context) */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
+                      <h3 className="text-white font-bold text-lg md:text-xl leading-tight mb-1 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 ease-out">
+                        {img.title || (activeFolder?.name ? `${activeFolder.name} Highlight` : "Gallery Moment")}
+                      </h3>
+                      <p className="text-white/80 text-sm md:text-base line-clamp-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 ease-out delay-75">
+                        {img.description || "Click to view full size"}
+                      </p>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
-            {/* Quarter-screen hover/click expand overlay */}
-            {expandedImg && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-              >
-                <div
-                  className="w-[50vw] h-[50vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10 pointer-events-auto"
-                  onMouseLeave={() => setExpandedImg(null)}
+            {/* Full-screen click expand overlay */}
+            <AnimatePresence>
+              {expandedImg && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:p-8"
                   onClick={() => setExpandedImg(null)}
                 >
-                  <img
-                    src={expandedImg.image_url}
-                    alt={expandedImg.title || "Gallery image"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            )}
+                  <motion.button
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute top-4 right-4 md:top-8 md:right-8 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition-colors z-10"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExpandedImg(null);
+                    }}
+                  >
+                    <X className="w-6 h-6" />
+                  </motion.button>
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    className="relative w-[95vw] h-[95vh] flex items-center justify-center pointer-events-none"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <img
+                      src={expandedImg.image_url}
+                      alt="Gallery image"
+                      className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.5)] select-none pointer-events-auto"
+                      onContextMenu={(e) => e.preventDefault()}
+                      onDragStart={(e) => e.preventDefault()}
+                    />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {/* Call to Action - View Full Gallery */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-16 text-center"
+            >
+              <Link
+                to="/gallery"
+                className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-4 px-10 rounded-full font-bold shadow-lg shadow-primary/20 hover:-translate-y-1 hover:shadow-primary/40 focus:outline-none focus:ring-4 focus:ring-primary/30 transition-all duration-300 uppercase tracking-wider text-sm relative overflow-hidden group"
+                aria-label="View all photos in the full gallery page"
+              >
+                <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                <span className="relative flex items-center gap-2">
+                  <ImageIcon className="w-5 h-5" />
+                  View Full Gallery
+                </span>
+              </Link>
+            </motion.div>
           </>
         )}
       </div>
