@@ -181,7 +181,7 @@ const GallerySection = () => {
                   >
                     <img
                       src={img.image_url}
-                      alt={img.title || `Gallery image ${i + 1}`}
+                      alt={`Gallery image ${i + 1}`}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 select-none"
                       onContextMenu={(e) => e.preventDefault()}
                       onDragStart={(e) => e.preventDefault()}
@@ -190,7 +190,7 @@ const GallerySection = () => {
                     {/* Hover Info Overlay (HCI: Feedback & Context) */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
                       <h3 className="text-white font-bold text-lg md:text-xl leading-tight mb-1 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 ease-out">
-                        {img.title || (activeFolder?.name ? `${activeFolder.name} Highlight` : "Gallery Moment")}
+                        {activeFolder?.name ? `${activeFolder.name} Highlight` : "Gallery Moment"}
                       </h3>
                       <p className="text-white/80 text-sm md:text-base line-clamp-2 translate-y-4 group-hover:translate-y-0 transition-transform duration-300 ease-out delay-75">
                         {img.description || "Click to view full size"}

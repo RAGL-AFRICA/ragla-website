@@ -114,35 +114,41 @@ const ManageApplications = () => {
   };
 
   const sendApprovalEmail = async (app: MembershipApplication, membershipCode: string) => {
-    const { data: refreshedData, error: refreshError } = await supabase.auth.refreshSession();
-    if (refreshError && !refreshedData.session?.access_token) {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-      if (!sessionData.session?.access_token) {
-        throw new Error("Your admin session has expired. Please sign in again.");
-      }
-    }
+    const payload = {
+      to: app.email,
+      applicantName: app.name,
+      membershipCode,
+      program: app.membership_category,
+      portalUrl: window.location.origin + "/sign-in",
+    };
 
-    const { data: latestSessionData, error: latestSessionError } = await supabase.auth.getSession();
-    if (latestSessionError) throw latestSessionError;
-
-    const accessToken = latestSessionData.session?.access_token;
-    if (!accessToken) {
-      throw new Error("Your admin session has expired. Please sign in again.");
-    }
-
-    const { error } = await supabase.functions.invoke("send-approval-email", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: {
-        to: app.email,
-        applicantName: app.name,
-        membershipCode,
-      },
+    const { data, error } = await supabase.functions.invoke("send-approval-email", {
+      body: payload,
     });
 
-    if (error) throw error;
+    if (!error) {
+      const responseData = data as { success?: boolean; error?: string; details?: string; mode?: string; message?: string } | null;
+      if (responseData?.success === false) {
+        throw new Error(responseData.details || responseData.error || "Approval email failed in Edge Function.");
+      }
+      return responseData;
+    }
+
+    const invokeMessage = error.message || "Unknown function error";
+
+    if (/Failed to send a request to the Edge Function|Failed to fetch/i.test(invokeMessage)) {
+      throw new Error(
+        "Cannot reach Supabase Edge Function. Deploy send-approval-email, confirm project/env keys, and ensure network access to Supabase.",
+      );
+    }
+
+    if (/non-2xx status code/i.test(invokeMessage)) {
+      throw new Error(
+        "send-approval-email returned an error. Check function logs and verify Supabase Auth email settings and service role configuration.",
+      );
+    }
+
+    throw error;
   };
 
   const handleUpdateStatus = async (app: MembershipApplication, newStatus: string) => {
@@ -172,8 +178,12 @@ const ManageApplications = () => {
 
       if (newStatus === "approved" && generatedCode) {
         try {
-          await sendApprovalEmail(app, generatedCode);
-          toast.success(`Application approved. Membership code ${generatedCode} emailed successfully.`);
+          const emailResult = await sendApprovalEmail(app, generatedCode) as { mode?: string; message?: string } | undefined;
+          if (emailResult?.mode === "recovery") {
+            toast.success(`Application approved. ${emailResult.message || `A password reset email was sent for Student ID ${generatedCode}.`}`);
+          } else {
+            toast.success(`Application approved. Membership code ${generatedCode} emailed successfully.`);
+          }
         } catch (emailError: any) {
           toast.warning(`Application approved with code ${generatedCode}, but email failed: ${emailError?.message || "Unknown error"}`);
         }
