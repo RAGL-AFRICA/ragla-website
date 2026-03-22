@@ -2,6 +2,17 @@ import { Facebook, Twitter, Instagram, MessageCircle, MapPin, Phone, Mail, Chevr
 import logo from "@/assets/ragla logo.png";
 import { Link } from "react-router-dom";
 
+const quickLinks = [
+  { label: "Home", href: "/" },
+  { label: "About Us", href: "/about-us" },
+  { label: "Membership", href: "/membership-benefits" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Events", href: "/events" },
+  { label: "News", href: "/news" },
+  { label: "Posts", href: "/posts" },
+  { label: "Contact Us", href: "/contact-us" },
+];
+
 const Footer = () => {
   return (
     <footer className="bg-secondary/40 border-t border-border mt-auto">
@@ -70,10 +81,17 @@ const Footer = () => {
           <div className="lg:col-span-2 lg:col-start-6">
             <h4 className="text-foreground font-bold text-lg mb-6">Quick Links</h4>
             <ul className="space-y-4">
-              <li><Link to="/about-us" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary/50" /> About Us</Link></li>
-              <li><Link to="/contact-us" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary/50" /> Contact Us</Link></li>
-              <li><Link to="/membership-benefits" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary/50" /> Membership</Link></li>
-              <li><Link to="/gallery" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary/50" /> Gallery</Link></li>
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
