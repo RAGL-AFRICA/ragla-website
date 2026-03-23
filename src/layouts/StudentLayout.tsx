@@ -92,7 +92,8 @@ const StudentLayout = () => {
           }
 
           if (allPayments && allPayments.length > 0) {
-            data.membership_status = "active";
+            // Use the status from the latest payment as requested
+            data.membership_status = allPayments[0].status;
             
             // Resolve Student ID if missing locally
             const resolvedSid = allPayments.find(p => (p.student_data as any)?.student_id)?.student_data?.student_id;
@@ -137,6 +138,7 @@ const StudentLayout = () => {
 
   const statusColor = {
     active:  "bg-green-500/20 text-green-400 border-green-500/30",
+    success: "bg-green-500/20 text-green-400 border-green-500/30",
     pending: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
     expired: "bg-red-500/20 text-red-400 border-red-500/30",
   }[profile?.membership_status || "pending"] ?? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";

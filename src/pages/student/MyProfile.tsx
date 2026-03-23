@@ -93,7 +93,8 @@ const MyProfile = () => {
           }
 
           if (allPayments && allPayments.length > 0) {
-            data.membership_status = "active";
+            // Use the authoritative status from the latest payment record
+            data.membership_status = allPayments[0].status;
             
             // Resolve Student ID if missing locally
             const resolvedSid = allPayments.find(p => (p.student_data as any)?.student_id)?.student_data?.student_id;
@@ -110,7 +111,7 @@ const MyProfile = () => {
 
             // Sync back to local profile
             supabase.from("user_profiles").update({ 
-               membership_status: "active",
+               membership_status: data.membership_status,
                membership_category: data.membership_category,
                membership_number: data.membership_number
             }).eq("id", uid).then(() => {});
@@ -192,7 +193,13 @@ const MyProfile = () => {
           <p className="font-bold text-xl text-foreground">{profile.full_name || "No name set"}</p>
           <p className="text-sm text-muted-foreground mb-2">{userEmail}</p>
           <div className="flex flex-wrap gap-2">
-            <span className="inline-block text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 uppercase tracking-wider">
+            <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider ${
+              profile.membership_status === 'active' || profile.membership_status === 'success' 
+                ? 'bg-green-500/10 text-green-400 border-green-500/20' 
+                : profile.membership_status === 'expired'
+                ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
+            }`}>
               {profile.membership_status || "Pending"}
             </span>
             {profile.membership_number && (
