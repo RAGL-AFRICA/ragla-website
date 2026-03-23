@@ -3,16 +3,9 @@ import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
+import { externalSupabase } from "@/lib/external_supabase";
 import { UploadCloud, Check, ChevronRight, ChevronLeft, CreditCard, User, Briefcase, GraduationCap, ClipboardCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const MEMBERSHIP_CATEGORIES = [
-  "Affiliate Membership",
-  "Associate Membership",
-  "Certified Membership",
-  "Chartered Membership",
-  "Fellow Membership"
-];
 
 const MEMBERSHIP_BUCKET_CANDIDATES = [
   "membership_applications",
@@ -49,6 +42,41 @@ const Apply = () => {
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  // Fetch categories from external DB to ensure alignment with payment types
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await externalSupabase
+          .from("fee_types")
+          .select("name")
+          .not("name", "eq", "Any Other Amount");
+        
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setCategories(data.map(c => c.name));
+        } else {
+          throw new Error("No categories found");
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        // Fallback to basic categories if DB call fails
+        setCategories([
+          "Affiliate Membership",
+          "Associate Membership",
+          "Certified Membership",
+          "Chartered Membership",
+          "Fellow Membership"
+        ]);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -425,9 +453,15 @@ const Apply = () => {
                   <div className="space-y-6">
                     <div className="space-y-2">
                       <label className="text-sm font-bold text-foreground">Membership Category Applied For *</label>
-                      <select required value={form.membership_category} onChange={e => setForm({...form, membership_category: e.target.value})} className="w-full bg-background border border-border rounded-xl px-4 py-4 appearance-none">
-                        <option value="">Select Category</option>
-                        {MEMBERSHIP_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                      <select 
+                        required 
+                        value={form.membership_category} 
+                        onChange={e => setForm({...form, membership_category: e.target.value})} 
+                        className="w-full bg-background border border-border rounded-xl px-4 py-4 appearance-none"
+                        disabled={loadingCategories}
+                      >
+                        <option value="">{loadingCategories ? "Loading Categories..." : "Select Category"}</option>
+                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                       </select>
                     </div>
                     <div className="grid md:grid-cols-2 gap-6">

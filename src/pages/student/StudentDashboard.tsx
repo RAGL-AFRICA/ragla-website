@@ -149,7 +149,8 @@ const StudentDashboard = () => {
           }
 
           if (allPayments && allPayments.length > 0) {
-            data.membership_status = "active";
+            // Use the authoritative status from the latest payment record
+            data.membership_status = allPayments[0].status;
             
             // Resolve Student ID if missing locally
             const resolvedSid = allPayments.find(p => (p.student_data as any)?.student_id)?.student_data?.student_id;
@@ -170,7 +171,7 @@ const StudentDashboard = () => {
             
             // Sync resolved data back to local profile
             supabase.from("user_profiles").update({ 
-              membership_status: "active",
+              membership_status: data.membership_status,
               membership_category: data.membership_category,
               membership_number: data.membership_number
             }).eq("id", session.user.id).then(() => {});
@@ -192,18 +193,21 @@ const StudentDashboard = () => {
 
   const StatusIcon = {
     active: CheckCircle,
+    success: CheckCircle,
     pending: Clock,
     expired: AlertCircle,
   }[profile?.membership_status || "pending"] ?? Clock;
 
   const statusColor = {
     active:  "text-green-400",
+    success: "text-green-400",
     pending: "text-yellow-400",
     expired: "text-red-400",
   }[profile?.membership_status || "pending"] ?? "text-yellow-400";
 
   const statusBg = {
     active:  "bg-green-500/10 border-green-500/20",
+    success: "bg-green-500/10 border-green-500/20",
     pending: "bg-yellow-500/10 border-yellow-500/20",
     expired: "bg-red-500/10 border-red-500/20",
   }[profile?.membership_status || "pending"] ?? "bg-yellow-500/10 border-yellow-500/20";
@@ -255,7 +259,7 @@ const StudentDashboard = () => {
       </motion.div>
 
       {/* Membership Status Banner */}
-      {!loading && profile?.membership_status !== "active" && (
+      {!loading && profile?.membership_status !== "active" && profile?.membership_status !== "success" && (
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
