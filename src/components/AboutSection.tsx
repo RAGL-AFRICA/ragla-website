@@ -55,7 +55,7 @@ const AboutSection = () => {
         </motion.div>
 
         {/* Five Pillars Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 mb-12">
           {pillars.map((pillar, i) => {
             const Icon = pillar.icon;
             return (
@@ -80,7 +80,7 @@ const AboutSection = () => {
         </div>
 
         {/* CTA and Stats */}
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -89,7 +89,7 @@ const AboutSection = () => {
           >
             <Link
               to="/about-us"
-              className="inline-block border border-primary text-primary py-3 px-8 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 uppercase tracking-wider text-sm"
+              className="inline-block border border-primary text-primary py-3 px-8 rounded-lg font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-200 uppercase tracking-wider text-sm w-full sm:w-auto text-center"
             >
               More About Us
             </Link>
@@ -104,7 +104,7 @@ const AboutSection = () => {
             className="flex items-center justify-center md:justify-end"
           >
             <div className="text-center">
-              <span className="text-8xl md:text-9xl font-black text-primary tabular-nums">20+</span>
+              <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-primary tabular-nums">20+</span>
               <h3 className="text-2xl font-bold text-foreground mt-2">YEARS OF</h3>
               <p className="text-muted-foreground text-lg uppercase tracking-wider">
                 Academic Leadership

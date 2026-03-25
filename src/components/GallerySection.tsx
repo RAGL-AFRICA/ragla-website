@@ -118,7 +118,7 @@ const GallerySection = () => {
 
         {/* Folder navigation (Tabs) */}
         {folders.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
+          <div className="flex gap-2 mb-10 overflow-x-auto pb-2 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center">
             <button
               onClick={() => handleFolderClick("all")}
               className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 ${
@@ -162,7 +162,7 @@ const GallerySection = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 auto-rows-[150px] md:auto-rows-[220px]">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 md:gap-4 md:auto-rows-[220px]">
               {images.slice(0, 7).map((img, i) => {
                 // Dynamic Mosaic Grid Logic for 7 images (HCI: Aesthetic & Rhythm)
                 let spanClasses = "col-span-1 row-span-1";
