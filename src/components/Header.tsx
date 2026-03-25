@@ -110,7 +110,7 @@ const Header = () => {
       </header>
 
       {/* Spacer to prevent content from jumping due to fixed header */}
-      <div className="h-16 md:h-20"></div>
+      <div className="h-[60px] md:h-[112px] lg:h-[72px]"></div>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
