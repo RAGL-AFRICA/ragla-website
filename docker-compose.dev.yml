@@ -1,0 +1,15 @@
+services:
+  web-dev:
+    image: node:20-alpine
+    container_name: ragla-web-dev
+    working_dir: /app
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 8080"
+    ports:
+      - "8080:8080"
+    environment:
+      VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+      VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: unless-stopped
