@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
@@ -41,6 +42,11 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>RAGLA Events | Leadership Summits & Governance Conferences</title>
+        <meta name="description" content="Stay updated with RAGLA's upcoming events, seminars, and international conferences on governance and leadership across Africa." />
+        <link rel="canonical" href="https://ragl-africa.org/events" />
+      </Helmet>
       <Header />
 
       <section className="section-padding bg-secondary">

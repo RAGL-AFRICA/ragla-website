@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Phone, MapPin, Mail } from "lucide-react";
@@ -38,6 +39,11 @@ const ContactUs = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Contact RAGLA | Reach Out for Inquiries and Partnerships</title>
+        <meta name="description" content="Get in touch with RAGLA for membership inquiries, partnership opportunities, or leadership training. Our office is located in East Legon, Accra, Ghana." />
+        <link rel="canonical" href="https://ragl-africa.org/contact-us" />
+      </Helmet>
       <Header />
 
       {/* Page Header */}

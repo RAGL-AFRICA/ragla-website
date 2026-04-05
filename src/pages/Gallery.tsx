@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
@@ -56,6 +57,11 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>RAGLA Gallery | Highlights from Governance and Leadership Events</title>
+        <meta name="description" content="View photos and highlights from RAGLA's recent events, leadership summits, and professional development programs across Africa." />
+        <link rel="canonical" href="https://ragl-africa.org/gallery" />
+      </Helmet>
       <Header />
 
       <section className="section-padding bg-secondary">

@@ -82,9 +82,9 @@ const FeaturedSection = () => {
               <Star className="w-4 h-4 fill-primary" />
               Featured Highlight
             </p>
-            <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight text-center md:text-left">
               {featuredEvent.title}
-            </h3>
+            </h2>
             
             {featuredEvent.description && (
               <p className="text-muted-foreground leading-relaxed mb-8">

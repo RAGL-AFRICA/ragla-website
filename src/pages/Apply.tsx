@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
@@ -29,6 +30,11 @@ const Apply = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Apply for Membership | RAGLA Application Portal</title>
+        <meta name="description" content="Start your journey towards professional excellence in governance and leadership. Complete the RAGLA membership application process online." />
+        <link rel="canonical" href="https://ragl-africa.org/apply" />
+      </Helmet>
       <Header />
 
       {/* Hero Section */}

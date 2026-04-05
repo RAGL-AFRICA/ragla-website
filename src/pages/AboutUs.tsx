@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
@@ -72,6 +73,11 @@ const stats = [
 const AboutUs = () => {
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>About RAGLA | Our Mission, Values, and Pan-African Vision</title>
+        <meta name="description" content="Learn about RAGLA's mission to foster excellence in governance and leadership across Africa. Discover our corporate values and strategic objectives." />
+        <link rel="canonical" href="https://ragl-africa.org/about-us" />
+      </Helmet>
       <Header />
 
       {/* Page Header */}
