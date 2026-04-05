@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
@@ -5,21 +6,64 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const STORAGE_KEY = "ragla_portal_saved_state_v1";
+
 const Apply = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [iframeHeight, setIframeHeight] = useState("850px");
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      // Prevent arbitrary messages from causing errors
+      if (!event.data || !event.data.type) return;
+
+      const { type, payload } = event.data;
+
       // 1. Handle Successful Application Submission
-      if (event.data.type === 'ADMISSIONS_SUCCESS') {
+      if (type === 'ADMISSIONS_SUCCESS') {
         setIsSubmitted(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
       
       // 2. Handle Dynamic Height Resize from Widget
-      if (event.data.type === 'SET_HEIGHT' && event.data.height) {
+      if (type === 'SET_HEIGHT' && event.data.height) {
         setIframeHeight(`${event.data.height}px`);
+      }
+
+      // 3. Save form data when user types in the iframe
+      if (type === "SAVE_APPLICATION_STATE") {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        } catch (e) {
+          console.warn("Parent website failed to save widget state:", e);
+        }
+      }
+
+      // 4. Clear saved data when user successfully submits
+      if (type === "CLEAR_APPLICATION_STATE") {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+          console.warn("Parent website failed to clear widget state.");
+        }
+      }
+
+      // 5. Restore saved data when iframe finishes loading
+      if (type === "WIDGET_READY") {
+        try {
+          const savedData = localStorage.getItem(STORAGE_KEY);
+          if (savedData) {
+            const iframe = document.getElementById("ragla-admissions-widget") as HTMLIFrameElement;
+            if (iframe && iframe.contentWindow) {
+              iframe.contentWindow.postMessage({
+                type: "RESTORE_APPLICATION_STATE",
+                payload: JSON.parse(savedData)
+              }, "*");
+            }
+          }
+        } catch (e) {
+          console.warn("Parent website failed to restore widget state:", e);
+        }
       }
     };
 
@@ -29,6 +73,11 @@ const Apply = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Apply for Membership | RAGLA Application Portal</title>
+        <meta name="description" content="Start your journey towards professional excellence in governance and leadership. Complete the RAGLA membership application process online." />
+        <link rel="canonical" href="https://ragl-africa.org/apply" />
+      </Helmet>
       <Header />
 
       {/* Hero Section */}

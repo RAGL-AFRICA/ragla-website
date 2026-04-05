@@ -233,7 +233,7 @@ const GallerySection = () => {
                   >
                     <img
                       src={expandedImg.image_url}
-                      alt="Gallery image"
+                      alt={expandedImg.title || "RAGLA Gallery Image"}
                       className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.5)] select-none pointer-events-auto"
                       onContextMenu={(e) => e.preventDefault()}
                       onDragStart={(e) => e.preventDefault()}
