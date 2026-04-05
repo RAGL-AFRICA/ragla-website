@@ -18,7 +18,7 @@ const Apply = () => {
       }
       
       // 2. Handle Dynamic Height Resize from Widget
-      if ((event.data.type === 'SET_HEIGHT' || event.data.type === 'RESIZE') && event.data.height) {
+      if (event.data.type === 'SET_HEIGHT' && event.data.height) {
         setIframeHeight(`${event.data.height}px`);
       }
     };
@@ -38,7 +38,7 @@ const Apply = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <p className="text-xs font-semibold tracking-widest uppercase mb-3 text-yellow-600">Membership Portal</p>
+            <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-3 text-yellow-600">Membership Portal</p>
             <h1 className="text-3xl md:text-5xl font-black text-foreground mb-4 leading-tight">Apply for Membership</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto px-4">
               Join the Royal Academy of Governance and Leadership Africa. Complete the application below to start your journey.
@@ -63,6 +63,7 @@ const Apply = () => {
                   className="w-full h-full"
                 >
                   <iframe 
+                    // Make sure to update this with your actual student portal production URL
                     src="https://student.ragl-africa.org/apply?widget=true" 
                     style={{ 
                       width: '100%', 

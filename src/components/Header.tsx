@@ -153,6 +153,15 @@ const Header = () => {
               >
                 Student Portal Login
               </a>
+              <a 
+                href="https://student.ragl-africa.org/library" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex justify-center items-center text-center text-muted-foreground py-2 w-full text-xs font-semibold hover:text-primary transition-colors"
+                onClick={() => setMobileOpen(false)}
+              >
+                Digital Library Access
+              </a>
             </div>
             
             <div className="mt-auto pt-6 text-center text-xs text-muted-foreground">

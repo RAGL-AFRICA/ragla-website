@@ -81,39 +81,12 @@ const Footer = () => {
           <div className="lg:col-span-2 lg:col-start-6">
             <h4 className="text-foreground font-bold text-lg mb-6">Quick Links</h4>
             <ul className="space-y-4">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    to={link.href}
-                    className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
-                  >
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <a 
-                  href="https://student.ragl-africa.org/student/login" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
-                  Student Portal
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://student.ragl-africa.org/library" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                  Digital Library
-                </a>
-              </li>
+              <li><Link to="/about-us" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary/50" /> About Us</Link></li>
+              <li><Link to="/contact-us" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary/50" /> Contact Us</Link></li>
+              <li><Link to="/membership-benefits" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary/50" /> Membership</Link></li>
+              <li><Link to="/gallery" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-primary/50" /> Gallery</Link></li>
+              <li><a href="https://student.ragl-africa.org/student/login" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-yellow-500" /> Student Portal</a></li>
+              <li><a href="https://student.ragl-africa.org/library" target="_blank" rel="noopener noreferrer" className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Digital Library</a></li>
             </ul>
           </div>
 
