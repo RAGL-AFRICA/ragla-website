@@ -159,6 +159,48 @@ npm run build
 # Deploy to Vercel, Netlify, GitHub Pages, or any static host
 ```
 
+## 🐳 Docker
+
+This project now supports both production and development container workflows.
+
+### Prerequisites
+- Docker Desktop installed and running
+- Docker Compose plugin available (`docker compose version`)
+
+If `docker compose up --build` returns exit code `127`, Docker is not installed or not on your `PATH`.
+
+### Environment
+
+Create/update `.env` in the project root:
+
+```sh
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Production container (Nginx)
+
+```sh
+docker compose -f docker-compose.prod.yml up --build
+```
+
+Open: `http://localhost:8080`
+
+### Development container (hot reload)
+
+```sh
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Open: `http://localhost:8080`
+
+### Stop containers
+
+```sh
+docker compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.dev.yml down
+```
+
 ## 📞 Contact Information
 
 - **Phone**: +233 (0)256257507

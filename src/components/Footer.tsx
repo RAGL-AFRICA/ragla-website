@@ -2,6 +2,17 @@ import { Facebook, Twitter, Instagram, MessageCircle, MapPin, Phone, Mail, Chevr
 import logo from "@/assets/ragla logo.png";
 import { Link } from "react-router-dom";
 
+const quickLinks = [
+  { label: "Home", href: "/" },
+  { label: "About Us", href: "/about-us" },
+  { label: "Membership", href: "/membership-benefits" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Events", href: "/events" },
+  { label: "News", href: "/news" },
+  { label: "Posts", href: "/posts" },
+  { label: "Contact Us", href: "/contact-us" },
+];
+
 const Footer = () => {
   return (
     <footer className="bg-secondary/40 border-t border-border mt-auto">

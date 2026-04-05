@@ -91,7 +91,7 @@ const Gallery = () => {
                 >
                   <img
                     src={img.image_url}
-                    alt={img.title || `Gallery image ${i + 1}`}
+                    alt={`Gallery image ${i + 1}`}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 select-none"
                     onContextMenu={(e) => e.preventDefault()}
                     onDragStart={(e) => e.preventDefault()}
