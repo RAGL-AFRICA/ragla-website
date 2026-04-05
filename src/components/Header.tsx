@@ -62,12 +62,6 @@ const Header = () => {
 
           {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
-            <Link to="/sign-in" className="flex items-center gap-1.5 text-foreground/75 hover:text-primary font-semibold text-xs transition-colors group">
-              <div className="p-1 rounded-full bg-secondary group-hover:bg-primary/10 transition-colors">
-                 <User className="w-3.5 h-3.5" />
-              </div>
-              <span className="hidden lg:inline">Login</span>
-            </Link>
             <Link
               to="/apply"
               className="bg-primary text-primary-foreground px-4 md:px-5 py-2 rounded-full text-xs font-bold shadow-md shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
@@ -143,14 +137,6 @@ const Header = () => {
             </ul>
 
             <div className="mt-8 flex flex-col gap-3 px-2">
-              <Link 
-                to="/sign-in" 
-                className="flex justify-center items-center gap-2 py-3 w-full border border-border rounded-lg text-base font-bold transition-colors hover:bg-secondary"
-                onClick={() => setMobileOpen(false)}
-              >
-                <User className="w-4 h-4 text-primary" />
-                Login
-              </Link>
               <Link
                 to="/apply"
                 className="flex justify-center items-center text-center bg-primary text-primary-foreground py-3 w-full rounded-lg text-base font-bold shadow-md shadow-primary/20"
@@ -158,6 +144,15 @@ const Header = () => {
               >
                 Join Today
               </Link>
+              <a 
+                href="https://student.ragl-africa.org/student/login" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex justify-center items-center text-center text-muted-foreground py-2 w-full text-xs font-semibold hover:text-primary transition-colors border-b border-border/50"
+                onClick={() => setMobileOpen(false)}
+              >
+                Student Portal Login
+              </a>
             </div>
             
             <div className="mt-auto pt-6 text-center text-xs text-muted-foreground">

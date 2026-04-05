@@ -21,18 +21,8 @@ import ManageEvents from "./pages/admin/ManageEvents.tsx";
 import ManageGallery from "./pages/admin/ManageGallery.tsx";
 import ManageNewsPosts from "./pages/admin/ManageNewsPosts.tsx";
 import ManageMessages from "./pages/admin/ManageMessages.tsx";
-import ManageApplications from "./pages/admin/ManageApplications.tsx";
-import PaidMembers from "./pages/admin/PaidMembers.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 import Apply from "./pages/Apply.tsx";
-// Student Portal
-import StudentLayout from "./layouts/StudentLayout.tsx";
-import { StudentRoute } from "./components/StudentRoute.tsx";
-import StudentDashboard from "./pages/student/StudentDashboard.tsx";
-import MyCourses from "./pages/student/MyCourses.tsx";
-import Announcements from "./pages/student/Announcements.tsx";
-import MyProfile from "./pages/student/MyProfile.tsx";
-import Payments from "./pages/student/Payments.tsx";
 
 const queryClient = new QueryClient();
 
@@ -59,20 +49,10 @@ const App = () => (
           
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
-            <Route path="applications" element={<ManageApplications />} />
             <Route path="events" element={<ManageEvents />} />
             <Route path="news-posts" element={<ManageNewsPosts />} />
             <Route path="gallery" element={<ManageGallery />} />
             <Route path="messages" element={<ManageMessages />} />
-            <Route path="paid-members" element={<PaidMembers />} />
-          </Route>
-
-          <Route path="/student" element={<StudentRoute><StudentLayout /></StudentRoute>}>
-            <Route index element={<StudentDashboard />} />
-            <Route path="courses" element={<MyCourses />} />
-            <Route path="payments" element={<Payments />} />
-            <Route path="announcements" element={<Announcements />} />
-            <Route path="profile" element={<MyProfile />} />
           </Route>
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

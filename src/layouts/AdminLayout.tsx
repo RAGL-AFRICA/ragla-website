@@ -21,12 +21,10 @@ const AdminLayout = () => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
-    { icon: FileText, label: "Applications", path: "/admin/applications" },
     { icon: Calendar, label: "Manage Events", path: "/admin/events" },
     { icon: Newspaper, label: "News & Posts", path: "/admin/news-posts" },
     { icon: ImageIcon, label: "Manage Gallery", path: "/admin/gallery" },
     { icon: Mail, label: "Messages", path: "/admin/messages" },
-    { icon: UserCheck, label: "Paid Members", path: "/admin/paid-members" },
   ];
 
   return (

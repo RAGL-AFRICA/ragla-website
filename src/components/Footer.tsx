@@ -92,6 +92,28 @@ const Footer = () => {
                   </Link>
                 </li>
               ))}
+              <li>
+                <a 
+                  href="https://student.ragl-africa.org/student/login" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                  Student Portal
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://student.ragl-africa.org/library" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-muted-foreground text-sm font-medium hover:text-primary transition-colors flex items-center gap-2"
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                  Digital Library
+                </a>
+              </li>
             </ul>
           </div>
 
