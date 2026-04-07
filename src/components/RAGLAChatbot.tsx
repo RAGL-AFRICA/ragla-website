@@ -3,191 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X, Send, Minimize2, Bot, User, ChevronRight, RotateCcw } from "lucide-react";
 import { Link } from "react-router-dom";
 
-// ──────────────────────────────────────────────
-// RAGLA KNOWLEDGE BASE
-// ──────────────────────────────────────────────
-
-interface KBEntry {
-  keywords: string[];
-  answer: string;
-  links?: { label: string; href: string }[];
-  suggestions?: string[];
-}
-
-const KNOWLEDGE_BASE: KBEntry[] = [
-  // ── What is RAGLA ──────────────────────────
-  {
-    keywords: ["what is ragla", "who is ragla", "about ragla", "tell me about", "what do you do", "ragl", "academy", "governance", "leadership"],
-    answer:
-      "**RAGLA** (Royal Academy of Governance and Leadership Africa) is a top-notch Pan-African professional Academy dedicated to fostering the highest standards of excellence in governance and leadership across Africa.\n\nWe rally professionals from the public and private sectors, academia, civil society organisations, and the non-profit sector to:\n- Build governance & leadership capacity\n- Reinforce institutions to be more productive and accountable\n- Enhance best ethical practices",
-    links: [{ label: "Read More About Us", href: "/about-us" }],
-    suggestions: ["What is RAGLA's mission?", "What are RAGLA's values?", "How do I join RAGLA?"],
-  },
-  // ── Mission ───────────────────────────────
-  {
-    keywords: ["mission", "purpose", "goal", "thematic", "why ragla"],
-    answer:
-      "RAGLA's mission is built on **five thematic areas**:\n\n1. **Professional Excellence** — Fostering ethical integrity and accountability in service delivery\n2. **Capacity Building** — Developing leaders through courses, programmes, and CPD initiatives\n3. **Market-Driven Research** — Building a platform to disseminate research and share best practices\n4. **Fostering Strong Partnerships** — Working with governments, CSOs, and the private sector\n5. **Nurturing the Next Generation** — Inspiring Africa's future leaders to champion inclusive and innovative solutions",
-    links: [{ label: "About RAGLA", href: "/about-us" }],
-    suggestions: ["What are RAGLA's values?", "What are RAGLA's objectives?", "How do I join?"],
-  },
-  // ── Values ────────────────────────────────
-  {
-    keywords: ["values", "ipac", "integrity", "professionalism", "accountability", "commitment", "corporate values"],
-    answer:
-      "RAGLA is driven by **IPAC**:\n\n- 🛡️ **Integrity** — Service with integrity is our clarion call to duty\n- 🏆 **Professionalism** — Adhering to the highest level of standards that define us as a professional body\n- ✅ **Accountability** — Holding fidelity to sincerity, honesty, and good ethical conduct\n- 🎯 **Commitment** — Driven by the highest level of enthusiasm to promote best governance practices",
-    suggestions: ["What is RAGLA's mission?", "Tell me about RAGLA's objectives"],
-  },
-  // ── Objectives ────────────────────────────
-  {
-    keywords: ["objectives", "goals", "aim", "aims", "what does ragla do"],
-    answer:
-      "RAGLA's key objectives include:\n\n1. Promote transparency, accountability, integrity, and responsibility\n2. Develop professional standards and codes of conduct\n3. Provide capacity building, certification, and CPD\n4. Conduct and disseminate market-driven research\n5. Advocate policy reform and build partnerships\n6. Facilitate collaborative networking across Africa\n7. Develop youth and emerging leaders\n8. Recognise and accredit excellence in governance\n9. Position Africa as a hub of governance innovation\n10. Promote sustainable and inclusive leadership",
-    links: [{ label: "About RAGLA", href: "/about-us" }],
-    suggestions: ["How do I join RAGLA?", "What are the membership benefits?"],
-  },
-  // ── Membership Categories ─────────────────
-  {
-    keywords: ["membership", "member", "join", "categories", "types", "category", "tier"],
-    answer:
-      "RAGLA offers **6 membership categories**:\n\n1. **FM-RAGLA** — Foundational Member *(Founders & pioneers)*\n2. **AFF-RAGLA** — Affiliate Member *(Lower–Mid level with degree + 3–5 yrs exp)*\n3. **CertM-RAGLA** — Certified Member *(Degree + completed RAGLA programme + 5 yrs exp)*\n4. **ASSOC-RAGLA** — Associate Member *(Mid–Top management + degree + 5–10 yrs exp)*\n5. **ChM-RAGLA** — Chartered Member *(Postgrad + 10+ yrs leadership + Scholar-Practitioner)*\n6. **F-RAGLA** — Fellow Member *(Highest category — 15–30 yrs experience)*",
-    links: [{ label: "View All Categories & Criteria", href: "/membership-benefits" }, { label: "Apply Now", href: "/apply" }],
-    suggestions: ["What are the membership benefits?", "How do I apply for membership?", "What is Affiliate membership?"],
-  },
-  // ── Affiliate Member ──────────────────────
-  {
-    keywords: ["affiliate", "aff-ragla"],
-    answer:
-      "**Affiliate Member (AFF-RAGLA)** is suited for lower to mid-level executives.\n\n**Criteria:**\n- At least a Degree or Professional Diploma in a related area\n- 3–5 years of working experience\n- Ready to conform to RAGLA's norms and values\n- Ready to pay appropriate membership dues\n- Willing to undertake CPD as a prerequisite",
-    links: [{ label: "Apply Now", href: "/apply" }],
-    suggestions: ["Tell me about Associate membership", "What are the membership benefits?"],
-  },
-  // ── Associate Member ─────────────────────
-  {
-    keywords: ["associate", "assoc-ragla"],
-    answer:
-      "**Associate Member (ASSOC-RAGLA)** is for mid-to-top management executives.\n\n**Criteria:**\n- Degree or Professional Qualification in a relevant area\n- Middle-to-Top Management Executive role\n- 5–10 years of working experience in a related field\n- Conform to RAGLA's values and established standards\n- Pay appropriate membership dues and undertake CPD",
-    links: [{ label: "Apply Now", href: "/apply" }],
-    suggestions: ["Tell me about Chartered membership", "What are the membership benefits?"],
-  },
-  // ── Certified Member ─────────────────────
-  {
-    keywords: ["certified", "certm-ragla", "certification"],
-    answer:
-      "**Certified Member (CertM-RAGLA)**:\n\n**Criteria:**\n- Minimum Bachelor's degree or equivalent professional qualification\n- Completed one of RAGLA's Certified Programmes\n- At least 5 years of relevant professional experience\n- Subscribe to and uphold RAGLA's Code of Ethics\n- Complete a minimum of **40 CPD hours annually**",
-    links: [{ label: "Apply Now", href: "/apply" }],
-    suggestions: ["Tell me about Chartered membership", "What are CPD requirements?"],
-  },
-  // ── Chartered Member ─────────────────────
-  {
-    keywords: ["chartered", "chm-ragla"],
-    answer:
-      "**Chartered Member (ChM-RAGLA)** is RAGLA's highest professional qualification.\n\n**Criteria:**\n- Recognised Post-Graduate degree or higher\n- Minimum 10 years of progressive leadership or governance experience\n- Proven record of executive leadership or board participation\n- Must be a Scholar-Practitioner with evidence of thought leadership\n- Must have completed RAGLA's Chartered Professional Programme",
-    links: [{ label: "Apply Now", href: "/apply" }],
-    suggestions: ["Tell me about Fellow membership", "What are the benefits?"],
-  },
-  // ── Fellow Member ─────────────────────────
-  {
-    keywords: ["fellow", "f-ragla", "fellows"],
-    answer:
-      "**Fellow Member (F-RAGLA)** is the **highest RAGLA membership category**. Members are inducted into a Council of Fellows.\n\n**Criteria:**\n- Post-Graduate Qualification (minimum)\n- 15–30 years of unimpeded working experience\n- Accomplished senior corporate executive, seasoned public servant, or renowned academic",
-    links: [{ label: "View Membership Categories", href: "/membership-benefits" }],
-    suggestions: ["What are the membership benefits?", "How do I apply?"],
-  },
-  // ── Membership Benefits ───────────────────
-  {
-    keywords: ["benefit", "benefits", "advantages", "perks", "why join", "what do i get"],
-    answer:
-      "RAGLA membership comes with **8 key benefit areas**:\n\n🎓 **Professional Recognition** — Designations, certifications, post-nominal letters\n🌍 **Networking** — Pan-African and global network of governance professionals\n📚 **Capacity Building** — Free/discounted CPD programmes & executive training\n📖 **Knowledge Resources** — Journals, newsletters, digital library access\n💼 **Career Advancement** — Mentorship, coaching, leadership development\n🗣️ **Advocacy & Influence** — Shape governance reform across Africa\n💰 **Discounts & Privileges** — Special rates on exams, events, publications\n🤝 **Community Impact** — CSR projects and principled leadership initiatives",
-    links: [{ label: "Full Benefits Details", href: "/membership-benefits" }],
-    suggestions: ["How do I apply for membership?", "What are the membership categories?"],
-  },
-  // ── How to Apply ──────────────────────────
-  {
-    keywords: ["apply", "application", "how to join", "register", "sign up", "enroll", "process", "steps"],
-    answer:
-      "Applying for RAGLA membership is a **5-step process**:\n\n1. **Identity** — Provide your full name, phone, and email\n2. **Payment** — Complete the registration fee via our secure payment widget\n3. **Professional Details** — Share your career background and experience\n4. **Academic & Membership** — Select your category and list qualifications\n5. **Final Submission** — Upload your passport photo, resume, certificates, referees, and statement of purpose\n\nAfter submission, the RAGLA Council will review and contact you.",
-    links: [{ label: "Start Your Application", href: "/apply" }],
-    suggestions: ["What documents do I need?", "What are the membership categories?", "What is the registration fee?"],
-  },
-  // ── Documents needed ─────────────────────
-  {
-    keywords: ["documents", "document", "upload", "what to bring", "what do i need", "files", "required", "requirements"],
-    answer:
-      "To complete your RAGLA membership application, you will need to upload:\n\n📸 **Passport Photo** (image file)\n📄 **Summarised Resume / CV** (PDF)\n🎓 **Certificates** (PDF)\n💳 **Proof of Payment** (PDF, JPG, or PNG — max 10MB)\n✍️ **Statement of Purpose** (typed in the form)\n👥 **Two Professional Referees** (name & contact)\n\nAll uploads happen securely on the application form.",
-    links: [{ label: "Apply Now", href: "/apply" }],
-    suggestions: ["How do I apply?", "What is the registration fee?"],
-  },
-  // ── Contact ───────────────────────────────
-  {
-    keywords: ["contact", "reach", "phone", "email", "address", "location", "office", "where", "get in touch", "help"],
-    answer:
-      "You can reach RAGLA through the following:\n\n📞 **Phone:** +233 (0)256257507\n📧 **Email:** Info@ragl-africa.org\n📍 **Address:** GA – 334 – 8177, 2nd Bissau Street, East Legon, Accra – Ghana\n\nYou can also send us a message directly through our Contact page.",
-    links: [{ label: "Send a Message", href: "/contact-us" }],
-    suggestions: ["How do I apply?", "Tell me about RAGLA"],
-  },
-  // ── CPD ───────────────────────────────────
-  {
-    keywords: ["cpd", "continuous professional development", "training", "courses", "learning"],
-    answer:
-      "RAGLA is committed to **Continuous Professional Development (CPD)**. As a member you get:\n\n- Free or discounted access to executive training and CPD programmes\n- Privileged access to market-driven research, case studies, and global best practices\n- CPD points to maintain your professional standing\n- Certified members must complete a minimum of **40 CPD hours annually**",
-    links: [{ label: "Membership Benefits", href: "/membership-benefits" }],
-    suggestions: ["Tell me about membership categories", "What are the membership benefits?"],
-  },
-  // ── Motto ────────────────────────────────
-  {
-    keywords: ["motto", "slogan", "servitium", "integritas", "phasellus", "latin"],
-    answer:
-      "RAGLA operates under a three-word Latin motto:\n\n- ✦ **Servitium** — Service\n- ✦ **Integritas** — Integrity\n- ✦ **Phasellus** — Professionalism\n\nThese three pillars define how RAGLA approaches its work across Africa.",
-    suggestions: ["What are RAGLA's values?", "Tell me about RAGLA"],
-  },
-  // ── Location ─────────────────────────────
-  {
-    keywords: ["ghana", "accra", "east legon", "africa", "pan-african", "pan african"],
-    answer:
-      "RAGLA is headquartered in **Accra, Ghana**:\n\n📍 GA – 334 – 8177, 2nd Bissau Street, East Legon, Accra – Ghana\n\nAs a Pan-African Academy, RAGLA serves professionals across the entire African continent.",
-    links: [{ label: "Contact Us", href: "/contact-us" }],
-    suggestions: ["How do I contact RAGLA?", "How do I join?"],
-  },
-  // ── Events ───────────────────────────────
-  {
-    keywords: ["event", "events", "conference", "summit", "webinar", "seminar"],
-    answer:
-      "RAGLA regularly organises leadership events, governance summits, and networking conferences for members and the public. Check our Events page for the latest upcoming activities.",
-    links: [{ label: "View Events", href: "/events" }],
-    suggestions: ["How do I join RAGLA?", "What are the membership benefits?"],
-  },
-  // ── News ─────────────────────────────────
-  {
-    keywords: ["news", "latest", "update", "announcement", "blog", "post", "article"],
-    answer:
-      "Stay up to date with the latest news, thought leadership articles, and governance updates from RAGLA on our News page.",
-    links: [{ label: "Read the News", href: "/news" }],
-    suggestions: ["Tell me about RAGLA", "What events are upcoming?"],
-  },
-  // ── Gallery ──────────────────────────────
-  {
-    keywords: ["gallery", "photo", "pictures", "images", "photos"],
-    answer:
-      "View photos and highlights from RAGLA events, programmes, and activities in our Gallery.",
-    links: [{ label: "Visit Gallery", href: "/gallery" }],
-    suggestions: ["Tell me about RAGLA", "What events are upcoming?"],
-  },
-  // ── Greeting ────────────────────────────
-  {
-    keywords: ["hello", "hi", "hey", "greetings", "good morning", "good afternoon", "good evening", "howdy"],
-    answer:
-      "Hello there! 👋 Welcome to RAGLA — the Royal Academy of Governance and Leadership Africa.\n\nI'm here to answer your questions about our organisation, membership categories, application process, and more. How can I help you today?",
-    suggestions: ["What is RAGLA?", "How do I join RAGLA?", "Contact RAGLA"],
-  },
-  // ── Thanks ───────────────────────────────
-  {
-    keywords: ["thank", "thanks", "thank you", "appreciate", "great", "wonderful", "perfect", "awesome"],
-    answer:
-      "You're very welcome! 😊 It's my pleasure to assist. Is there anything else you'd like to know about RAGLA?",
-    suggestions: ["How do I apply?", "What are the membership benefits?", "Contact RAGLA"],
-  },
-];
+// No knowledge base here anymore! It's securely hosted in the Supabase Edge Function.
+import { supabase } from "@/lib/supabase";
+import { generateId } from "@/lib/utils";
 
 const QUICK_SUGGESTIONS = [
   "What is RAGLA?",
@@ -196,29 +14,6 @@ const QUICK_SUGGESTIONS = [
   "Membership benefits",
   "Contact RAGLA",
 ];
-
-// ──────────────────────────────────────────────
-// SEARCH LOGIC
-// ──────────────────────────────────────────────
-
-function findAnswer(query: string): KBEntry | null {
-  const q = query.toLowerCase().trim();
-  // Score each entry by count of keyword hits
-  let best: KBEntry | null = null;
-  let bestScore = 0;
-
-  for (const entry of KNOWLEDGE_BASE) {
-    let score = 0;
-    for (const kw of entry.keywords) {
-      if (q.includes(kw)) score += kw.split(" ").length; // multi-word keywords score higher
-    }
-    if (score > bestScore) {
-      bestScore = score;
-      best = entry;
-    }
-  }
-  return bestScore > 0 ? best : null;
-}
 
 // ──────────────────────────────────────────────
 // TYPES
@@ -299,11 +94,11 @@ const RAGLAChatbot = () => {
     setHasUnread(false);
   };
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     if (!text.trim()) return;
 
     const userMsg: Message = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       role: "user",
       text: text.trim(),
       ts: new Date(),
@@ -313,32 +108,38 @@ const RAGLAChatbot = () => {
     setInput("");
     setIsTyping(true);
 
-    // Simulate thinking delay
-    setTimeout(() => {
-      const entry = findAnswer(text);
+    try {
+      const { data, error } = await supabase.functions.invoke("chat-with-gemini", {
+        body: { message: text }
+      });
+
+      if (error) throw error;
+
       const botMsg: Message = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         role: "bot",
-        text: entry
-          ? entry.answer
-          : "I'm sorry, I don't have a specific answer for that. Please feel free to browse our website or contact us directly — we'd be happy to help!\n\n📧 Info@ragl-africa.org\n📞 +233 (0)256257507",
-        links: entry?.links,
-        suggestions: entry?.suggestions,
+        text: data?.text || "I'm sorry, I couldn't process that right now.",
         ts: new Date(),
       };
-      setIsTyping(false);
+      
       setMessages((prev) => [...prev, botMsg]);
-    }, 900 + Math.random() * 400);
+    } catch (error) {
+      console.error("Chat error:", error);
+      const errorMsg: Message = {
+        id: generateId(),
+        role: "bot",
+        text: "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later!",
+        ts: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleSend = () => sendMessage(input);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+
 
   const handleReset = () => {
     setMessages([
@@ -354,6 +155,19 @@ const RAGLAChatbot = () => {
 
   return (
     <>
+      {/* ── Backdrop (Click outside to close) ─────── */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 z-40 bg-black/5 sm:bg-transparent backdrop-blur-[2px] sm:backdrop-blur-none"
+          />
+        )}
+      </AnimatePresence>
+
       {/* ── Floating Bubble ─────────────────────── */}
       <AnimatePresence>
         {!isOpen && (
@@ -385,25 +199,28 @@ const RAGLAChatbot = () => {
           <motion.div
             key="panel"
             // Mobile: slide up from bottom. Desktop: scale in from bottom-right.
-            initial={{ opacity: 0, y: 60 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 60 }}
-            transition={{ type: "spring", stiffness: 320, damping: 30 }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
             className={[
               "fixed z-50 flex flex-col overflow-hidden",
-              "bg-background/98 backdrop-blur-xl border-border shadow-2xl shadow-black/30",
+              "bg-background/85 backdrop-blur-2xl border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.2)]",
               // Mobile: full-width bottom sheet anchored to screen bottom
-              "inset-x-0 bottom-0 rounded-t-3xl border-t border-l border-r",
+              "inset-x-0 bottom-0 rounded-t-[2.5rem] border-t",
               // sm+: floating panel bottom-right, capped width
-              "sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[420px] sm:rounded-3xl sm:border",
+              "sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[440px] sm:rounded-[2rem] sm:border",
               // height: tall on mobile (no max needed, flex manages it), capped on desktop
-              isMinimized ? "" : "max-h-[88svh] sm:max-h-[min(680px,90vh)]",
+              isMinimized ? "h-auto" : "max-h-[85svh] sm:max-h-[min(720px,90vh)]",
             ].join(" ")}
           >
             {/* ── Header ───────────────────────────── */}
-            <div className="flex items-center gap-3 px-4 sm:px-5 py-3 sm:py-4 bg-primary text-primary-foreground flex-shrink-0 rounded-t-3xl">
+            <div className="flex items-center gap-3 px-5 sm:px-6 py-4 sm:py-5 bg-gradient-to-r from-primary via-primary/95 to-primary/90 text-primary-foreground flex-shrink-0 relative overflow-hidden">
+              {/* Subtle light effect in header */}
+              <div className="absolute inset-0 bg-white/5 pointer-events-none" />
+              
               {/* Mobile drag handle */}
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-primary-foreground/30 sm:hidden" />
+              <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-12 h-1.5 rounded-full bg-primary-foreground/20 sm:hidden" />
 
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center flex-shrink-0">
                 <Bot className="w-5 h-5" />
@@ -415,28 +232,28 @@ const RAGLAChatbot = () => {
                   <p className="text-xs text-primary-foreground/80">Online · Ready to help</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
+              <div className="flex items-center gap-1.5 flex-shrink-0 relative z-10">
                 <button
                   onClick={handleReset}
                   title="Reset conversation"
-                  className="w-8 h-8 rounded-full hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
+                  className="w-9 h-9 rounded-xl hover:bg-primary-foreground/20 flex items-center justify-center transition-all hover:scale-105 active:scale-90"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <RotateCcw className="w-4.5 h-4.5" />
                 </button>
                 {/* Minimize — desktop only */}
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
-                  title={isMinimized ? "Expand" : "Minimise"}
-                  className="hidden sm:flex w-8 h-8 rounded-full hover:bg-primary-foreground/20 items-center justify-center transition-colors"
+                  title={isMinimized ? "Expand" : "Minimize"}
+                  className="hidden sm:flex w-9 h-9 rounded-xl hover:bg-primary-foreground/20 items-center justify-center transition-all hover:scale-105 active:scale-90"
                 >
-                  <Minimize2 className="w-4 h-4" />
+                  <Minimize2 className="w-4.5 h-4.5" />
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  title="Close"
-                  className="w-8 h-8 rounded-full hover:bg-primary-foreground/20 flex items-center justify-center transition-colors"
+                  title="Close Assistant"
+                  className="w-9 h-9 rounded-xl bg-white/10 hover:bg-red-500/80 flex items-center justify-center transition-all hover:scale-105 active:scale-90 text-primary-foreground group"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4.5 h-4.5 group-hover:rotate-90 transition-transform duration-300" />
                 </button>
               </div>
             </div>
@@ -478,10 +295,10 @@ const RAGLAChatbot = () => {
                         <div className={`flex flex-col gap-1.5 sm:gap-2 max-w-[82%] ${msg.role === "user" ? "items-end" : "items-start"}`}>
                           {/* Bubble */}
                           <div
-                            className={`px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl text-sm leading-relaxed ${
+                            className={`px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-[0.925rem] leading-relaxed shadow-sm ${
                               msg.role === "user"
-                                ? "bg-primary text-primary-foreground rounded-tr-sm"
-                                : "bg-secondary text-foreground rounded-tl-sm border border-border/50"
+                                ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-tr-sm border border-primary/20"
+                                : "bg-card/40 backdrop-blur-sm text-foreground rounded-tl-sm border border-border/50"
                             }`}
                           >
                             {renderText(msg.text)}
@@ -503,20 +320,20 @@ const RAGLAChatbot = () => {
                             </div>
                           )}
 
-                          {/* Suggestion chips */}
-                          {msg.suggestions && msg.suggestions.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-0.5">
-                              {msg.suggestions.map((s) => (
-                                <button
-                                  key={s}
-                                  onClick={() => sendMessage(s)}
-                                  className="text-xs text-muted-foreground border border-border hover:border-primary hover:text-primary bg-background hover:bg-primary/5 px-2.5 sm:px-3 py-1.5 rounded-full transition-all"
-                                >
-                                  {s}
-                                </button>
-                              ))}
-                            </div>
-                          )}
+                              {/* Suggestion chips */}
+                              {msg.suggestions && msg.suggestions.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-1">
+                                  {msg.suggestions.map((s) => (
+                                    <button
+                                      key={s}
+                                      onClick={() => sendMessage(s)}
+                                      className="text-[0.75rem] font-medium text-primary hover:text-primary-foreground border border-primary/30 hover:border-primary bg-primary/5 hover:bg-primary px-3 py-1.5 rounded-full transition-all duration-300"
+                                    >
+                                      {s}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
                         </div>
                       </motion.div>
                     ))}
@@ -533,10 +350,10 @@ const RAGLAChatbot = () => {
                           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex-shrink-0 flex items-center justify-center bg-primary text-primary-foreground">
                             <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           </div>
-                          <div className="bg-secondary border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1.5 items-center">
-                            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "0ms" }} />
-                            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "150ms" }} />
-                            <span className="w-2 h-2 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+                          <div className="bg-card/40 backdrop-blur-sm border border-border/50 rounded-2xl rounded-tl-sm px-4 py-3 flex gap-1.5 items-center">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary/80 animate-pulse" style={{ animationDelay: "0ms" }} />
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary/80 animate-pulse" style={{ animationDelay: "200ms" }} />
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary/80 animate-pulse" style={{ animationDelay: "400ms" }} />
                           </div>
                         </motion.div>
                       )}
@@ -559,25 +376,30 @@ const RAGLAChatbot = () => {
 
                   {/* ── Input Bar ────────────────────────── */}
                   {/* pb-safe accounts for iOS home indicator */}
-                  <div className="flex items-center gap-2 px-3 sm:px-4 py-3 sm:py-4 border-t border-border bg-background/90 backdrop-blur-sm flex-shrink-0 pb-[env(safe-area-inset-bottom,12px)] sm:pb-3">
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSend();
+                    }}
+                    className="flex items-center gap-2 px-3 sm:px-4 py-3 sm:py-4 border-t border-border bg-background/90 backdrop-blur-sm flex-shrink-0 pb-[env(safe-area-inset-bottom,12px)] sm:pb-3"
+                  >
                     <input
                       ref={inputRef}
                       type="text"
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
                       placeholder="Ask me anything about RAGLA..."
                       className="flex-1 bg-secondary/60 border border-border rounded-xl px-3 sm:px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all"
                       disabled={isTyping}
                     />
                     <button
-                      onClick={handleSend}
+                      type="submit"
                       disabled={!input.trim() || isTyping}
                       className="w-11 h-11 sm:w-10 sm:h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:brightness-110 active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 shadow-lg shadow-primary/20"
                     >
                       <Send className="w-4 h-4" />
                     </button>
-                  </div>
+                  </form>
                 </motion.div>
               )}
             </AnimatePresence>

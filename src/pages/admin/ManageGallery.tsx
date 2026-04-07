@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Trash2, Image as ImageIcon, ExternalLink, FolderPlus, UploadCloud, FolderOpen, ArrowLeft, Link as LinkIcon } from "lucide-react";
+import { generateId } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -176,7 +177,7 @@ const ManageGallery = () => {
     for (const file of files) {
       try {
         const fileExt = file.name.split('.').pop() || 'jpg';
-        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        const fileName = `${generateId()}.${fileExt}`;
         const filePath = `${activeFolder.id}/${fileName}`;
 
         // 1. Upload to Storage — try each bucket candidate
