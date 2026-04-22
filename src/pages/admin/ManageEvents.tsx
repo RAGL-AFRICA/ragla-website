@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Calendar as CalendarIcon, Edit, Plus, Star, Trash2, UploadCloud } from "lucide-react";
+import { generateId } from "@/lib/utils";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -153,7 +154,7 @@ const ManageEvents = () => {
 
   const uploadEventFlyer = async (file: File) => {
     const fileExt = file.name.split(".").pop() || "jpg";
-    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const fileName = `${generateId()}.${fileExt}`;
 
     for (const bucketName of EVENT_BUCKET_CANDIDATES) {
       const filePath = `flyers/${fileName}`;
