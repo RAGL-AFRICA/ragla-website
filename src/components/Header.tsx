@@ -145,13 +145,13 @@ const Header = () => {
                 Join Today
               </Link>
               <a 
-                href="https://student.ragl-africa.org/student/login" 
+                href="https://student.ragl-africa.org/membership/login" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex justify-center items-center text-center text-muted-foreground py-2 w-full text-xs font-semibold hover:text-primary transition-colors border-b border-border/50"
                 onClick={() => setMobileOpen(false)}
               >
-                Student Portal Login
+                Membership Portal Login
               </a>
               <a 
                 href="https://student.ragl-africa.org/library" 
@@ -160,7 +160,7 @@ const Header = () => {
                 className="flex justify-center items-center text-center text-muted-foreground py-2 w-full text-xs font-semibold hover:text-primary transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
-                Digital Library Access
+                Resource Centre
               </a>
             </div>
             
