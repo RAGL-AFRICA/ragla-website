@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Calendar } from "lucide-react";
 import upcomingImg from "@/assets/upcoming-event.jpg"; // fallback
+import { Badge } from "@/components/ui/badge";
+import { getEventStatus } from "@/lib/utils";
 
 type EventType = {
   id: string;
@@ -165,8 +167,25 @@ const UpcomingSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.25) }}
-                className="rounded-2xl overflow-hidden border border-border bg-card card-shadow"
+                className="rounded-2xl overflow-hidden border border-border bg-card card-shadow relative"
               >
+                {item.itemType === "event" && (() => {
+                  const status = getEventStatus(item.displayDate);
+                  return (
+                    <>
+                      {status === "Upcoming" && (
+                        <Badge className="bg-blue-500 hover:bg-blue-600 border-none text-white absolute top-4 right-4 shadow-md z-10">Upcoming</Badge>
+                      )}
+                      {status === "Due" && (
+                        <Badge className="bg-amber-500 hover:bg-amber-600 border-none text-white absolute top-4 right-4 shadow-md z-10">Due</Badge>
+                      )}
+                      {status === "Past" && (
+                        <Badge className="bg-gray-500 hover:bg-gray-600 border-none text-white absolute top-4 right-4 shadow-md z-10">Past</Badge>
+                      )}
+                    </>
+                  );
+                })()}
+
                 <img
                   src={item.image_url || upcomingImg}
                   alt={item.title}

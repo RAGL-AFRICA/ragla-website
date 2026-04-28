@@ -5,7 +5,9 @@ import { Calendar as CalendarIcon, Edit, Plus, Star, Trash2, UploadCloud } from 
 import { generateId } from "@/lib/utils";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
+import { getEventStatus } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -468,7 +470,15 @@ const ManageEvents = () => {
                 </div>
 
                 <div className="pr-20">
-                  <h3 className="text-xl font-bold text-foreground mb-2">{event.title}</h3>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-xl font-bold text-foreground">{event.title}</h3>
+                    {(() => {
+                      const status = getEventStatus(event.date);
+                      if (status === "Upcoming") return <Badge className="bg-blue-500 hover:bg-blue-600 text-white border-none">Upcoming</Badge>;
+                      if (status === "Due") return <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-none">Due</Badge>;
+                      if (status === "Past") return <Badge className="bg-gray-500 hover:bg-gray-600 text-white border-none">Past</Badge>;
+                    })()}
+                  </div>
                   <div className="mb-4">
                     <p className={`text-muted-foreground text-sm break-words ${expandedEvents.has(event.id) ? "" : "line-clamp-3"}`}>
                       {event.description || "No description provided."}

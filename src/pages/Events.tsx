@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
 import { Calendar } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { getEventStatus, EventStatus } from "@/lib/utils";
 
 type EventItem = {
   id: string;
@@ -72,8 +74,19 @@ const Events = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event) => (
-                <article key={event.id} className="rounded-xl border border-border bg-card overflow-hidden">
+              {events.map((event) => {
+                const status = getEventStatus(event.date);
+                return (
+                <article key={event.id} className="rounded-xl border border-border bg-card overflow-hidden relative">
+                  {status === "Upcoming" && (
+                    <Badge className="bg-blue-500 hover:bg-blue-600 border-none text-white absolute top-4 right-4 shadow-md z-10">Upcoming</Badge>
+                  )}
+                  {status === "Due" && (
+                    <Badge className="bg-amber-500 hover:bg-amber-600 border-none text-white absolute top-4 right-4 shadow-md z-10">Due</Badge>
+                  )}
+                  {status === "Past" && (
+                    <Badge className="bg-gray-500 hover:bg-gray-600 border-none text-white absolute top-4 right-4 shadow-md z-10">Past</Badge>
+                  )}
                   {event.image_url && <img src={event.image_url} alt={event.title} className="w-full h-52 object-cover" />}
                   <div className="p-5 space-y-3">
                     <h2 className="text-xl font-bold text-foreground break-words">{event.title}</h2>
@@ -96,7 +109,7 @@ const Events = () => {
                     {event.description && <p className="text-sm text-foreground whitespace-pre-wrap">{event.description}</p>}
                   </div>
                 </article>
-              ))}
+              )})}
             </div>
           )}
         </div>
