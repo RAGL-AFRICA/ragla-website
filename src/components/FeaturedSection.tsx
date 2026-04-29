@@ -77,18 +77,19 @@ const FeaturedSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
+            className="min-w-0"
           >
             <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-3 flex items-center gap-2">
               <Star className="w-4 h-4 fill-primary" />
               Featured Highlight
             </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 leading-tight text-center md:text-left break-words">
               {featuredEvent.title}
             </h2>
             
             {featuredEvent.description && (
               <div 
-                className="text-muted-foreground leading-relaxed mb-8 prose prose-sm dark:prose-invert max-w-none"
+                className="text-muted-foreground leading-relaxed mb-8 prose prose-sm dark:prose-invert max-w-none w-full min-w-0 overflow-hidden break-words"
                 dangerouslySetInnerHTML={{ __html: featuredEvent.description }}
               />
             )}
