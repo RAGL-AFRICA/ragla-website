@@ -458,7 +458,7 @@ const ManageEvents = () => {
               </div>
 
               <div className="flex-1 p-5 lg:p-6 flex flex-col justify-center relative">
-                <div className="absolute top-4 right-4 flex gap-2">
+                <div className="absolute top-4 right-4 flex gap-2 z-10">
                   <Button size="icon" variant="secondary" onClick={() => handleOpenDialog(event)} title="Edit event">
                     <Edit className="w-4 h-4" />
                   </Button>
@@ -478,7 +478,7 @@ const ManageEvents = () => {
                     })()}
                   </div>
                   <div className="mb-4">
-                    <div className={`text-muted-foreground text-sm prose prose-sm dark:prose-invert max-w-none ${expandedEvents.has(event.id) ? "" : "line-clamp-3"}`}>
+                    <div className={`text-muted-foreground text-sm prose prose-sm dark:prose-invert max-w-none overflow-hidden pointer-events-none ${expandedEvents.has(event.id) ? "" : "line-clamp-3"}`}>
                       {event.description ? (
                         <div dangerouslySetInnerHTML={{ __html: event.description }} />
                       ) : (
