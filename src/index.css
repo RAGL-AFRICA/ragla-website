@@ -101,4 +101,22 @@
     transform: translateY(-4px);
     box-shadow: 0 0 0 1px hsl(var(--gold) / 0.3), 0 8px 24px rgba(0,0,0,.5);
   }
+
+  .prose {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .prose img, 
+  .prose video, 
+  .prose iframe {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .prose table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
 }
