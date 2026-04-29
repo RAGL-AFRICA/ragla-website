@@ -26,7 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
   const totalMins = i * 30;
@@ -302,12 +302,10 @@ const ManageEvents = () => {
 
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Provide details about the event..."
+                  <RichTextEditor
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={4}
+                    onChange={(content) => setFormData({ ...formData, description: content })}
+                    placeholder="Provide details about the event..."
                   />
                 </div>
 
@@ -480,9 +478,13 @@ const ManageEvents = () => {
                     })()}
                   </div>
                   <div className="mb-4">
-                    <p className={`text-muted-foreground text-sm break-words ${expandedEvents.has(event.id) ? "" : "line-clamp-3"}`}>
-                      {event.description || "No description provided."}
-                    </p>
+                    <div className={`text-muted-foreground text-sm prose prose-sm dark:prose-invert max-w-none ${expandedEvents.has(event.id) ? "" : "line-clamp-3"}`}>
+                      {event.description ? (
+                        <div dangerouslySetInnerHTML={{ __html: event.description }} />
+                      ) : (
+                        "No description provided."
+                      )}
+                    </div>
                     {event.description && event.description.length > 160 && (
                       <button
                         type="button"

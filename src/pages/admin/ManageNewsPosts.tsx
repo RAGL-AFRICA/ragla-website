@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 type NewsPostType = {
   id: string;
@@ -196,11 +197,9 @@ const ManageNewsPosts = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
-                  rows={6}
+                <RichTextEditor
                   value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  onChange={(content) => setFormData({ ...formData, content })}
                   placeholder="Write the post/news content"
                 />
               </div>
@@ -277,7 +276,12 @@ const ManageNewsPosts = () => {
                       minute: "2-digit",
                     })}
                   </p>
-                  {item.content && <p className="text-sm text-foreground mt-3 whitespace-pre-wrap">{item.content}</p>}
+                  {item.content && (
+                    <div 
+                      className="text-sm text-foreground mt-3 line-clamp-3 prose prose-sm dark:prose-invert max-w-none pointer-events-none"
+                      dangerouslySetInnerHTML={{ __html: item.content }}
+                    />
+                  )}
                 </div>
 
                 <div className="flex gap-2 shrink-0">

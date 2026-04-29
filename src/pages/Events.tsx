@@ -106,7 +106,12 @@ const Events = () => {
                         <span className="font-medium text-primary">Location:</span> {event.location}
                       </p>
                     )}
-                    {event.description && <p className="text-sm text-foreground whitespace-pre-wrap">{event.description}</p>}
+                    {event.description && (
+                      <div 
+                        className="text-sm text-foreground prose prose-sm dark:prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ __html: event.description }}
+                      />
+                    )}
                   </div>
                 </article>
               )})}
