@@ -457,7 +457,7 @@ const ManageEvents = () => {
                 )}
               </div>
 
-              <div className="flex-1 p-5 lg:p-6 flex flex-col justify-center relative">
+              <div className="flex-1 p-5 lg:p-6 flex flex-col justify-center relative min-w-0">
                 <div className="absolute top-4 right-4 flex gap-2 z-10">
                   <Button size="icon" variant="secondary" onClick={() => handleOpenDialog(event)} title="Edit event">
                     <Edit className="w-4 h-4" />
@@ -469,7 +469,7 @@ const ManageEvents = () => {
 
                 <div className="pr-20">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-xl font-bold text-foreground">{event.title}</h3>
+                    <h3 className="text-xl font-bold text-foreground break-words">{event.title}</h3>
                     {(() => {
                       const status = getEventStatus(event.date);
                       if (status === "Upcoming") return <Badge className="bg-blue-500 hover:bg-blue-600 text-white border-none">Upcoming</Badge>;
@@ -478,7 +478,7 @@ const ManageEvents = () => {
                     })()}
                   </div>
                   <div className="mb-4">
-                    <div className={`text-muted-foreground text-sm prose prose-sm dark:prose-invert max-w-none overflow-hidden pointer-events-none ${expandedEvents.has(event.id) ? "" : "line-clamp-3"}`}>
+                    <div className={`text-muted-foreground text-sm prose prose-sm dark:prose-invert max-w-none overflow-hidden pointer-events-none break-words w-full min-w-0 ${expandedEvents.has(event.id) ? "" : "line-clamp-3"}`}>
                       {event.description ? (
                         <div dangerouslySetInnerHTML={{ __html: event.description }} />
                       ) : (
