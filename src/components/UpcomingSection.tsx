@@ -210,13 +210,12 @@ const UpcomingSection = () => {
                   )}
                   {item.description && (
                     <div>
-                      <p
-                        className={`text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words ${
+                      <div
+                        className={`text-sm text-foreground prose prose-sm dark:prose-invert max-w-none ${
                           expandedItems.has(item.id) ? "" : "line-clamp-3"
                         }`}
-                      >
-                        {item.description}
-                      </p>
+                        dangerouslySetInnerHTML={{ __html: item.description }}
+                      />
                       {item.description.length > 160 && (
                         <button
                           type="button"
