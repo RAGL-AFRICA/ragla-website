@@ -80,7 +80,12 @@ const News = () => {
                         minute: "2-digit",
                       })}
                     </p>
-                    {item.content && <p className="text-sm text-foreground whitespace-pre-wrap">{item.content}</p>}
+                    {item.content && (
+                      <div 
+                        className="text-sm text-foreground prose prose-sm dark:prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ __html: item.content }}
+                      />
+                    )}
                   </div>
                 </article>
               ))}
