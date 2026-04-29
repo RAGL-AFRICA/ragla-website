@@ -10,8 +10,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 type ContactMessage = {
   id: string;
@@ -280,12 +280,10 @@ const ManageMessages = () => {
 
             <div className="space-y-2">
               <Label htmlFor="reply-body">Your Reply *</Label>
-              <Textarea
-                id="reply-body"
-                placeholder="Type your reply here..."
+              <RichTextEditor
                 value={replyBody}
-                onChange={(e) => setReplyBody(e.target.value)}
-                rows={6}
+                onChange={(content) => setReplyBody(content)}
+                placeholder="Type your reply here..."
               />
             </div>
 

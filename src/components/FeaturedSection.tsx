@@ -87,9 +87,10 @@ const FeaturedSection = () => {
             </h2>
             
             {featuredEvent.description && (
-              <p className="text-muted-foreground leading-relaxed mb-8">
-                {featuredEvent.description}
-              </p>
+              <div 
+                className="text-muted-foreground leading-relaxed mb-8 prose prose-sm dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: featuredEvent.description }}
+              />
             )}
 
             <div className="flex flex-col sm:flex-row gap-4">
