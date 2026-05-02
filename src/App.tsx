@@ -22,6 +22,8 @@ import ManageEvents from "./pages/admin/ManageEvents.tsx";
 import ManageGallery from "./pages/admin/ManageGallery.tsx";
 import ManageNewsPosts from "./pages/admin/ManageNewsPosts.tsx";
 import ManageMessages from "./pages/admin/ManageMessages.tsx";
+import ManageRegistrations from "./pages/admin/ManageRegistrations.tsx";
+import EventDetail from "./pages/EventDetail.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 import Apply from "./pages/Apply.tsx";
 
@@ -46,12 +48,14 @@ const App = () => (
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/:eventId" element={<EventDetail />} />
             <Route path="/news" element={<News />} />
             <Route path="/posts" element={<Posts />} />
             
             <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="events" element={<ManageEvents />} />
+              <Route path="events/registrations/:eventId" element={<ManageRegistrations />} />
               <Route path="news-posts" element={<ManageNewsPosts />} />
               <Route path="gallery" element={<ManageGallery />} />
               <Route path="messages" element={<ManageMessages />} />

@@ -67,9 +67,9 @@ const News = () => {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {news.map((item) => (
-                <article key={item.id} className="rounded-xl border border-border bg-card overflow-hidden">
-                  {item.image_url && <img src={item.image_url} alt={item.title} className="w-full h-52 object-cover" />}
-                  <div className="p-5 space-y-3">
+                <article key={item.id} className="rounded-xl border border-border bg-card overflow-hidden flex flex-col min-w-0">
+                  {item.image_url && <img src={item.image_url} alt={item.title} className="w-full h-52 object-cover shrink-0" />}
+                  <div className="p-5 space-y-3 flex-1 min-w-0">
                     <h2 className="text-xl font-bold text-foreground break-words">{item.title}</h2>
                     <p className="text-sm text-muted-foreground">
                       {new Date(item.published_at || item.created_at).toLocaleString("en-US", {
@@ -82,7 +82,7 @@ const News = () => {
                     </p>
                     {item.content && (
                       <div 
-                        className="text-sm text-foreground prose prose-sm dark:prose-invert max-w-none"
+                        className="prose prose-sm sm:prose-base dark:prose-invert max-w-none break-words overflow-hidden"
                         dangerouslySetInnerHTML={{ __html: item.content }}
                       />
                     )}
