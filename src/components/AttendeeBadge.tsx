@@ -78,7 +78,7 @@ const AttendeeBadge = ({ attendeeName, eventTitle, eventDate, eventLocation, eve
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
-              <span className="text-[8px] uppercase tracking-widest block opacity-60 mt-1">Regional Academy on Governance & Leadership</span>
+              <span className="text-[8px] uppercase tracking-widest block opacity-60 mt-1">Royal Academy of Governance and Leadership Africa</span>
             </div>
           </div>
 
