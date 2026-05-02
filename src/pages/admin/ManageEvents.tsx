@@ -27,6 +27,11 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/admin/RichTextEditor";
+import FormBuilder, { FormField } from "@/components/admin/FormBuilder";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import EventShareButtons from "@/components/EventShareButtons";
 
 const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
   const totalMins = i * 30;
@@ -57,6 +62,8 @@ type EventFormData = {
   time: string;
   location: string;
   is_featured: boolean;
+  enable_registration: boolean;
+  registration_fields: FormField[];
 };
 
 const initialFormData: EventFormData = {
@@ -66,6 +73,8 @@ const initialFormData: EventFormData = {
   time: "",
   location: "",
   is_featured: false,
+  enable_registration: false,
+  registration_fields: [],
 };
 
 const EVENT_BUCKET_CANDIDATES = ["events", "event_flyers", "event-flyers"];
@@ -127,7 +136,7 @@ const ManageEvents = () => {
     }
   };
 
-  const handleOpenDialog = (event?: EventType) => {
+  const handleOpenDialog = async (event?: EventType) => {
     if (event) {
       const eventDate = event.date ? new Date(event.date) : null;
       const derivedTime = eventDate
@@ -135,6 +144,26 @@ const ManageEvents = () => {
         : "";
 
       setEditingEvent(event);
+      
+      // Fetch registration form if it exists
+      let regFields: FormField[] = [];
+      let hasRegForm = false;
+      
+      try {
+        const { data, error } = await supabase
+          .from("event_registration_forms")
+          .select("fields")
+          .eq("event_id", event.id)
+          .maybeSingle();
+        
+        if (data) {
+          regFields = data.fields;
+          hasRegForm = true;
+        }
+      } catch (err) {
+        console.error("Error fetching reg form:", err);
+      }
+
       setFormData({
         title: event.title,
         description: event.description || "",
@@ -142,6 +171,8 @@ const ManageEvents = () => {
         time: derivedTime,
         location: event.location || "",
         is_featured: event.is_featured,
+        enable_registration: hasRegForm,
+        registration_fields: regFields,
       });
       setExistingImageUrl(event.image_url || "");
       setFlyerFile(null);
@@ -218,14 +249,37 @@ const ManageEvents = () => {
         is_featured: formData.is_featured,
       };
 
+      let eventId: string;
+
       if (editingEvent) {
-        const { error } = await supabase.from("events").update(payload).eq("id", editingEvent.id);
+        eventId = editingEvent.id;
+        const { error } = await supabase.from("events").update(payload).eq("id", eventId);
         if (error) throw error;
         toast.success("Event updated successfully!");
       } else {
-        const { error } = await supabase.from("events").insert([payload]);
+        const { data, error } = await supabase.from("events").insert([payload]).select("id").single();
         if (error) throw error;
+        eventId = data.id;
         toast.success("Event created successfully!");
+      }
+
+      // Handle registration form
+      if (formData.enable_registration && formData.registration_fields.length > 0) {
+        const { error: regError } = await supabase
+          .from("event_registration_forms")
+          .upsert({
+            event_id: eventId,
+            fields: formData.registration_fields,
+          }, { onConflict: "event_id" });
+        
+        if (regError) {
+          console.error("Error saving reg form:", regError);
+          toast.error("Event saved but registration form failed to save.");
+        }
+      } else if (!formData.enable_registration && editingEvent) {
+        // If disabled, we could delete it, but maybe better to keep it? 
+        // Let's delete it if explicitly disabled to keep DB clean.
+        await supabase.from("event_registration_forms").delete().eq("event_id", eventId);
       }
 
       setIsDialogOpen(false);
@@ -288,123 +342,174 @@ const ManageEvents = () => {
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="space-y-6 pt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="title">Event Title *</Label>
-                  <Input
-                    id="title"
-                    placeholder="e.g., Annual Leadership Summit"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="description">Description</Label>
-                  <RichTextEditor
-                    value={formData.description}
-                    onChange={(content) => setFormData({ ...formData, description: content })}
-                    placeholder="Provide details about the event..."
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-start text-left font-normal">
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {formData.date ? format(formData.date, "PPP") : "Pick a date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={formData.date}
-                        onSelect={(selected) => setFormData({ ...formData, date: selected })}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="time">Time</Label>
-                  <Select
-                    value={formData.time}
-                    onValueChange={(value) => setFormData({ ...formData, time: value })}
-                  >
-                    <SelectTrigger id="time">
-                      <SelectValue placeholder="Select a time" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60 overflow-y-auto">
-                      {TIME_SLOTS.map(({ value, label }) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    placeholder="e.g., Accra International Conference Center"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  />
-                </div>
-
-                <div className="space-y-3 md:col-span-2">
-                  <Label htmlFor="flyer">Event Flyer (Image Upload)</Label>
-                  <Input
-                    id="flyer"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setFlyerFile(e.target.files?.[0] || null)}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Upload an image flyer. This will be shown on the upcoming event section.
-                  </p>
-
-                  {selectedFlyerPreview ? (
-                    <div className="rounded-lg border overflow-hidden bg-muted/30 max-h-52">
-                      <img
-                        src={selectedFlyerPreview}
-                        alt="Event flyer preview"
-                        className="w-full h-full object-cover"
+              <Tabs defaultValue="details" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="details">Event Details</TabsTrigger>
+                  <TabsTrigger value="registration">Registration Form</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="details" className="space-y-6 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="title">Event Title *</Label>
+                      <Input
+                        id="title"
+                        placeholder="e.g., Annual Leadership Summit"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        required
                       />
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground border rounded-lg p-3 bg-muted/30">
-                      <UploadCloud className="w-4 h-4" />
-                      No flyer uploaded yet.
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="description">Description</Label>
+                      <RichTextEditor
+                        value={formData.description}
+                        onChange={(content) => setFormData({ ...formData, description: content })}
+                        placeholder="Provide details about the event..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Date</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formData.date ? format(formData.date, "PPP") : "Pick a date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={formData.date}
+                            onSelect={(selected) => setFormData({ ...formData, date: selected })}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="time">Time</Label>
+                      <Select
+                        value={formData.time}
+                        onValueChange={(value) => setFormData({ ...formData, time: value })}
+                      >
+                        <SelectTrigger id="time">
+                          <SelectValue placeholder="Select a time" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60 overflow-y-auto">
+                          {TIME_SLOTS.map(({ value, label }) => (
+                            <SelectItem key={value} value={value}>
+                              {label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="location">Location</Label>
+                      <Input
+                        id="location"
+                        placeholder="e.g., Accra International Conference Center"
+                        value={formData.location}
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-3 md:col-span-2">
+                      <Label htmlFor="flyer">Event Flyer (Image Upload)</Label>
+                      <Input
+                        id="flyer"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setFlyerFile(e.target.files?.[0] || null)}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Upload an image flyer. This will be shown on the upcoming event section.
+                      </p>
+
+                      {selectedFlyerPreview ? (
+                        <div className="rounded-lg border overflow-hidden bg-muted/30 max-h-52">
+                          <img
+                            src={selectedFlyerPreview}
+                            alt="Event flyer preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground border rounded-lg p-3 bg-muted/30">
+                          <UploadCloud className="w-4 h-4" />
+                          No flyer uploaded yet.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center space-x-2 md:col-span-2 bg-muted/50 p-4 rounded-lg border border-border mt-2">
+                      <Switch
+                        id="featured"
+                        checked={formData.is_featured}
+                        onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
+                      />
+                      <Label htmlFor="featured" className="flex items-center gap-2 cursor-pointer">
+                        <Star
+                          className={`w-4 h-4 ${
+                            formData.is_featured ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"
+                          }`}
+                        />
+                        Mark as Featured Event
+                        <span className="text-muted-foreground font-normal text-xs ml-2">
+                          (Appears in the highlight section on the homepage)
+                        </span>
+                      </Label>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="registration" className="space-y-6 pt-4">
+                  <div className="flex items-center space-x-2 bg-primary/5 p-4 rounded-lg border border-primary/20">
+                    <Switch
+                      id="enable-reg"
+                      checked={formData.enable_registration}
+                      onCheckedChange={(checked) => setFormData({ ...formData, enable_registration: checked })}
+                    />
+                    <Label htmlFor="enable-reg" className="text-base font-semibold cursor-pointer">
+                      Enable Registration for this Event
+                    </Label>
+                  </div>
+
+                  {formData.enable_registration && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                      <div className="space-y-1">
+                        <h4 className="font-medium">Form Builder</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Define the fields that attendees should fill when registering.
+                        </p>
+                      </div>
+                      <FormBuilder 
+                        fields={formData.registration_fields} 
+                        onChange={(fields) => setFormData({ ...formData, registration_fields: fields })} 
+                      />
                     </div>
                   )}
-                </div>
 
-                <div className="flex items-center space-x-2 md:col-span-2 bg-muted/50 p-4 rounded-lg border border-border mt-2">
-                  <Switch
-                    id="featured"
-                    checked={formData.is_featured}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
-                  />
-                  <Label htmlFor="featured" className="flex items-center gap-2 cursor-pointer">
-                    <Star
-                      className={`w-4 h-4 ${
-                        formData.is_featured ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"
-                      }`}
-                    />
-                    Mark as Featured Event
-                    <span className="text-muted-foreground font-normal text-xs ml-2">
-                      (Appears in the highlight section on the homepage)
-                    </span>
-                  </Label>
-                </div>
-              </div>
+                  {!formData.enable_registration && (
+                    <div className="py-12 text-center border-2 border-dashed rounded-xl bg-muted/20">
+                      <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-20" />
+                      <p className="text-muted-foreground">Registration is currently disabled for this event.</p>
+                      <Button 
+                        type="button" 
+                        variant="link" 
+                        onClick={() => setFormData({ ...formData, enable_registration: true })}
+                      >
+                        Click to enable and create a form
+                      </Button>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-border">
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
@@ -455,10 +560,19 @@ const ManageEvents = () => {
                     <Star className="w-3 h-3 fill-white" /> Featured
                   </div>
                 )}
+                <div className="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <EventShareButtons eventId={event.id} eventTitle={event.title} />
+                </div>
               </div>
 
               <div className="flex-1 p-5 lg:p-6 flex flex-col justify-center relative min-w-0">
                 <div className="absolute top-4 right-4 flex gap-2 z-10">
+                  <Button size="sm" variant="outline" asChild title="View registrations">
+                    <Link to={`/admin/events/registrations/${event.id}`}>
+                      <Users className="w-4 h-4 mr-2" />
+                      Registrations
+                    </Link>
+                  </Button>
                   <Button size="icon" variant="secondary" onClick={() => handleOpenDialog(event)} title="Edit event">
                     <Edit className="w-4 h-4" />
                   </Button>
