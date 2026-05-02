@@ -24,7 +24,7 @@ const AttendeeBadge = ({ attendeeName, eventTitle, eventDate, eventLocation, eve
 
   useEffect(() => {
     // Fire confetti on mount
-    const duration = 3 * 1000;
+    const duration = 2 * 1000;
     const animationEnd = Date.now() + duration;
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
@@ -52,7 +52,11 @@ const AttendeeBadge = ({ attendeeName, eventTitle, eventDate, eventLocation, eve
     
     try {
       toast.loading("Generating your premium badge...");
-      const dataUrl = await toPng(badgeRef.current, { cacheBust: true, quality: 1 });
+      const dataUrl = await toPng(badgeRef.current, { 
+        cacheBust: true, 
+        quality: 1,
+        pixelRatio: 2 // Better quality
+      });
       const link = document.createElement('a');
       link.download = `RAGLA-Badge-${attendeeName.replace(/\s+/g, '-').toLowerCase()}.png`;
       link.href = dataUrl;
@@ -83,157 +87,149 @@ const AttendeeBadge = ({ attendeeName, eventTitle, eventDate, eventLocation, eve
   };
 
   return (
-    <div className="flex flex-col items-center space-y-10 w-full overflow-hidden px-4 py-8">
+    <div className="flex flex-col items-center space-y-6 md:space-y-8 w-full overflow-hidden px-1 py-4 md:py-8">
       {/* Premium Success Header */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-4"
+        className="text-center space-y-2 md:space-y-3"
       >
         <div className="relative inline-block">
           <div className="absolute inset-0 bg-green-500 blur-2xl opacity-20 animate-pulse"></div>
-          <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 border border-green-500/20">
-            <CheckCircle2 className="w-12 h-12 text-green-500" />
+          <div className="relative inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-green-500/10 border border-green-500/20">
+            <CheckCircle2 className="w-6 h-6 md:w-10 md:h-10 text-green-500" />
           </div>
         </div>
-        <div className="space-y-2">
-          <h3 className="text-3xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground via-primary to-foreground bg-[length:200%_auto] animate-shimmer">
-            WELCOME TO RAGLA
+        <div className="space-y-1">
+          <h3 className="text-xl md:text-3xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground via-primary to-foreground bg-[length:200%_auto] animate-shimmer leading-tight uppercase">
+            Pass Generated
           </h3>
-          <p className="text-muted-foreground font-medium flex items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary" />
-            Your exclusive digital pass is ready
-            <Sparkles className="w-4 h-4 text-primary" />
+          <p className="text-[10px] md:text-sm text-muted-foreground font-medium flex items-center justify-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-primary" />
+            Your exclusive digital access is ready
           </p>
         </div>
       </motion.div>
 
       {/* The Holographic Badge Card */}
       <motion.div 
-        initial={{ opacity: 0, scale: 0.8, rotateX: 20 }}
-        animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-        transition={{ type: "spring", damping: 15, stiffness: 100 }}
-        className="perspective-1000 w-full max-w-lg"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="perspective-1000 w-full max-w-[400px] px-2"
       >
         <div 
           ref={badgeRef}
-          className="relative aspect-[1.58/1] w-full rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5),0_30px_60px_-30px_rgba(var(--primary),0.3)] border border-white/20 bg-[#08080a] text-white p-6 sm:p-10 group transition-all duration-700"
+          className="relative aspect-[1.58/1] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-[#0a0a0b] text-white p-4 sm:p-6 group transition-all duration-700"
         >
           {/* Holographic Layer */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-white/[0.08] pointer-events-none z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-white/[0.05] pointer-events-none z-10"></div>
           <div className="absolute top-0 left-[-100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent skew-x-[-25deg] group-hover:left-[150%] transition-all duration-[1500ms] ease-in-out"></div>
           
-          {/* Animated Background Orbs */}
-          <div className="absolute -top-32 -right-32 w-80 h-80 bg-primary/20 rounded-full blur-[120px] animate-pulse"></div>
-          <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-primary/10 rounded-full blur-[100px]"></div>
-          
-          {/* Static grain effect */}
-          <div className="absolute inset-x-0 inset-y-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] blend-overlay"></div>
-
           {/* Card Content Layout */}
           <div className="relative h-full flex flex-col justify-between z-20">
             {/* Top Bar */}
             <div className="flex justify-between items-start">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary via-primary/80 to-primary/40 flex items-center justify-center border border-white/20 shadow-lg rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                   <User className="w-6 h-6 text-white" />
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center border border-white/20">
+                   <User className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-white" />
                 </div>
-                <div className="space-y-0.5">
-                  <span className="text-[10px] uppercase tracking-[0.4em] font-black text-primary opacity-90">OFFICIAL PASS</span>
-                  <div className="text-xl sm:text-2xl font-black tracking-tight">{attendeeName}</div>
+                <div className="space-y-0 min-w-0">
+                  <span className="text-[6px] sm:text-[7px] uppercase tracking-[0.3em] font-black text-primary opacity-90">OFFICIAL PASS</span>
+                  <div className="text-[10px] sm:text-sm md:text-base font-black tracking-tight leading-none truncate max-w-[100px] sm:max-w-[150px]">{attendeeName}</div>
                 </div>
               </div>
               <div className="flex flex-col items-end">
-                <img src="/lovable-uploads/87965355-6b5c-439d-b4b6-ebf29910e599.png" alt="RAGLA" className="h-10 invert brightness-0 opacity-100 drop-shadow-lg" />
-                <span className="text-[7px] uppercase tracking-widest block opacity-70 mt-1 font-bold">EXCELLENCE IN GOVERNANCE</span>
+                <img src="/lovable-uploads/87965355-6b5c-439d-b4b6-ebf29910e599.png" alt="RAGLA" className="h-5 sm:h-7 invert brightness-0 opacity-100" />
+                <span className="text-[5px] sm:text-[6px] uppercase tracking-widest block opacity-70 mt-0.5 font-bold">RAGL AFRICA</span>
               </div>
             </div>
 
             {/* Middle Main Text */}
-            <div className="space-y-4">
+            <div className="space-y-0.5 sm:space-y-1">
                <div className="inline-flex flex-col">
-                 <h4 className="text-3xl sm:text-4xl lg:text-5xl font-black italic tracking-tighter leading-none">
+                 <h4 className="text-base sm:text-xl md:text-2xl font-black italic tracking-tighter leading-none">
                    I WILL BE <span className="text-primary not-italic">ATTENDING</span>
                  </h4>
-                 <div className="h-1.5 w-full bg-gradient-to-r from-primary to-transparent mt-1 rounded-full opacity-50"></div>
                </div>
-               <h5 className="text-xl sm:text-3xl font-bold opacity-100 line-clamp-1 max-w-[90%] drop-shadow-md">{eventTitle}</h5>
+               <h5 className="text-[10px] sm:text-sm md:text-base font-bold opacity-100 line-clamp-1 max-w-[90%]">{eventTitle}</h5>
             </div>
 
             {/* Bottom Bar Details */}
-            <div className="flex items-end justify-between pt-6 border-t border-white/10 mt-auto">
-              <div className="flex gap-6 sm:gap-10">
-                 <div className="space-y-1">
-                   <div className="flex items-center gap-1.5 opacity-60">
-                     <Calendar className="w-3 h-3 text-primary" />
-                     <span className="text-[8px] uppercase font-black tracking-widest">Date</span>
+            <div className="flex items-end justify-between pt-2 sm:pt-3 border-t border-white/10 mt-auto">
+              <div className="flex gap-3 sm:gap-5">
+                 <div className="space-y-0">
+                   <div className="flex items-center gap-1 opacity-60">
+                     <Calendar className="w-2 h-2 text-primary" />
+                     <span className="text-[5px] uppercase font-black tracking-widest leading-none">Date</span>
                    </div>
-                   <span className="text-xs sm:text-sm font-bold block">{eventDate ? new Date(eventDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric'}) : 'TBA'}</span>
+                   <span className="text-[8px] sm:text-[10px] font-bold block leading-none">{eventDate ? new Date(eventDate).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric'}) : 'TBA'}</span>
                  </div>
                  
                  {eventLocation && (
-                   <div className="space-y-1">
-                     <div className="flex items-center gap-1.5 opacity-60">
-                       <MapPin className="w-3 h-3 text-primary" />
-                       <span className="text-[8px] uppercase font-black tracking-widest">Global Location</span>
+                   <div className="space-y-0">
+                     <div className="flex items-center gap-1 opacity-60">
+                       <MapPin className="w-2 h-2 text-primary" />
+                       <span className="text-[5px] uppercase font-black tracking-widest leading-none">Location</span>
                      </div>
-                     <span className="text-xs sm:text-sm font-bold block truncate max-w-[120px] sm:max-w-[200px]">{eventLocation}</span>
+                     <span className="text-[8px] sm:text-[10px] font-bold block leading-none truncate max-w-[60px] sm:max-w-[100px]">{eventLocation}</span>
                    </div>
                  )}
               </div>
               
-              <div className="flex flex-col items-end gap-1.5">
-                <div className="p-1 px-1.5 bg-white rounded-md">
-                   <QrCode className="w-8 h-8 text-black" />
+              <div className="flex flex-col items-end gap-1">
+                <div className="p-0.5 bg-white rounded-sm">
+                   <QrCode className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
                 </div>
-                <div className="text-[7px] font-mono opacity-50 tracking-tighter">ID: RG-{eventId.substring(0,8).toUpperCase()}</div>
+                <div className="text-[4px] font-mono opacity-50 tracking-tighter leading-none uppercase">ID: {eventId.substring(0,6)}</div>
               </div>
             </div>
           </div>
-          
-          {/* Protective Shine Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none"></div>
         </div>
       </motion.div>
 
       {/* Share Actions */}
-      <div className="w-full max-w-lg grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Button 
-          variant="secondary"
-          className="rounded-2xl h-14 font-black uppercase tracking-widest border border-white/5 shadow-xl hover:bg-secondary/80 transition-all hover:-translate-y-1"
-          onClick={downloadBadge}
-        >
-          <Download className="w-5 h-5 mr-3 text-primary" />
-          Download Ticket
-        </Button>
-        <Button 
-          className="rounded-2xl h-14 font-black uppercase tracking-widest bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl shadow-primary/30 transition-all hover:-translate-y-1"
-          onClick={handleShareSystem}
-        >
-          <Share2 className="w-5 h-5 mr-3" />
-          Share to Socials
-        </Button>
+      <div className="w-full max-w-[400px] px-2 flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button 
+            variant="secondary"
+            className="rounded-xl h-12 font-black uppercase tracking-widest border border-white/5 shadow-xl flex-1 text-[10px]"
+            onClick={downloadBadge}
+          >
+            <Download className="w-4 h-4 mr-2 text-primary" />
+            Download Ticket
+          </Button>
+          <Button 
+            className="rounded-xl h-12 font-black uppercase tracking-widest bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl flex-1 text-[10px]"
+            onClick={handleShareSystem}
+          >
+            <Share2 className="w-4 h-4 mr-2" />
+            Share Pass
+          </Button>
+        </div>
         
-        <div className="sm:col-span-2 flex flex-col items-center pt-4 space-y-4">
-           <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground opacity-60">Instant Profile Share</p>
-           <div className="flex gap-4">
+        <div className="flex flex-col items-center pt-1 space-y-3">
+           <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-muted-foreground opacity-60">Instant Social Share</p>
+           <div className="flex gap-2">
               <button 
                 onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, '_blank')}
-                className="w-12 h-12 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-[#0077b5] hover:text-white hover:border-transparent transition-all hover:-translate-y-1"
+                className="w-9 h-9 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-[#0077b5] hover:text-white transition-all shadow-sm"
+                title="Share on LinkedIn"
               >
-                <Linkedin className="w-5 h-5" />
+                <Linkedin className="w-4 h-4" />
               </button>
               <button 
                 onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, '_blank')}
-                className="w-12 h-12 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-[#1877f2] hover:text-white hover:border-transparent transition-all hover:-translate-y-1"
+                className="w-9 h-9 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-[#1877f2] hover:text-white transition-all shadow-sm"
+                title="Share on Facebook"
               >
-                <Facebook className="w-5 h-5" />
+                <Facebook className="w-4 h-4" />
               </button>
               <button 
                 onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`, '_blank')}
-                className="w-12 h-12 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-black hover:text-white hover:border-transparent transition-all hover:-translate-y-1"
+                className="w-9 h-9 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm"
+                title="Share on X"
               >
-                <Twitter className="w-5 h-5" />
+                <Twitter className="w-4 h-4" />
               </button>
            </div>
         </div>
