@@ -234,7 +234,7 @@ const AttendeeBadge = ({ attendeeName, eventTitle, eventDate, eventLocation, eve
            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-muted-foreground opacity-60">Instant Social Share</p>
            <div className="flex gap-2">
               <button 
-                onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`, '_blank')}
+                onClick={handleShareSystem}
                 className="w-9 h-9 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
                 title="Share on WhatsApp"
               >
