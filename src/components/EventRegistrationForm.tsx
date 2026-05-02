@@ -235,18 +235,18 @@ const EventRegistrationForm = ({
         <div className="pt-4 space-y-4">
           <Button 
             type="submit" 
-            className="w-full h-[60px] text-lg font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-1 active:translate-y-0 group relative overflow-hidden" 
+            className="w-full h-14 md:h-[60px] text-base md:text-lg font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-1 active:translate-y-0 group relative overflow-hidden px-4" 
             disabled={isSubmitting}
           >
-            <span className="relative z-10 flex items-center justify-center gap-3">
+            <span className="relative z-10 flex items-center justify-center gap-2 md:gap-3 text-center">
                CLAIM MY EXCLUSIVE ACCESS
-               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+               <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform shrink-0" />
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </Button>
           
           <div className="flex flex-col items-center gap-3">
-             <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-40">
+             <div className="flex items-center gap-2 text-[8px] md:text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-black opacity-40">
                <ShieldCheck className="w-3.5 h-3.5" />
                End-to-End Encrypted Registration
              </div>
