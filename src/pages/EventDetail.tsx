@@ -269,7 +269,7 @@ const EventDetail = () => {
                      About the organiser
                    </h4>
                    <p className="text-sm text-muted-foreground mb-4">
-                     Reginal Academy on Governance and Leadership (RAGLA) is committed to building leadership capacity across Africa.
+                     Royal Academy of Governance and Leadership Africa (RAGLA) is committed to building leadership capacity across Africa.
                    </p>
                    <Button variant="link" className="p-0 h-auto text-primary" asChild>
                      <Link to="/about-us">Learn more about RAGLA</Link>

@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormField } from "./admin/FormBuilder";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldCheck, Zap, Sparkles, ArrowRight } from "lucide-react";
 import AttendeeBadge from "./AttendeeBadge";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface EventRegistrationFormProps {
   eventId: string;
@@ -37,18 +38,22 @@ const EventRegistrationForm = ({
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
 
-  // Helper to find the attendee name from form data
+  const steps = [
+    "Securing your unique seat...",
+    "Validating leadership credentials...",
+    "Preparing your exclusive digital pass...",
+    "Finalising registration..."
+  ];
+
   const getAttendeeName = () => {
-    // Try common labels
     const nameLabels = ["Full Name", "Name", "Your Name", "fullname", "name"];
     for (const label of nameLabels) {
       if (formData[label]) return formData[label];
-      // Case insensitive check
       const foundIdx = Object.keys(formData).find(k => k.toLowerCase() === label.toLowerCase());
       if (foundIdx) return formData[foundIdx];
     }
-    // Fallback to first field value if it's a string
     const firstVal = Object.values(formData)[0];
     if (typeof firstVal === "string") return firstVal;
     return "Honoured Guest";
@@ -61,6 +66,11 @@ const EventRegistrationForm = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    // Animate loading steps
+    const stepInterval = setInterval(() => {
+      setLoadingStep(prev => (prev < steps.length - 1 ? prev + 1 : prev));
+    }, 800);
 
     try {
       const { data: formDataDb, error: formError } = await supabase
@@ -81,119 +91,169 @@ const EventRegistrationForm = ({
 
       if (regError) throw regError;
 
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Ensure last step is seen
       setSubmitted(true);
-      toast.success("Successfully registered for the event!");
       onSuccess?.();
     } catch (error: any) {
       console.error("Registration error:", error);
       toast.error("Failed to register: " + error.message);
     } finally {
+      clearInterval(stepInterval);
       setIsSubmitting(false);
     }
   };
 
   if (submitted) {
     return (
-      <div className="space-y-8 py-4">
-        <AttendeeBadge 
-          attendeeName={getAttendeeName()}
-          eventTitle={eventTitle}
-          eventDate={eventDate}
-          eventLocation={eventLocation}
-          eventId={eventId}
-        />
-        <div className="text-center">
-          <Button variant="link" className="text-muted-foreground" onClick={() => setSubmitted(false)}>
-            Need to register someone else? Click here.
-          </Button>
-        </div>
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key="success"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="space-y-8 py-4"
+        >
+          <AttendeeBadge 
+            attendeeName={getAttendeeName()}
+            eventTitle={eventTitle}
+            eventDate={eventDate}
+            eventLocation={eventLocation}
+            eventId={eventId}
+          />
+          <div className="text-center">
+            <Button variant="link" className="text-muted-foreground transition-opacity hover:opacity-100 opacity-60" onClick={() => setSubmitted(false)}>
+              Need to register someone else? Click here.
+            </Button>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid gap-6">
-        {fields.map((field) => (
-          <div key={field.id} className="space-y-2.5">
-            <Label htmlFor={field.id} className="text-sm font-bold tracking-tight text-foreground/80">
-              {field.label} {field.required && <span className="text-primary italic">*</span>}
-            </Label>
-            
-            <div className="relative group">
-              {field.type === "textarea" ? (
-                <Textarea
-                  id={field.id}
-                  required={field.required}
-                  placeholder={`Enter your ${field.label.toLowerCase()}...`}
-                  className="bg-secondary/50 border-border/50 focus:bg-background transition-all min-h-[100px] resize-none rounded-xl"
-                  value={formData[field.label] || ""}
-                  onChange={(e) => handleInputChange(field.label, e.target.value)}
-                />
-              ) : field.type === "select" ? (
-                <Select
-                  required={field.required}
-                  value={formData[field.label] || ""}
-                  onValueChange={(val) => handleInputChange(field.label, val)}
-                >
-                  <SelectTrigger id={field.id} className="bg-secondary/50 border-border/50 focus:bg-background transition-all h-12 rounded-xl">
-                    <SelectValue placeholder={`Select ${field.label.toLowerCase()}...`} />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    {field.options?.map((opt) => (
-                      <SelectItem key={opt} value={opt} className="rounded-lg">{opt}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : field.type === "checkbox" ? (
-                <div className="flex items-start space-x-3 pt-2 bg-secondary/30 p-4 rounded-xl border border-border/30">
-                  <Checkbox
-                    id={field.id}
-                    className="mt-1"
-                    checked={formData[field.label] || false}
-                    onCheckedChange={(checked) => handleInputChange(field.label, checked)}
-                    required={field.required}
-                  />
-                  <label
-                    htmlFor={field.id}
-                    className="text-sm font-medium leading-relaxed cursor-pointer select-none"
-                  >
-                    {field.label}
-                  </label>
-                </div>
-              ) : (
-                <Input
-                  id={field.id}
-                  type={field.type}
-                  required={field.required}
-                  placeholder={`Enter your ${field.label.toLowerCase()}...`}
-                  className="bg-secondary/50 border-border/50 focus:bg-background transition-all h-12 rounded-xl"
-                  value={formData[field.label] || ""}
-                  onChange={(e) => handleInputChange(field.label, e.target.value)}
-                />
-              )}
+    <div className="relative">
+      <AnimatePresence>
+        {isSubmitting && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 bg-background/90 backdrop-blur-md flex flex-col items-center justify-center space-y-8 rounded-3xl"
+          >
+            <div className="relative">
+               <div className="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+               <div className="absolute inset-0 flex items-center justify-center">
+                 <Zap className="w-8 h-8 text-primary animate-pulse" />
+               </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      <Button type="submit" className="w-full h-[52px] text-lg font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-0.5 active:translate-y-0" disabled={isSubmitting}>
-        {isSubmitting ? (
-          <>
-            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-            Processing registration...
-          </>
-        ) : (
-          "Secure My Seat Now"
+            <div className="text-center space-y-2">
+               <motion.p 
+                 key={loadingStep}
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 className="text-xl font-bold tracking-tight text-foreground"
+               >
+                 {steps[loadingStep]}
+               </motion.p>
+               <p className="text-xs uppercase tracking-widest text-muted-foreground font-black opacity-50">Please do not refresh</p>
+            </div>
+          </motion.div>
         )}
-      </Button>
-      
-      <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground uppercase tracking-widest font-bold pt-2 opacity-60">
-        <div className="h-[1px] flex-1 bg-border/50"></div>
-        SECURE REGISTRATION
-        <div className="h-[1px] flex-1 bg-border/50"></div>
-      </div>
-    </form>
+      </AnimatePresence>
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="grid gap-6">
+          {fields.map((field, index) => (
+            <motion.div 
+              key={field.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="space-y-2.5"
+            >
+              <Label htmlFor={field.id} className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/80 flex items-center gap-2">
+                {field.label} {field.required && <Sparkles className="w-3 h-3 text-primary" />}
+              </Label>
+              
+              <div className="relative group">
+                {field.type === "textarea" ? (
+                  <Textarea
+                    id={field.id}
+                    required={field.required}
+                    placeholder={`Enter details...`}
+                    className="bg-secondary/30 border-border/50 focus:bg-background transition-all min-h-[120px] resize-none rounded-2xl focus:ring-4 focus:ring-primary/10 border-transparent shadow-sm"
+                    value={formData[field.label] || ""}
+                    onChange={(e) => handleInputChange(field.label, e.target.value)}
+                  />
+                ) : field.type === "select" ? (
+                  <Select
+                    required={field.required}
+                    value={formData[field.label] || ""}
+                    onValueChange={(val) => handleInputChange(field.label, val)}
+                  >
+                    <SelectTrigger id={field.id} className="bg-secondary/30 border-border/50 focus:bg-background transition-all h-14 rounded-2xl focus:ring-4 focus:ring-primary/10 border-transparent shadow-sm">
+                      <SelectValue placeholder={`Select one...`} />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl p-2">
+                      {field.options?.map((opt) => (
+                        <SelectItem key={opt} value={opt} className="rounded-xl py-3 cursor-pointer">{opt}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : field.type === "checkbox" ? (
+                  <div className="flex items-start space-x-4 pt-2 bg-secondary/20 p-5 rounded-2xl border border-border/20 group hover:border-primary/30 transition-colors cursor-pointer" 
+                    onClick={() => handleInputChange(field.label, !formData[field.label])}>
+                    <Checkbox
+                      id={field.id}
+                      className="mt-1 w-5 h-5 rounded-md border-2 border-primary/30 data-[state=checked]:bg-primary transition-all"
+                      checked={formData[field.label] || false}
+                      onCheckedChange={(checked) => handleInputChange(field.label, checked)}
+                      required={field.required}
+                    />
+                    <label
+                      htmlFor={field.id}
+                      className="text-sm font-bold leading-relaxed cursor-pointer select-none text-foreground/70 group-hover:text-foreground transition-colors"
+                    >
+                      {field.label}
+                    </label>
+                  </div>
+                ) : (
+                  <Input
+                    id={field.id}
+                    type={field.type}
+                    required={field.required}
+                    placeholder={`Your ${field.label.toLowerCase()}...`}
+                    className="bg-secondary/30 border-border/50 focus:bg-background transition-all h-14 rounded-2xl focus:ring-4 focus:ring-primary/10 border-transparent shadow-sm"
+                    value={formData[field.label] || ""}
+                    onChange={(e) => handleInputChange(field.label, e.target.value)}
+                  />
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="pt-4 space-y-4">
+          <Button 
+            type="submit" 
+            className="w-full h-[60px] text-lg font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-1 active:translate-y-0 group relative overflow-hidden" 
+            disabled={isSubmitting}
+          >
+            <span className="relative z-10 flex items-center justify-center gap-3">
+               CLAIM MY EXCLUSIVE ACCESS
+               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </Button>
+          
+          <div className="flex flex-col items-center gap-3">
+             <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-40">
+               <ShieldCheck className="w-3.5 h-3.5" />
+               End-to-End Encrypted Registration
+             </div>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 
