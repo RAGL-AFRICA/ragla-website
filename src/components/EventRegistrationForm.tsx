@@ -238,8 +238,8 @@ const EventRegistrationForm = ({
             className="w-full h-14 md:h-[60px] text-base md:text-lg font-black uppercase tracking-widest rounded-2xl shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-all hover:-translate-y-1 active:translate-y-0 group relative overflow-hidden px-4" 
             disabled={isSubmitting}
           >
-            <span className="relative z-10 flex items-center justify-center gap-2 md:gap-3 text-center">
-               CLAIM MY EXCLUSIVE ACCESS
+            <span className="relative z-10 flex items-center justify-center gap-2 md:gap-3 text-center text-xs md:text-sm">
+               REGISTER NOW
                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform shrink-0" />
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
