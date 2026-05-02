@@ -71,17 +71,40 @@ const AttendeeBadge = ({ attendeeName, eventTitle, eventDate, eventLocation, eve
   };
 
   const handleShareSystem = async () => {
-    if (navigator.share) {
+    try {
+      if (badgeRef.current === null) return;
+      
+      // Try to prepare the file for sharing if the browser supports it
+      let filesToShare: File[] = [];
       try {
+        const dataUrl = await toPng(badgeRef.current, { pixelRatio: 2 });
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        filesToShare = [new File([blob], 'ragla-badge.png', { type: 'image/png' })];
+      } catch (err) {
+        console.error("Could not prepare file for sharing", err);
+      }
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: filesToShare })) {
+        await navigator.share({
+          title: 'I am attending ' + eventTitle,
+          text: shareText,
+          url: shareUrl,
+          files: filesToShare
+        });
+      } else if (navigator.share) {
         await navigator.share({
           title: 'I am attending ' + eventTitle,
           text: shareText,
           url: shareUrl,
         });
-      } catch (err) {
-        console.log('Error sharing', err);
+      } else {
+        // Fallback for desktop: WhatsApp is very common
+        window.open(`https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`, '_blank');
       }
-    } else {
+    } catch (err) {
+      console.log('Error sharing', err);
+      // Final fallback to Twitter
       window.open(`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`, '_blank');
     }
   };
@@ -210,6 +233,15 @@ const AttendeeBadge = ({ attendeeName, eventTitle, eventDate, eventLocation, eve
         <div className="flex flex-col items-center pt-1 space-y-3">
            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-muted-foreground opacity-60">Instant Social Share</p>
            <div className="flex gap-2">
+              <button 
+                onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`, '_blank')}
+                className="w-9 h-9 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
+                title="Share on WhatsApp"
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.316 1.592 5.448 0 9.886-4.438 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.438-9.889 9.886 0 2.225.6 4.025 1.709 5.881l-1.087 3.97 4.093-1.077zm11.334-7.464c-.287-.143-1.697-.838-1.959-.933-.261-.095-.452-.143-.642.143-.19.285-.733.931-.899 1.121-.166.19-.333.213-.62.072-.286-.144-1.21-.447-2.305-1.423-.852-.76-1.427-1.7-1.594-1.986-.166-.285-.018-.44.126-.581.129-.126.286-.333.429-.5.143-.166.19-.285.286-.475.095-.19.048-.356-.024-.5-.071-.143-.642-1.545-.88-2.116-.231-.558-.466-.482-.642-.491-.166-.008-.356-.01-.546-.01s-.5.071-.76.356c-.261.285-1 0-1 2.446s1.284 4.8 1.451 5.038c.166.237 2.527 3.859 6.121 5.412.854.369 1.521.589 2.041.754.858.271 1.639.233 2.259.141.69-.103 2.115-.863 2.413-1.697.298-.834.298-1.545.21-1.693-.089-.143-.328-.218-.615-.356z"/>
+                </svg>
+              </button>
               <button 
                 onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`, '_blank')}
                 className="w-9 h-9 rounded-xl bg-secondary/50 border border-border flex items-center justify-center hover:bg-[#0077b5] hover:text-white transition-all shadow-sm"
