@@ -104,7 +104,8 @@ const EventDetail = () => {
         <title>{event.title} | RAGLA Events</title>
         <meta name="description" content={event.description?.replace(/<[^>]*>/g, '').substring(0, 160) || "Join RAGLA for this event."} />
         <meta property="og:title" content={event.title} />
-        <meta property="og:image" content={event.image_url || ""} />
+        <meta property="og:image" content={event.image_url?.startsWith('http') ? event.image_url : window.location.origin + event.image_url} />
+        <meta property="og:url" content={window.location.href} />
         <meta property="og:type" content="event" />
       </Helmet>
       
