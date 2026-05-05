@@ -17,6 +17,9 @@ type EventItem = {
   date: string | null;
   location: string | null;
   image_url: string | null;
+  speaker_name: string | null;
+  speaker_title: string | null;
+  speaker_image_url: string | null;
   created_at: string;
 };
 
@@ -31,7 +34,7 @@ const Events = () => {
         setLoading(true);
         const { data, error } = await supabase
           .from("events")
-          .select("*")
+          .select("id, title, description, date, location, image_url, created_at, speaker_name, speaker_title, speaker_image_url")
           .order("date", { ascending: true, nullsFirst: false })
           .order("created_at", { ascending: false });
 
@@ -97,85 +100,99 @@ const Events = () => {
                 const canRegister = hasRegistration && status !== "Past";
 
                 return (
-                  <article key={event.id} className="group flex flex-col rounded-[2.5rem] border border-border/50 bg-card/40 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:shadow-[0_32px_64px_-15px_rgba(0,0,0,0.2)] hover:-translate-y-2 relative">
+                  <article key={event.id} className="group flex flex-col rounded-[3rem] border border-primary/20 bg-[#00122e] overflow-hidden transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] hover:-translate-y-2 relative text-white">
                     {/* Glossy Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     
                     {/* Status Badge */}
                     <div className="absolute top-6 right-6 z-20">
                       {status === "Upcoming" && (
-                        <Badge className="bg-primary hover:bg-primary border-none text-white shadow-[0_8px_16px_-4px_rgba(var(--primary),0.4)] px-4 py-1.5 rounded-full font-bold tracking-tight text-xs">Upcoming</Badge>
+                        <Badge className="bg-primary hover:bg-primary border-none text-[#00122e] shadow-[0_0_20px_rgba(var(--primary),0.4)] px-4 py-1.5 rounded-full font-black tracking-widest text-[10px] uppercase">Upcoming</Badge>
                       )}
                       {status === "Due" && (
-                        <Badge className="bg-amber-500 hover:bg-amber-600 border-none text-white shadow-lg px-4 py-1.5 rounded-full font-bold tracking-tight text-xs">Due Soon</Badge>
+                        <Badge className="bg-amber-500 hover:bg-amber-600 border-none text-white shadow-lg px-4 py-1.5 rounded-full font-black tracking-widest text-[10px] uppercase">Due Soon</Badge>
                       )}
                       {status === "Past" && (
-                        <Badge className="bg-zinc-500 hover:bg-zinc-600 border-none text-white shadow-lg px-4 py-1.5 rounded-full font-bold tracking-tight text-xs">Past</Badge>
+                        <Badge className="bg-white/10 hover:bg-white/20 border border-white/10 text-white/60 px-4 py-1.5 rounded-full font-black tracking-widest text-[10px] uppercase">Past</Badge>
                       )}
                     </div>
 
                     {/* Image Container */}
-                    <Link to={`/events/${event.id}`} className="block relative h-64 overflow-hidden bg-muted m-3 rounded-[2rem]">
+                    <Link to={`/events/${event.id}`} className="block relative h-64 overflow-hidden bg-[#001a3d]">
                       {event.image_url ? (
                         <img 
                           src={event.image_url} 
                           alt={event.title} 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                          className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" 
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground opacity-20">
+                        <div className="w-full h-full flex items-center justify-center text-primary/20">
                           <Calendar className="w-16 h-16" />
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#00122e] via-transparent to-transparent" />
+                      {/* Category Pill */}
+                      <div className="absolute bottom-6 left-8 z-20">
+                        <span className="bg-primary/20 backdrop-blur-xl border border-primary/30 text-primary px-3 py-1 rounded-lg font-black text-[9px] uppercase tracking-[0.2em]">
+                          Executive Programme
+                        </span>
+                      </div>
                     </Link>
 
-                    <div className="p-8 pt-4 flex-1 flex flex-col">
+                    <div className="p-8 pt-2 flex-1 flex flex-col relative z-20">
                       <div className="flex-1 space-y-5">
-                        <div className="space-y-2">
-                           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary opacity-80">
-                             <span className="w-8 h-[2px] bg-primary/40"></span>
-                             {event.date ? new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'TBA'}
+                        <div className="space-y-3">
+                           <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">
+                             {event.date ? new Date(event.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) : 'Official Schedule'}
                            </div>
                           <Link to={`/events/${event.id}`}>
-                            <h2 className="text-2xl font-extrabold text-foreground leading-tight tracking-tight line-clamp-2 group-hover:text-primary transition-colors break-words">
+                            <h2 className="text-2xl font-black text-white leading-[1.15] tracking-tight line-clamp-2 group-hover:text-primary transition-colors uppercase">
                               {event.title}
                             </h2>
                           </Link>
                         </div>
 
-                        {event.description && (
+                        {/* Speaker Info on Card */}
+                        {event.speaker_name && (
+                          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:border-primary/20 transition-colors">
+                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/30 shrink-0">
+                              <img 
+                                src={event.speaker_image_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800"} 
+                                alt={event.speaker_name}
+                                className="w-full h-full object-cover grayscale hover:grayscale-0"
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-[9px] font-black uppercase tracking-widest text-primary">Keynote Speaker</p>
+                              <p className="text-sm font-bold text-white truncate">{event.speaker_name}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {event.description && !event.speaker_name && (
                           <div 
-                            className="text-sm leading-relaxed text-muted-foreground line-clamp-3 mb-4 opacity-80 font-medium"
+                            className="text-sm leading-relaxed text-white/50 line-clamp-3 mb-4 font-medium italic"
                             dangerouslySetInnerHTML={{ __html: event.description }}
                           />
                         )}
                       </div>
 
-                      <div className="pt-8 space-y-6">
+                      <div className="pt-8">
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                           <Button 
                             asChild 
-                            className={`flex-1 h-14 rounded-2xl font-bold text-base shadow-xl transition-all duration-300 ${canRegister ? "bg-primary hover:shadow-primary/30" : "bg-secondary text-secondary-foreground"}`} 
+                            className={`flex-1 h-14 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300 ${canRegister ? "bg-primary text-[#00122e] hover:shadow-[0_0_30px_rgba(var(--primary),0.3)]" : "bg-white/5 text-white hover:bg-white/10"}`} 
                             variant={canRegister ? "default" : "outline"}
                           >
                             <Link to={`/events/${event.id}`}>
-                              {canRegister ? "Register Now" : "Details"}
-                              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                              {canRegister ? "Register Now" : "View Details"}
+                              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                             </Link>
                           </Button>
-                          <div className="bg-secondary/50 p-2 rounded-xl flex items-center justify-center h-14 w-14 group/share cursor-pointer border border-border/30 hover:bg-secondary transition-colors">
-                             <Share2 className="w-5 h-5 text-muted-foreground group-hover/share:text-primary transition-colors" />
-                          </div>
-                        </div>
-                        
-                        {/* Mini Social Row (Visible on hover or subtle) */}
-                        <div className="flex items-center justify-between opacity-60 group-hover:opacity-100 transition-opacity">
-                             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">Exclusive Event</span>
-                             <div className="flex gap-3">
-                                <EventShareButtons eventId={event.id} eventTitle={event.title} />
-                             </div>
+                          <button className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary group/share transition-all duration-300">
+                             <Share2 className="w-5 h-5 text-white/70 group-hover:text-[#00122e]" />
+                          </button>
                         </div>
                       </div>
                     </div>

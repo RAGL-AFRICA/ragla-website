@@ -24,6 +24,7 @@ interface EventRegistrationFormProps {
   eventTitle: string;
   eventDate: string | null;
   eventLocation: string | null;
+  initialData?: Record<string, any>;
   onSuccess?: () => void;
 }
 
@@ -33,9 +34,10 @@ const EventRegistrationForm = ({
   eventTitle, 
   eventDate, 
   eventLocation, 
+  initialData = {},
   onSuccess 
 }: EventRegistrationFormProps) => {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, any>>(initialData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
