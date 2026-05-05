@@ -51,6 +51,10 @@ type EventType = {
   date: string | null;
   location: string | null;
   image_url: string | null;
+  speaker_name: string | null;
+  speaker_title: string | null;
+  speaker_bio: string | null;
+  speaker_image_url: string | null;
   is_featured: boolean;
   created_at: string;
 };
@@ -61,6 +65,9 @@ type EventFormData = {
   date: Date | undefined;
   time: string;
   location: string;
+  speaker_name: string;
+  speaker_title: string;
+  speaker_bio: string;
   is_featured: boolean;
   enable_registration: boolean;
   registration_fields: FormField[];
@@ -72,6 +79,9 @@ const initialFormData: EventFormData = {
   date: undefined,
   time: "",
   location: "",
+  speaker_name: "",
+  speaker_title: "",
+  speaker_bio: "",
   is_featured: false,
   enable_registration: false,
   registration_fields: [],
@@ -98,7 +108,9 @@ const ManageEvents = () => {
 
   const [formData, setFormData] = useState<EventFormData>(initialFormData);
   const [flyerFile, setFlyerFile] = useState<File | null>(null);
+  const [speakerFile, setSpeakerFile] = useState<File | null>(null);
   const [existingImageUrl, setExistingImageUrl] = useState<string>("");
+  const [existingSpeakerImageUrl, setExistingSpeakerImageUrl] = useState<string>("");
 
   useEffect(() => {
     fetchEvents();
@@ -170,27 +182,34 @@ const ManageEvents = () => {
         date: eventDate || undefined,
         time: derivedTime,
         location: event.location || "",
+        speaker_name: event.speaker_name || "",
+        speaker_title: event.speaker_title || "",
+        speaker_bio: event.speaker_bio || "",
         is_featured: event.is_featured,
         enable_registration: hasRegForm,
         registration_fields: regFields,
       });
       setExistingImageUrl(event.image_url || "");
+      setExistingSpeakerImageUrl(event.speaker_image_url || "");
       setFlyerFile(null);
+      setSpeakerFile(null);
     } else {
       setEditingEvent(null);
       setFormData(initialFormData);
       setExistingImageUrl("");
+      setExistingSpeakerImageUrl("");
       setFlyerFile(null);
+      setSpeakerFile(null);
     }
     setIsDialogOpen(true);
   };
 
-  const uploadEventFlyer = async (file: File) => {
+  const uploadFile = async (file: File, prefix: string = "flyers") => {
     const fileExt = file.name.split(".").pop() || "jpg";
     const fileName = `${generateId()}.${fileExt}`;
 
     for (const bucketName of EVENT_BUCKET_CANDIDATES) {
-      const filePath = `flyers/${fileName}`;
+      const filePath = `${prefix}/${fileName}`;
       const { error: uploadError } = await supabase.storage
         .from(bucketName)
         .upload(filePath, file, { upsert: false });
@@ -209,7 +228,7 @@ const ManageEvents = () => {
     }
 
     throw new Error(
-      "Event flyer storage bucket not found. Create one bucket in Supabase: events, event_flyers, or event-flyers."
+      `Event ${prefix} storage bucket not found. Create one bucket in Supabase: events, event_flyers, or event-flyers.`
     );
   };
 
@@ -234,10 +253,15 @@ const ManageEvents = () => {
 
     try {
       let imageUrl = existingImageUrl || null;
+      let speakerImageUrl = existingSpeakerImageUrl || null;
 
       if (flyerFile) {
         setIsUploadingFlyer(true);
-        imageUrl = await uploadEventFlyer(flyerFile);
+        imageUrl = await uploadFile(flyerFile, "flyers");
+      }
+
+      if (speakerFile) {
+        speakerImageUrl = await uploadFile(speakerFile, "speakers");
       }
 
       const payload = {
@@ -246,6 +270,10 @@ const ManageEvents = () => {
         date: buildEventDateIso(),
         location: formData.location.trim() || null,
         image_url: imageUrl,
+        speaker_name: formData.speaker_name.trim() || null,
+        speaker_title: formData.speaker_title.trim() || null,
+        speaker_bio: formData.speaker_bio.trim() || null,
+        speaker_image_url: speakerImageUrl,
         is_featured: formData.is_featured,
       };
 
@@ -343,8 +371,9 @@ const ManageEvents = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6 pt-4">
               <Tabs defaultValue="details" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className={`grid w-full ${formData.enable_registration ? "grid-cols-3" : "grid-cols-2"}`}>
                   <TabsTrigger value="details">Event Details</TabsTrigger>
+                  <TabsTrigger value="speaker">Speaker Profile</TabsTrigger>
                   <TabsTrigger value="registration">Registration Form</TabsTrigger>
                 </TabsList>
                 
@@ -464,6 +493,65 @@ const ManageEvents = () => {
                           (Appears in the highlight section on the homepage)
                         </span>
                       </Label>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="speaker" className="space-y-6 pt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="speaker_name">Speaker Full Name</Label>
+                      <Input
+                        id="speaker_name"
+                        placeholder="e.g., Prof. Adebola Olowookere"
+                        value={formData.speaker_name}
+                        onChange={(e) => setFormData({ ...formData, speaker_name: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="speaker_title">Professional Title</Label>
+                      <Input
+                        id="speaker_title"
+                        placeholder="e.g., Executive Governance Expert"
+                        value={formData.speaker_title}
+                        onChange={(e) => setFormData({ ...formData, speaker_title: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="speaker_bio">Speaker Brief Bio</Label>
+                      <textarea
+                        id="speaker_bio"
+                        className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        placeholder="Describe the speaker's background and achievements..."
+                        value={formData.speaker_bio}
+                        onChange={(e) => setFormData({ ...formData, speaker_bio: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-3 md:col-span-2">
+                      <Label htmlFor="speaker_photo">Speaker Photo</Label>
+                      <Input
+                        id="speaker_photo"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setSpeakerFile(e.target.files?.[0] || null)}
+                      />
+                      
+                      {speakerFile || existingSpeakerImageUrl ? (
+                        <div className="rounded-full border-4 border-primary/20 overflow-hidden w-24 h-24 mt-2">
+                          <img
+                            src={speakerFile ? URL.createObjectURL(speakerFile) : existingSpeakerImageUrl}
+                            alt="Speaker photo preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground italic">
+                          No photo selected.
+                        </div>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
