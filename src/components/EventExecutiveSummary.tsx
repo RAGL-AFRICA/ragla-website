@@ -30,8 +30,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import * as htmlToImage from 'html-to-image';
-import { Download, Share } from "lucide-react";
+import { Share } from "lucide-react";
 import { toast } from "sonner";
 import EventRegistrationForm from "./EventRegistrationForm";
 import { FormField } from "./admin/FormBuilder";
@@ -55,9 +54,6 @@ interface EventExecutiveSummaryProps {
 const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, formFields }) => {
   const [email, setEmail] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const cardRef = React.useRef<HTMLDivElement>(null);
-  const [isCapturing, setIsCapturing] = useState(false);
-
   const eventDate = event.date ? new Date(event.date) : null;
   const formattedDate = eventDate ? eventDate.toLocaleDateString("en-GB", {
     weekday: 'long',
@@ -79,76 +75,64 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
     }
   };
 
-  const handleDownloadImage = async () => {
-    if (!cardRef.current) return;
-    
-    try {
-      setIsCapturing(true);
-      // Wait a bit for images to load
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const dataUrl = await htmlToImage.toPng(cardRef.current, {
-        quality: 1,
-        pixelRatio: 2,
-        backgroundColor: "#00122e",
-        cacheBust: true,
-      });
-      
-      const link = document.createElement('a');
-      link.download = `RAGLA-EVENT-${event.title.replace(/\s+/g, '-').substring(0, 30)}.png`;
-      link.href = dataUrl;
-      link.click();
-      toast.success("Professional card generated successfully!");
-    } catch (err) {
-      console.error("Image generation failed", err);
-      toast.error("Failed to generate image. Please try again.");
-    } finally {
-      setIsCapturing(false);
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/events/${event.id}`;
+    if (navigator.share && navigator.canShare && navigator.canShare({ url: shareUrl })) {
+      try {
+        await navigator.share({
+          title: event.title,
+          text: `Join me at ${event.title} - An exclusive RAGLA Event`,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.error("Share failed", err);
+      }
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Event link copied to clipboard!");
     }
   };
 
   return (
     <div className="relative group">
-       {/* Card Share/Download Actions Overlay */}
+       {/* Card Share Actions Overlay */}
        <div className="absolute -top-14 right-0 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity z-30">
           <Button 
-            onClick={handleDownloadImage}
-            disabled={isCapturing}
+            onClick={handleShare}
             className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-primary hover:text-[#00122e] rounded-full px-6 font-black text-[10px] uppercase tracking-widest gap-2 shadow-2xl h-10"
           >
-             {isCapturing ? "Preparing..." : <><Download className="w-4 h-4" /> Save as Image</>}
+             <Share className="w-4 h-4" /> Share Programme
           </Button>
        </div>
 
        <div 
-         ref={cardRef}
          className="max-w-5xl mx-auto my-12 bg-[#00122e] rounded-3xl overflow-hidden shadow-[0_40px_100px_-15px_rgba(0,0,0,0.6)] border border-primary/20 text-white font-sans selection:bg-primary selection:text-[#00122e]"
        >
       {/* Top Header - Executive Summary */}
-      <div className="relative p-8 md:p-14 border-b border-white/5 overflow-hidden">
+      <div className="relative p-5 sm:p-8 md:p-14 border-b border-white/5 overflow-hidden">
         {/* Background Decorative Element */}
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute top-0 right-0 w-full md:w-1/2 h-full bg-gradient-to-l from-primary/10 to-transparent pointer-events-none" />
         
-        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start gap-10">
+        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start gap-6 md:gap-10">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-6 max-w-2xl"
+            className="space-y-4 md:space-y-6 max-w-2xl w-full"
           >
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-primary leading-none">
+            <h1 className="text-4xl sm:text-5xl md:text-8xl font-black tracking-tighter text-primary leading-none">
               EXECUTIVE <br /> <span className="text-white">SUMMARY</span>
             </h1>
-            <p className="text-xl md:text-2xl font-bold tracking-tight text-white/80 border-l-4 border-primary pl-6 py-2">
+            <p className="text-base sm:text-xl md:text-2xl font-bold tracking-tight text-white/80 border-l-4 border-primary pl-4 sm:pl-6 py-2">
               Continues Professional Development (CPD) Programme
             </p>
             
-            <div className="pt-8">
-               <div className="flex items-center gap-3 mb-4">
-                  <div className="h-0.5 w-12 bg-primary" />
+            <div className="pt-4 md:pt-8">
+               <div className="flex items-center gap-3 mb-3">
+                  <div className="h-0.5 w-8 md:w-12 bg-primary" />
                   <p className="text-primary font-black uppercase tracking-[0.3em] text-[10px]">Programme Topic</p>
                </div>
-              <h2 className="text-2xl md:text-4xl font-extrabold leading-tight text-white italic drop-shadow-lg">
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-extrabold leading-tight text-white italic drop-shadow-lg">
                 "{event.title}"
               </h2>
             </div>
@@ -157,7 +141,7 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] flex flex-col gap-8 min-w-[320px] shadow-2xl relative"
+            className="bg-white/5 backdrop-blur-xl border border-white/10 p-5 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] flex flex-col gap-5 sm:gap-8 w-full md:min-w-[280px] md:max-w-[340px] shadow-2xl relative"
           >
              {/* Academy Crest */}
              <div className="flex flex-col items-center text-center space-y-4">
@@ -200,20 +184,20 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
       </div>
 
       {/* Main Content Grid */}
-      <div className="p-8 md:p-16 space-y-20">
+      <div className="p-5 sm:p-8 md:p-16 space-y-12 md:space-y-20">
         {/* Row 1: Reality & Expect */}
-        <div className="grid md:grid-cols-2 gap-16">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-16">
           <motion.div 
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 20 }}
             viewport={{ once: true }}
-            className="flex gap-8"
+            className="flex gap-4 md:gap-8"
           >
-            <div className="shrink-0 w-20 h-20 rounded-[2rem] bg-primary flex items-center justify-center shadow-[0_15px_30px_-10px_rgba(var(--primary),0.3)] self-start">
-               <Users className="w-10 h-10 text-[#00122e]" />
+            <div className="shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-[1.5rem] sm:rounded-[2rem] bg-primary flex items-center justify-center shadow-[0_15px_30px_-10px_rgba(var(--primary),0.3)] self-start">
+               <Users className="w-7 h-7 sm:w-10 sm:h-10 text-[#00122e]" />
             </div>
             <div className="space-y-4">
-              <h3 className="text-2xl font-black uppercase tracking-wider text-primary">The Executive Reality</h3>
+              <h3 className="text-lg sm:text-2xl font-black uppercase tracking-wider text-primary">The Executive Reality</h3>
               <p className="text-sm leading-relaxed text-white/70 font-medium">
                 In today's precarious executive environment, leaders are progressively challenged with a fragile balancing act: the quest to deliver the bottom-line under severe pressure, whilst upholding fidelity to integrity and promoting ethical standards. This programme is therefore designed to tackle that reality frontal by providing an authoritative, experiential exploration of how to sustain ethical integrity, even in the most challenging boardroom and leadership environments.
               </p>
@@ -224,13 +208,13 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
             whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 20 }}
             viewport={{ once: true }}
-            className="flex gap-8"
+            className="flex gap-4 md:gap-8"
           >
-            <div className="shrink-0 w-20 h-20 rounded-[2rem] bg-primary flex items-center justify-center shadow-[0_15px_30px_-10px_rgba(var(--primary),0.3)] self-start">
-               <ClipboardCheck className="w-10 h-10 text-[#00122e]" />
+            <div className="shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-[1.5rem] sm:rounded-[2rem] bg-primary flex items-center justify-center shadow-[0_15px_30px_-10px_rgba(var(--primary),0.3)] self-start">
+               <ClipboardCheck className="w-7 h-7 sm:w-10 sm:h-10 text-[#00122e]" />
             </div>
             <div className="space-y-4">
-              <h3 className="text-2xl font-black uppercase tracking-wider text-primary">What to Expect</h3>
+              <h3 className="text-lg sm:text-2xl font-black uppercase tracking-wider text-primary">What to Expect</h3>
               <p className="text-sm leading-relaxed text-white/70 font-medium">
                 In this Programme, Participants will connect with case based analysis, executive dilemmas, and breakdown of governance scenarios drawn from lived leadership experiences. The programme refines critical lessons on how ethical lapses take place, not ignorance driven, but from delicate trade-offs, rationalizations, and contextual pressures—and how they can be avoided by virtue of principled leadership and vigorous governance systems.
               </p>
@@ -251,7 +235,7 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
                  At the same time, the Programme is intended to equip Participants with workable models to reinforce ethical decision-making under pressure, including:
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 pt-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 md:gap-12 pt-8">
                  {[
                    { 
                      icon: Scale, 
@@ -306,15 +290,15 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="relative bg-gradient-to-br from-[#001a3d] to-[#00122e] rounded-[3rem] p-10 md:p-14 border border-primary/20 overflow-hidden shadow-2xl"
+            className="relative bg-gradient-to-br from-[#001a3d] to-[#00122e] rounded-[2rem] sm:rounded-[3rem] p-6 sm:p-10 md:p-14 border border-primary/20 overflow-hidden shadow-2xl"
           >
              {/* Decorative Background */}
              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
              
-             <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
+             <div className="relative z-10 flex flex-col md:flex-row items-center gap-7 md:gap-12">
                 <div className="relative shrink-0">
                    <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse" />
-                   <div className="w-48 h-48 md:w-64 md:h-64 rounded-full p-2 bg-gradient-to-tr from-primary via-primary/50 to-primary/20 shadow-2xl relative z-10">
+                   <div className="w-36 h-36 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full p-2 bg-gradient-to-tr from-primary via-primary/50 to-primary/20 shadow-2xl relative z-10">
                       <div className="w-full h-full rounded-full overflow-hidden border-4 border-[#00122e] bg-[#001a3d] flex items-center justify-center">
                          <img 
                             src={event.speaker_image_url || "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800"} 
@@ -366,10 +350,10 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
         <motion.div 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="flex flex-col md:flex-row items-center gap-10 bg-white/5 p-10 rounded-[2.5rem] border border-white/10"
+          className="flex flex-col md:flex-row items-center gap-6 md:gap-10 bg-white/5 p-6 sm:p-10 rounded-[1.5rem] sm:rounded-[2.5rem] border border-white/10"
         >
-           <div className="shrink-0 w-24 h-24 rounded-full border-4 border-primary/30 flex items-center justify-center bg-primary/10 shadow-2xl animate-pulse">
-              <Target className="w-12 h-12 text-primary" />
+           <div className="shrink-0 w-16 h-16 sm:w-24 sm:h-24 rounded-full border-4 border-primary/30 flex items-center justify-center bg-primary/10 shadow-2xl animate-pulse">
+              <Target className="w-8 h-8 sm:w-12 sm:h-12 text-primary" />
            </div>
            <div className="space-y-4">
               <p className="text-lg md:text-xl font-bold leading-relaxed text-white/90">
@@ -379,7 +363,7 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
         </motion.div>
 
         {/* Why Attend Section */}
-        <div className="grid md:grid-cols-[1fr,2fr] gap-12 items-center">
+        <div className="grid md:grid-cols-[1fr,2fr] gap-6 md:gap-12 items-center">
            <div className="space-y-4">
               <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center shadow-lg">
                 <ShieldCheck className="w-10 h-10 text-[#00122e]" />
@@ -412,8 +396,8 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
       </div>
 
       {/* Bottom Horizontal Bar - Final CTA */}
-      <div className="bg-primary p-8 md:p-14 text-[#00122e]">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-10">
+      <div className="bg-primary p-6 sm:p-8 md:p-14 text-[#00122e]">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10">
              <div className="space-y-4 text-center md:text-left">
                 <h4 className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60">Reserved Programme</h4>
                 <p className="text-3xl font-black uppercase tracking-widest leading-none">Participation is Free</p>
@@ -446,27 +430,27 @@ const EventExecutiveSummary: React.FC<EventExecutiveSummaryProps> = ({ event, fo
 
     {/* Registration Dialog */}
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="max-w-2xl bg-background border-primary/20 p-0 overflow-hidden rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/5">
-        <div className="bg-primary p-8 text-[#00122e] relative overflow-hidden">
+      <DialogContent className="w-[calc(100vw-2rem)] sm:w-auto max-w-2xl bg-background border-primary/20 p-0 overflow-hidden rounded-[1.5rem] sm:rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border border-white/5">
+        <div className="bg-primary p-5 sm:p-8 text-[#00122e] relative overflow-hidden">
            <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none" />
            <div className="relative z-10">
               <DialogHeader>
                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00122e]/60 mb-1">Official Registration</p>
-                 <DialogTitle className="text-3xl font-black uppercase tracking-widest flex items-center gap-4">
-                    <Award className="w-10 h-10" />
+                 <DialogTitle className="text-xl sm:text-3xl font-black uppercase tracking-widest flex items-center gap-2 sm:gap-4">
+                    <Award className="w-7 h-7 sm:w-10 sm:h-10 shrink-0" />
                     Executive Access
                  </DialogTitle>
               </DialogHeader>
            </div>
         </div>
-        <div className="p-10 max-h-[75vh] overflow-y-auto custom-scrollbar">
-           <div className="mb-10 space-y-3 p-6 rounded-3xl bg-secondary/30 border border-border/50 relative overflow-hidden group">
+        <div className="p-4 sm:p-6 md:p-10 max-h-[80vh] overflow-y-auto custom-scrollbar">
+           <div className="mb-6 sm:mb-10 space-y-2 sm:space-y-3 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-secondary/30 border border-border/50 relative overflow-hidden group">
               <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary opacity-60">Reserved Programme</p>
-              <h4 className="text-xl font-black leading-tight">{event.title}</h4>
-              <div className="flex items-center gap-2 pt-2 text-xs font-bold text-white/50">
-                 <Mail className="w-3.5 h-3.5 text-primary" />
-                 {email}
+              <h4 className="text-base sm:text-xl font-black leading-tight">{event.title}</h4>
+              <div className="flex items-center gap-2 pt-1 text-xs font-bold text-muted-foreground">
+                 <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
+                 <span className="truncate">{email}</span>
               </div>
            </div>
            
