@@ -57,6 +57,10 @@ Uploads needed: Passport photo (image), Resume (PDF), Certificates (PDF), Proof 
 Other info:
 - We host regular events, seminars, and networking conferences. Keep an eye on the website for dates.
 - We have a portal for applications and student management.
+
+Technical Support & Inquiries:
+- For any technical problems, website issues, or general inquiries, contact via phone or WhatsApp: +233 (0)591507448
+- WhatsApp link: https://wa.me/233591507448
 -----------------------------
 `;
 
@@ -81,7 +85,7 @@ Deno.serve(async (req) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-flash-latest",
       systemInstruction: SYSTEM_INSTRUCTION,
     });
 
