@@ -33,10 +33,9 @@ const Index = () => {
               },
               "address": {
                 "@type": "PostalAddress",
-                "streetAddress": "2nd Bissau Street, East Legon",
+                "streetAddress": "Garden Road, East Legon",
                 "addressLocality": "Accra",
                 "addressRegion": "Greater Accra",
-                "postalCode": "GA – 334 – 8177",
                 "addressCountry": "Ghana"
               },
               "sameAs": [
