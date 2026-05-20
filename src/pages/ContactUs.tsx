@@ -68,7 +68,7 @@ const ContactUs = () => {
               <MapPin className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
               <div>
                 <h3 className="text-foreground font-semibold text-lg mb-1">Location Address</h3>
-                <p className="text-muted-foreground">GA – 334 – 8177<br />2nd Bissau Street,<br />East Legon,<br />Accra – Ghana</p>
+                <p className="text-muted-foreground">Garden Road,<br />East Legon,<br />Accra – Ghana</p>
               </div>
             </div>
             <div className="flex gap-4 items-start">

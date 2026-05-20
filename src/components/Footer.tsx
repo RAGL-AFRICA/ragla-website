@@ -100,7 +100,7 @@ const Footer = () => {
                 </div>
                 <div className="pt-1">
                   <p className="text-sm font-bold text-foreground mb-1">Office Location</p>
-                  <p className="text-muted-foreground text-sm leading-relaxed">GA – 334 – 8177 2nd Bissau Street,<br /> East Legon, Accra – Ghana</p>
+                  <p className="text-muted-foreground text-sm leading-relaxed">Garden Road,<br /> East Legon, Accra – Ghana</p>
                 </div>
               </li>
               
