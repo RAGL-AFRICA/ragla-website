@@ -27,6 +27,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import raglaLogo from "@/assets/ragla logo.png";
+import isoBadge from "@/assets/iso-badge.png";
 
 // --- VALIDATION SCHEMA ---
 const applicationSchema = zod.object({
@@ -164,7 +166,7 @@ const Apply = () => {
               <div className="p-8 md:p-12 border-b-2 border-primary/20 bg-slate-50/50 dark:bg-zinc-900/50">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-10">
                   <div className="flex flex-col items-center md:items-start gap-4">
-                    <img src="/src/assets/ragla logo.png" alt="RAGLA Logo" className="h-24 md:h-32 object-contain" />
+                    <img src={raglaLogo} alt="RAGLA Logo" className="h-24 md:h-32 object-contain" />
                   </div>
                   <div className="text-center md:text-right max-w-sm lg:max-w-lg">
                     <h1 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-zinc-100 tracking-tight leading-tight">
@@ -177,7 +179,7 @@ const Apply = () => {
                   <div className="hidden lg:block">
                     <div className="relative group">
                       <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <img src="/src/assets/iso-badge.png" alt="ISO Certification" className="w-28 h-28 object-contain relative z-10" />
+                      <img src={isoBadge} alt="ISO Certification" className="w-28 h-28 object-contain relative z-10" />
                     </div>
                   </div>
                 </div>
