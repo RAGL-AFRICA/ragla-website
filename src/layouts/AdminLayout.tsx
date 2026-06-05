@@ -25,6 +25,7 @@ const AdminLayout = () => {
     { icon: Newspaper, label: "News & Posts", path: "/admin/news-posts" },
     { icon: ImageIcon, label: "Manage Gallery", path: "/admin/gallery" },
     { icon: Mail, label: "Messages", path: "/admin/messages" },
+    { icon: FileText, label: "Applications", path: "/admin/applications" },
   ];
 
   return (

@@ -23,9 +23,13 @@ import ManageGallery from "./pages/admin/ManageGallery.tsx";
 import ManageNewsPosts from "./pages/admin/ManageNewsPosts.tsx";
 import ManageMessages from "./pages/admin/ManageMessages.tsx";
 import ManageRegistrations from "./pages/admin/ManageRegistrations.tsx";
+import ManageApplications from "./pages/admin/ManageApplications.tsx";
 import EventDetail from "./pages/EventDetail.tsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.tsx";
 import Apply from "./pages/Apply.tsx";
+import ProgrammeApply from "./pages/ProgrammeApply.tsx";
+import Programmes from "./pages/Programmes.tsx";
+import CourseDetail from "./pages/CourseDetail.tsx";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +55,9 @@ const App = () => (
             <Route path="/events/:eventId" element={<EventDetail />} />
             <Route path="/news" element={<News />} />
             <Route path="/posts" element={<Posts />} />
+            <Route path="/programmes" element={<Programmes />} />
+            <Route path="/programmes/rpcsgl" element={<CourseDetail />} />
+            <Route path="/programmes/apply-rpcsgl" element={<ProgrammeApply />} />
             
             <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
               <Route index element={<AdminDashboard />} />
@@ -59,6 +66,7 @@ const App = () => (
               <Route path="news-posts" element={<ManageNewsPosts />} />
               <Route path="gallery" element={<ManageGallery />} />
               <Route path="messages" element={<ManageMessages />} />
+              <Route path="applications" element={<ManageApplications />} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
