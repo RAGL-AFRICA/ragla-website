@@ -34,7 +34,7 @@ import isoBadge from "@/assets/iso-badge.png";
 const applicationSchema = zod.object({
   personalInfo: zod.object({
     fullName: zod.string().min(3, "Full name is required"),
-    gender: zod.enum(["Male", "Female", "Prefer Not to Say"]),
+    gender: zod.string().min(1, "Gender is required"),
     dob: zod.string().min(1, "Date of birth is required"),
     nationality: zod.string().min(2, "Nationality is required"),
     mobile: zod.string().min(10, "Mobile number is required"),
@@ -213,20 +213,10 @@ const Apply = () => {
                       {errors.personalInfo?.fullName && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.fullName.message}</p>}
                     </div>
 
-                    <div className="space-y-3 col-span-2">
+                    <div className="space-y-2">
                       <Label className="uppercase text-[10px] font-bold tracking-widest text-zinc-500">Gender</Label>
-                      <RadioGroup 
-                        defaultValue="Male" 
-                        onValueChange={(val) => setValue("personalInfo.gender", val as any)}
-                        className="flex flex-wrap gap-x-6 gap-y-3 pt-1"
-                      >
-                        {["Male", "Female", "Prefer Not to Say"].map(g => (
-                          <div key={g} className="flex items-center space-x-2">
-                            <RadioGroupItem value={g} id={`gender-${g}`} className="border-slate-400 text-primary" />
-                            <Label htmlFor={`gender-${g}`} className="text-sm font-semibold text-slate-700 dark:text-zinc-300 cursor-pointer">{g}</Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
+                      <Input {...register("personalInfo.gender")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors font-medium" placeholder="E.G. MALE, FEMALE, ETC." />
+                      {errors.personalInfo?.gender && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.gender.message}</p>}
                     </div>
 
                     <div className="space-y-2">

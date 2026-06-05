@@ -282,14 +282,14 @@ const CourseDetail = () => {
                       animate={{ opacity: 1, x: 0 }}
                       className="space-y-6 max-w-2xl"
                     >
-                      <h1 className="text-5xl sm:text-6xl md:text-9xl font-black tracking-tighter text-primary leading-none">
+                      <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter text-primary leading-none">
                         EXECUTIVE <br /> <span className="text-white">SUMMARY</span>
                       </h1>
                       <div className="flex items-center gap-3">
                          <div className="h-0.5 w-12 bg-primary" />
                          <p className="text-primary font-black uppercase tracking-[0.4em] text-[10px]">Curated Programme</p>
                       </div>
-                      <h2 className="text-2xl md:text-4xl font-extrabold leading-tight text-white italic drop-shadow-lg pr-4">
+                      <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold leading-tight text-white italic drop-shadow-lg pr-4">
                         "Royal Professional Certificate in Strategic Governance & Leadership"
                       </h2>
                       <p className="text-lg md:text-xl font-bold tracking-tight text-white/50 border-l-4 border-primary pl-6 py-2">

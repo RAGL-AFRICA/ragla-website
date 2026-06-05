@@ -33,7 +33,7 @@ const activeCourse = {
   title: "Royal Professional Certificate in Strategic Governance & Leadership",
   level: "Professional Certificate",
   duration: "8 Weeks",
-  mode: "In-Person / Online / Hybrid",
+  mode: "Weekends / Online / Executive In-Person (Intense)",
   description:
     "A highly demanding, pragmatic, experiential, and internationally competitive Curated Executive Education Programme intended to equip participants with the right concepts, knowledge, tools, and practical leadership insights needed to achieve sustained excellence in leadership and governance responsibilities.",
   topics: [
@@ -237,7 +237,7 @@ const OverviewSection = () => (
           {
             icon: Clock,
             title: "Flexible Delivery",
-            desc: "All programmes are available online, in-person, or in a hybrid format to suit your schedule.",
+            desc: "All programmes are available weekends, online, or Executive In-Person (Intense) format to suit your schedule.",
           },
           {
             icon: TrendingUp,
@@ -426,9 +426,9 @@ const Programmes = () => {
             transition={{ duration: 0.5 }}
           >
             <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-3">RAGLA PROGRAMMES</p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-4 leading-tight">
-              Governance & Leadership <br className="hidden md:block" />
-              <span className="text-primary">Education</span>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-foreground mb-4 leading-[1.1] uppercase tracking-tighter">
+              EXECUTIVE EDUCATION & <br className="hidden md:block" />
+              <span className="text-primary">CAPACITY BUILDING</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Professional development designed to shape Africa's most capable and principled leaders —
