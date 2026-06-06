@@ -134,11 +134,16 @@ const executivePrograms = [
 ];
 
 const levelColors: Record<string, string> = {
-  Certificate: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  "Professional Certificate": "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
-  "Advanced Certificate": "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300",
-  "Postgraduate Diploma": "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
-  Chartered: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+  Certificate:
+    "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+  "Professional Certificate":
+    "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  "Advanced Certificate":
+    "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300",
+  "Postgraduate Diploma":
+    "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+  Chartered:
+    "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -148,9 +153,10 @@ const OverviewSection = () => (
     {/* Intro */}
     <div className="text-center max-w-3xl mx-auto">
       <p className="text-muted-foreground text-lg leading-relaxed">
-        RAGLA's Programmes division delivers world-class governance and leadership education across Africa.
-        From foundational certificates to chartered professional qualifications, our offerings are designed
-        to meet professionals at every stage of their career.
+        RAGLA's Programmes division delivers world-class governance and
+        leadership education across Africa. From foundational certificates to
+        chartered professional qualifications, our offerings are designed to
+        meet professionals at every stage of their career.
       </p>
     </div>
 
@@ -164,33 +170,40 @@ const OverviewSection = () => (
               FEATURED PROGRAMME
             </span>
             <h2 className="text-3xl font-black text-foreground mb-4 leading-tight">
-              Royal Professional Certificate in Strategic Governance & Leadership
+              Royal Professional Certificate in Strategic Governance &
+              Leadership
             </h2>
             <p className="text-muted-foreground mb-8 text-sm md:text-base leading-relaxed">
-              Equip yourself with the tools, knowledge, and practical insights needed to achieve sustained excellence in leadership and governance responsibilities across Africa.
+              Equip yourself with the tools, knowledge, and practical insights
+              needed to achieve sustained excellence in leadership and
+              governance responsibilities across Africa.
             </p>
             <div className="flex flex-wrap gap-4 mb-8">
               <div className="flex items-center gap-2 text-xs font-semibold text-foreground bg-secondary px-3 py-2 rounded-xl">
                 <Clock className="w-4 h-4 text-primary" /> 8 Weeks
               </div>
               <div className="flex items-center gap-2 text-xs font-semibold text-foreground bg-secondary px-3 py-2 rounded-xl">
-                <Globe className="w-4 h-4 text-primary" /> Hybrid Delivery
+                <Globe className="w-4 h-4 text-primary" /> Weekend, Online,
+                Executive In-Person (Intense) Delivery
               </div>
             </div>
             <Link
               to="/programmes/rpcsgl"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-2xl font-bold hover:brightness-110 transition-all text-sm group"
             >
-              Learn More About RPCSGL <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              Learn More About RPCSGL{" "}
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
           <div className="relative">
             <div className="aspect-[4/3] rounded-2xl bg-secondary/50 overflow-hidden flex items-center justify-center">
-               <GraduationCap className="w-24 h-24 text-primary/20" />
+              <GraduationCap className="w-24 h-24 text-primary/20" />
             </div>
             <div className="absolute -bottom-6 -left-6 bg-background card-shadow rounded-2xl p-6 hidden md:block border border-border/50">
               <p className="text-2xl font-black text-primary">Now</p>
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Enrolling</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                Enrolling
+              </p>
             </div>
           </div>
         </div>
@@ -205,9 +218,14 @@ const OverviewSection = () => (
         { value: "40+", label: "CPD Hours / Year" },
         { value: "5", label: "African Countries" },
       ].map((stat) => (
-        <div key={stat.label} className="bg-card card-shadow rounded-2xl p-6 text-center">
+        <div
+          key={stat.label}
+          className="bg-card card-shadow rounded-2xl p-6 text-center"
+        >
           <p className="text-4xl font-black text-primary">{stat.value}</p>
-          <p className="text-muted-foreground text-sm mt-1 font-medium">{stat.label}</p>
+          <p className="text-muted-foreground text-sm mt-1 font-medium">
+            {stat.label}
+          </p>
         </div>
       ))}
     </div>
@@ -250,13 +268,18 @@ const OverviewSection = () => (
             desc: "Every programme is grounded in RAGLA's Code of Ethics and Professional Standards.",
           },
         ].map((item) => (
-          <div key={item.title} className="bg-card card-shadow rounded-2xl p-6 flex gap-4">
+          <div
+            key={item.title}
+            className="bg-card card-shadow rounded-2xl p-6 flex gap-4"
+          >
             <div className="bg-primary/10 p-3 rounded-xl h-fit">
               <item.icon className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h3 className="font-bold text-foreground mb-1">{item.title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {item.desc}
+              </p>
             </div>
           </div>
         ))}
@@ -268,9 +291,12 @@ const OverviewSection = () => (
 const CoursesSection = () => (
   <div className="space-y-8">
     <div className="text-center max-w-2xl mx-auto">
-      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">Our Courses</h2>
+      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+        Our Courses
+      </h2>
       <p className="text-muted-foreground">
-        Structured professional programmes from introductory certificates to our prestigious Chartered qualification.
+        Structured professional programmes from introductory certificates to our
+        prestigious Chartered qualification.
       </p>
     </div>
     <div className="grid md:grid-cols-2 gap-6">
@@ -288,13 +314,19 @@ const CoursesSection = () => (
             <GraduationCap className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-primary font-bold text-xs tracking-wider">{activeCourse.code}</p>
-            <h3 className="text-foreground font-bold text-lg leading-tight mt-0.5">{activeCourse.title}</h3>
+            <p className="text-primary font-bold text-xs tracking-wider">
+              {activeCourse.code}
+            </p>
+            <h3 className="text-foreground font-bold text-lg leading-tight mt-0.5">
+              {activeCourse.title}
+            </h3>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
-          <span className={`text-xs font-semibold px-3 py-1 rounded-full ${levelColors[activeCourse.level] || "bg-secondary text-foreground"}`}>
+          <span
+            className={`text-xs font-semibold px-3 py-1 rounded-full ${levelColors[activeCourse.level] || "bg-secondary text-foreground"}`}
+          >
             {activeCourse.level}
           </span>
           <span className="text-xs font-semibold px-3 py-1 rounded-full bg-secondary text-foreground flex items-center gap-1">
@@ -305,13 +337,20 @@ const CoursesSection = () => (
           </span>
         </div>
 
-        <p className="text-muted-foreground text-sm leading-relaxed mb-4">{activeCourse.description}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+          {activeCourse.description}
+        </p>
 
         <div className="mb-5 flex-1">
-          <p className="text-xs font-bold text-foreground uppercase tracking-wider mb-2">Key Topics</p>
+          <p className="text-xs font-bold text-foreground uppercase tracking-wider mb-2">
+            Key Topics
+          </p>
           <ul className="space-y-1.5">
             {activeCourse.topics.map((t) => (
-              <li key={t} className="flex items-start gap-2 text-muted-foreground text-sm">
+              <li
+                key={t}
+                className="flex items-start gap-2 text-muted-foreground text-sm"
+              >
                 <CheckCircle className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
                 <span>{t}</span>
               </li>
@@ -360,21 +399,37 @@ const ComingSoonPlaceholder = ({ category }: { category: string }) => (
     <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
       <BookOpen className="w-10 h-10 text-primary" />
     </div>
-    <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">Coming Soon</h3>
+    <h3 className="text-3xl font-black mb-4 uppercase tracking-tight">
+      Coming Soon
+    </h3>
     <p className="text-muted-foreground max-w-lg">
-      We are currently curating specialized {category} programmes to meet the highest standards of governance and leadership excellence across Africa.
+      We are currently curating specialized {category} programmes to meet the
+      highest standards of governance and leadership excellence across Africa.
     </p>
     <div className="mt-8 flex gap-4">
-       <div className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-lg shadow-primary/40" style={{ animationDelay: '0ms' }} />
-       <div className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-lg shadow-primary/40" style={{ animationDelay: '150ms' }} />
-       <div className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-lg shadow-primary/40" style={{ animationDelay: '300ms' }} />
+      <div
+        className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-lg shadow-primary/40"
+        style={{ animationDelay: "0ms" }}
+      />
+      <div
+        className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-lg shadow-primary/40"
+        style={{ animationDelay: "150ms" }}
+      />
+      <div
+        className="w-2 h-2 rounded-full bg-primary animate-bounce shadow-lg shadow-primary/40"
+        style={{ animationDelay: "300ms" }}
+      />
     </div>
   </div>
 );
 
 const CPDSection = () => <ComingSoonPlaceholder category="CPD" />;
-const ExecutiveSection = () => <ComingSoonPlaceholder category="Executive Education" />;
-const OnlineSection = () => <ComingSoonPlaceholder category="Online Learning" />;
+const ExecutiveSection = () => (
+  <ComingSoonPlaceholder category="Executive Education" />
+);
+const OnlineSection = () => (
+  <ComingSoonPlaceholder category="Online Learning" />
+);
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
@@ -407,7 +462,9 @@ const Programmes = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Programmes | RAGLA – Royal Academy of Governance & Leadership Africa</title>
+        <title>
+          Programmes | RAGLA – Royal Academy of Governance & Leadership Africa
+        </title>
         <meta
           name="description"
           content="Explore RAGLA's programmes: certified courses, CPD seminars, executive education retreats, and online learning — all focused on governance and leadership excellence in Africa."
@@ -425,14 +482,16 @@ const Programmes = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-3">RAGLA PROGRAMMES</p>
+            <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-3">
+              RAGLA PROGRAMMES
+            </p>
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-foreground mb-4 leading-[1.1] uppercase tracking-tighter">
               EXECUTIVE EDUCATION & <br className="hidden md:block" />
               <span className="text-primary">CAPACITY BUILDING</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Professional development designed to shape Africa's most capable and principled leaders —
-              at every stage of your career journey.
+              Professional development designed to shape Africa's most capable
+              and principled leaders — at every stage of your career journey.
             </p>
           </motion.div>
         </div>
@@ -482,10 +541,12 @@ const Programmes = () => {
       {/* CTA Banner */}
       <section className="section-padding bg-primary">
         <div className="container-main text-center text-primary-foreground">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">Ready to Advance Your Career?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-3">
+            Ready to Advance Your Career?
+          </h2>
           <p className="text-primary-foreground/80 max-w-xl mx-auto mb-8 text-sm">
-            Apply to a RAGLA programme today and join hundreds of governance and leadership professionals
-            across Africa pursuing excellence.
+            Apply to a RAGLA programme today and join hundreds of governance and
+            leadership professionals across Africa pursuing excellence.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
