@@ -172,6 +172,59 @@ const curriculum = [
   },
 ];
 
+const objectives = [
+  "Demonstrate clear appreciation of contemporary principles of governance and institutional leadership.",
+  "Apply the techniques of strategic leadership to address complex issues within organizational environments.",
+  "Demonstrate ethical and principled leadership behavior and conduct.",
+  "Lead teams effectively across multicultural backgrounds.",
+  "Strengthen organizational accountability and systems of performance.",
+  "Make data-driven managerial decisions.",
+  "Develop the requisite skills to drive effective communication, negotiation, and stakeholder management.",
+  "Reinforce the structures and strictures institutional and operational governance.",
+  "Develop resilience and adaptive leadership capabilities to manage complex organizational issues.",
+  "Design and implement leadership enhancing strategies to drive high organizational performance outcomes."
+];
+
+const learningOutcomes = [
+  "Analyze the structures of governance and leadership systems and adopt data-driven approach to address issues.",
+  "Develop leadership frameworks that fit properly into the modern organization.",
+  "Lead high performing teams and manage institutional relationships for enhanced productivity.",
+  "Build strong internal controls to reinforce institutional accountability.",
+  "Apply ethical reasoning in leadership decisions making process.",
+  "Improve a highly cooperative environment.",
+  "Manage organizational conflicts with the highest sense of professionalism.",
+  "Promote effective communication.",
+  "Lead organizational change interventions.",
+  "Implement actionable governance and leadership improvement plans."
+];
+
+const deliveryFormats = [
+  { mode: "5-Day Executive In-Person (Intense)", icon: Users },
+  { mode: "8 Weekend Sessions", icon: Calendar },
+  { mode: "8 Weeks Online Delivery", icon: Globe }
+];
+
+const additionalSystems = [
+  { title: "Executive Mentorship System", desc: "Pairing with experienced Executives for mentorship." },
+  { title: "Leadership Coaching Clinics", desc: "Quarterly professional coaching sessions." },
+  { title: "Governance Simulation Laboratory", desc: "Real-time governance decision simulations." },
+  { title: "Executive Networking Forum", desc: "Professional networking opportunities." },
+  { title: "Alumni Leadership Network", desc: "Long-term professional community." },
+  { title: "International Guest Lecture Series", desc: "Sessions with global governance experts." },
+  { title: "Professional Leadership Portfolio", desc: "Compilation of leadership achievements and reflections." }
+];
+
+const deliverables = [
+  "Executive Participant Handbook",
+  "Governance Toolkit",
+  "Leadership Assessment Tools",
+  "Reading Pack",
+  "Compendium of Case Studies",
+  "Capstone Template",
+  "International Accredited Certificate of Completion",
+  "Executive Transcript/Report"
+];
+
 // ─── Accordion Component ──────────────────────────────────────────────────────
 
 const WeekAccordion = ({ item, index }: { item: typeof curriculum[0]; index: number }) => {
@@ -360,7 +413,7 @@ const CourseDetail = () => {
                     <div className="space-y-6">
                       <h3 className="text-2xl font-black uppercase tracking-wider text-primary">The Executive Reality</h3>
                       <p className="text-base leading-relaxed text-white/70 font-medium italic">
-                        "Today's corporate environment places peremptory demands on organizational leadership: ethical-centeredness, strategic agility, organizational savviness, and systematic cognizance fuelled by the capability to manage complex issues in dynamic environments."
+                        "Today’s corporate environment places peremptory demands on organizational leadership: ethical-centeredness, strategic agility, organizational savviness, systematic cognizance fuelled by the capability to manage complex issues in a rather dynamic and fast-paced environments."
                       </p>
                     </div>
                   </motion.div>
@@ -377,42 +430,102 @@ const CourseDetail = () => {
                     <div className="space-y-6">
                       <h3 className="text-2xl font-black uppercase tracking-wider text-primary">Mission Critical</h3>
                       <p className="text-base leading-relaxed text-white/70 font-medium">
-                        Public, private, and international sector organizations require leaders with the capacity for <span className="text-white font-bold">adaptive transitioning</span> from operational-focused competence to effective strategic leadership and governance excellence.
+                        Taking cognizance of this imperative, public, private, not-for-profit, and international sector organizations require leaders with the capacity of adaptive transitioning from operational-focused competence to effective strategic leadership and governance.
                       </p>
                     </div>
                   </motion.div>
                 </div>
+
+                {/* 1.5 COURSE RATIONALE */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-white/5 rounded-[3rem] p-10 md:p-20 border border-white/10"
+                >
+                  <h3 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-12 text-primary">Course Rationale</h3>
+                  <div className="grid md:grid-cols-2 gap-12">
+                    <div className="space-y-6">
+                      <p className="text-lg text-white/70 leading-relaxed">
+                        The major challenge of managing complex organizational settings in contemporary times comes not so much from inadequate technical expertise; it stems from poor systems of governance, leadership ineptitude, poor culture of accountability, and lack of thorough managerial and leadership readiness.
+                      </p>
+                      <p className="text-lg text-white/70 leading-relaxed">
+                        Upcoming and middle-level managers often get transitioned into leadership positions devoid of the requisite systematic training. This course addresses the gap by synthesizing executive leadership development, governance models, and institutional governance.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4">
+                      {[
+                        "Systems of governance", "Strategic thinking", "Institutional accountability", 
+                        "Responsible leadership", "Organizational behavior", "Effective leadership communication", "Performance leadership"
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/5">
+                          <CheckCircle className="w-5 h-5 text-primary" />
+                          <span className="text-sm font-bold uppercase tracking-wide text-white/80">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
 
                 {/* 2. THE TOOLS (ICON GRID) */}
                 <div className="relative pt-16 border-t border-white/5">
                    <div className="text-center space-y-12">
                       <div className="inline-block px-10 py-3 bg-primary/10 border border-primary/20 rounded-full mb-8">
                          <h3 className="text-xl md:text-2xl font-black uppercase tracking-[0.4em] text-primary">
-                            Strategic Competency Framework
+                            Core Combinations
                          </h3>
                       </div>
                       
-                      <p className="text-lg text-white/40 max-w-4xl mx-auto font-black uppercase tracking-tighter leading-tight">
-                        THE RPCSGL PROGRAMME IS INFUSED WITH THE HIGHEST STANDARDS OF GOVERNANCE RESEARCH AND PRACTICAL FIELD INSIGHTS
-                      </p>
-
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-12 pt-12">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12">
                          {[
-                           { icon: Scale, title: "Governance", desc: "Foundational principles of institutional accountability" },
-                           { icon: Compass, title: "Agility", desc: "Strategic response tools for fast-paced markets" },
-                           { icon: Landmark, title: "Fidelity", desc: "Maintaining integrity under severe pressure" },
-                           { icon: ShieldCheck, title: "Resilience", desc: "Building sustainable institutional frameworks" }
+                           { icon: Scale, title: "Governance", desc: "Governance Principles" },
+                           { icon: Compass, title: "Leadership", desc: "Practices of Strategic Leadership" },
+                           { icon: Landmark, title: "Ethics", desc: "Ethical decision-making" },
+                           { icon: LayoutDashboard, title: "Performance", desc: "Management of Organizational Performance" },
+                           { icon: Users, title: "Teams", desc: "Team Leadership and Stakeholder Management" },
+                           { icon: Mic2, title: "Communication", desc: "Communication and Negotiation" },
+                           { icon: Zap, title: "Digital", desc: "Leadership Competencies in the Digital-Age" },
+                           { icon: Lightbulb, title: "Solvers", desc: "Executive Problem-Solving" }
                          ].map((item, i) => (
                            <div key={i} className="space-y-4 group">
-                              <div className="w-24 h-24 mx-auto rounded-full border-2 border-primary/20 flex items-center justify-center bg-[#001a3d] group-hover:border-primary group-hover:shadow-[0_0_40px_rgba(var(--primary),0.2)] transition-all duration-500">
-                                <item.icon className="w-10 h-10 text-primary" />
+                              <div className="w-20 h-20 mx-auto rounded-full border-2 border-primary/20 flex items-center justify-center bg-[#001a3d] group-hover:border-primary group-hover:shadow-[0_0_40px_rgba(var(--primary),0.2)] transition-all duration-500">
+                                <item.icon className="w-8 h-8 text-primary" />
                               </div>
-                              <h4 className="text-sm font-black uppercase tracking-widest text-primary">{item.title}</h4>
+                              <h4 className="text-[10px] font-black uppercase tracking-widest text-primary">{item.title}</h4>
                               <p className="text-[10px] uppercase font-bold text-white/40 leading-tight px-4">{item.desc}</p>
                            </div>
                          ))}
                       </div>
                    </div>
+                </div>
+
+                {/* 2.5 DURATION & DELIVERY */}
+                <div className="grid md:grid-cols-2 gap-12 pt-16 border-t border-white/5">
+                  <div className="space-y-8">
+                    <h3 className="text-2xl font-black uppercase tracking-wider text-primary">Program Duration & Delivery</h3>
+                    <p className="text-white/60 font-medium">The Course follows an 8-Week Executive Modular Design. Delivery is structured for maximum impact and flexibility.</p>
+                    <div className="space-y-4">
+                      {deliveryFormats.map((format, i) => (
+                        <div key={i} className="flex items-center gap-4 p-5 bg-[#001a3d] rounded-2xl border border-primary/10">
+                          <div className="p-3 bg-primary/10 rounded-xl">
+                            <format.icon className="w-6 h-6 text-primary" />
+                          </div>
+                          <span className="font-bold text-white uppercase tracking-tight">{format.mode}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="bg-primary/5 rounded-[3rem] p-12 border border-primary/10">
+                    <h3 className="text-2xl font-black uppercase tracking-wider text-primary mb-8">Course Objectives</h3>
+                    <ul className="space-y-4">
+                      {objectives.slice(0, 6).map((obj, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-1" />
+                          <span className="text-sm font-medium text-white/80 leading-relaxed">{obj}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
                 {/* 3. THE CURRICULUM */}
@@ -423,7 +536,7 @@ const CourseDetail = () => {
                         <h2 className="text-4xl md:text-6xl font-black tracking-tighter">8-WEEK <span className="text-primary">JOURNEY</span></h2>
                       </div>
                       <p className="text-white/40 text-sm font-bold uppercase tracking-widest max-w-xs text-right">
-                         6 Modules of Intensive Professional Training and Case Study Analysis.
+                         Executive Modular Design reflecting HBS, INSEAD, and LBS frameworks.
                       </p>
                    </div>
                    
@@ -434,40 +547,193 @@ const CourseDetail = () => {
                       
                       <div className="bg-primary p-10 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-10 mt-12 text-[#00122e]">
                          <div className="shrink-0 w-24 h-24 rounded-full bg-[#00122e] flex items-center justify-center shadow-2xl">
-                            <Zap className="w-10 h-10 text-primary" />
-                         </div>
-                         <div className="flex-1 space-y-4 text-center md:text-left">
-                           <h4 className="text-3xl font-black uppercase tracking-tighter leading-none">The Executive Capstone</h4>
-                           <p className="text-base font-bold leading-relaxed opacity-80">
-                             Weeks 7 & 8 are dedicated to the <span className="underline decoration-2">Governance Improvement Plan (GIP)</span>. Participants defend their strategies to address real-world institutional challenges.
-                           </p>
-                         </div>
+                            <FolderOpen className="w-10 h-10 text-primary" />
+                          </div>
+                          <div className="flex-1 space-y-4 text-center md:text-left">
+                            <h4 className="text-3xl font-black uppercase tracking-tighter leading-none">2-Week Preparation Period</h4>
+                            <p className="text-base font-bold leading-relaxed opacity-80">
+                              Dedicated time for <span className="underline decoration-2">Capstone Project Writing and Defense</span>. Finalizing the Governance and Leadership Improvement Plan.
+                            </p>
+                          </div>
                       </div>
                    </div>
+                </div>
+
+                {/* 3.5 LEARNING OUTCOMES */}
+                <div className="grid md:grid-cols-1 gap-12">
+                  <div className="bg-[#001a3d] rounded-[3rem] p-10 md:p-20 border border-primary/20">
+                    <h3 className="text-3xl md:text-6xl font-black uppercase tracking-tighter mb-16 text-center">Learning <span className="text-primary">Outcomes</span></h3>
+                    <div className="grid md:grid-cols-2 gap-8">
+                      {learningOutcomes.map((outcome, i) => (
+                        <div key={i} className="flex items-start gap-4 p-6 bg-white/5 rounded-3xl border border-white/5 hover:border-primary/30 transition-all">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <TrendingUp className="w-5 h-5 text-primary" />
+                          </div>
+                          <p className="text-sm font-bold text-white/70 leading-relaxed">{outcome}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* 4. WHO SHOULD ATTEND */}
                 <div className="bg-white/5 rounded-[3rem] p-10 md:p-20 border border-white/10 text-center relative overflow-hidden">
                    <div className="absolute inset-0 bg-primary/5 blur-3xl opacity-20" />
                    <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-16 relative z-10 uppercase">
-                     Target <span className="text-primary">Profiles</span>
+                     Target <span className="text-primary">Participants</span>
                    </h2>
                    
                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10 text-left">
                       {[
-                        "C-Suite Executives", "Board Members", "Public Sector Leaders", "International NGO Directors",
-                        "Hi-Pos (High Potentials)", "Governance Officers", "Strategic Managers", "Policy Advisors",
-                        "Middle-Level Managers", "Entrepreneurs", "Administrative Leads", "Emerging Leaders"
+                        "Early-Career Managers", "Middle-Level Managers", "Team Leads", "Supervisors",
+                        "Public sector Professionals", "Not-for-Profit Organization Managers", "Business Executives", "Entrepreneurs",
+                        "Project Officers", "Administrative Professionals", "Emerging Executives", "Leadership Transitioners"
                       ].map(p => (
                         <div key={p} className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5 group hover:border-primary transition-all">
                            <UserCheck className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-                           <span className="text-xs font-bold uppercase tracking-wide text-white/80">{p}</span>
+                           <span className="text-[10px] font-bold uppercase tracking-wide text-white/80">{p}</span>
                         </div>
                       ))}
                    </div>
                 </div>
 
-                {/* 5. FINAL CTAS */}
+                {/* 4.5 ADDITIONAL SYSTEMS & SUPPORT */}
+                <div className="space-y-16">
+                  <div className="text-center">
+                    <h3 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-primary">World Class Systems Support</h3>
+                    <p className="text-white/40 mt-4 uppercase tracking-widest font-bold">Immersive Executive Education Methodology</p>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-3 gap-8">
+                    {additionalSystems.map((system, i) => (
+                      <div key={i} className="p-8 bg-[#001a3d] rounded-[2rem] border border-primary/10 hover:border-primary transition-all">
+                        <h4 className="text-lg font-black text-white mb-3 uppercase tracking-tight">{system.title}</h4>
+                        <p className="text-xs text-white/50 leading-relaxed font-bold uppercase">{system.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div className="bg-white/5 rounded-[3rem] p-12 border border-white/10">
+                      <h4 className="text-2xl font-black text-primary mb-8 ml-2">Digital Learning Support</h4>
+                      <ul className="grid grid-cols-1 gap-4">
+                        {[
+                          "Learning Management System (LMS)", "Digital reading repository", "Recorded lectures", 
+                          "Leadership discussion forums", "Executive coaching sessions", "AI-supported learning tools", "Online networking communities"
+                        ].map((item, i) => (
+                          <li key={i} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl">
+                             <MonitorPlay className="w-5 h-5 text-primary" />
+                             <span className="text-xs font-black text-white/70 uppercase tracking-widest">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="bg-white/5 rounded-[3rem] p-12 border border-white/10">
+                      <h4 className="text-2xl font-black text-primary mb-8 ml-2">Programme Deliverables</h4>
+                      <ul className="grid grid-cols-1 gap-4">
+                        {deliverables.map((item, i) => (
+                          <li key={i} className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl">
+                             <BookOpen className="w-5 h-5 text-primary" />
+                             <span className="text-xs font-black text-white/70 uppercase tracking-widest">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4.7 ADMISSION & FACULTY */}
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="bg-[#001a3d] rounded-[3rem] p-12 border border-primary/20">
+                    <h3 className="text-2xl font-black text-primary mb-8 uppercase tracking-widest leading-tight">Admission Criteria</h3>
+                    <div className="space-y-6">
+                      <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
+                        <p className="text-white font-bold uppercase tracking-widest text-xs mb-4">Qualifications (At least one):</p>
+                        <p className="text-white/60 text-xs font-black uppercase leading-relaxed">
+                          Diploma, HND, Bachelor’s Degree, Master’s Degree (MSc., MBA, MA, LLM etc.), Professional Qualification, or Equivalent Practical Managerial Experience.
+                        </p>
+                      </div>
+                      <ul className="space-y-4">
+                        <li className="flex items-center gap-3">
+                          <CheckCircle className="w-4 h-4 text-primary" />
+                          <span className="text-xs font-bold text-white/80 uppercase">Minimum 1–5 Years Professional Experience</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <CheckCircle className="w-4 h-4 text-primary" />
+                          <span className="text-xs font-bold text-white/80 uppercase">Demonstrated Leadership Potential</span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <CheckCircle className="w-4 h-4 text-primary" />
+                          <span className="text-xs font-bold text-white/80 uppercase">Commitment to Continuing Pro. Dev.</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="bg-[#001a3d] rounded-[3rem] p-12 border border-primary/20">
+                     <h3 className="text-2xl font-black text-primary mb-8 uppercase tracking-widest leading-tight">Faculty Profile</h3>
+                     <div className="grid grid-cols-2 gap-4">
+                        {[
+                          "Experienced Academics", "Scholar-Practitioners", "Governance Practitioners", "Corporate Executives",
+                          "Policy Experts", "Leadership Consultants", "Board Professionals", "International Guest Speakers"
+                        ].map((f, i) => (
+                          <div key={i} className="p-4 bg-white/5 rounded-xl border border-white/5 flex flex-col gap-2">
+                            <GraduationCap className="w-5 h-5 text-primary" />
+                            <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">{f}</span>
+                          </div>
+                        ))}
+                     </div>
+                  </div>
+                </div>
+
+                {/* 5. DELIVERY SCHEDULES */}
+                <div className="space-y-12">
+                   <div className="text-center space-y-4">
+                      <h3 className="text-3xl md:text-6xl font-black uppercase tracking-tighter">Delivery <span className="text-primary">Schedules</span></h3>
+                      <p className="text-white/40 font-bold uppercase tracking-[0.3em]">2026 COHORTS</p>
+                   </div>
+                   
+                   <div className="grid md:grid-cols-3 gap-8">
+                     {[
+                       { 
+                         title: "Weekend Stream", 
+                         date: "July 4 – Aug 22, 2026", 
+                         time: "8:00AM – 5:00PM",
+                         icon: Calendar 
+                       },
+                       { 
+                         title: "Online Cohort", 
+                         date: "Aug 4 – Sept 5, 2026", 
+                         time: "Live Interactive Sessions",
+                         icon: Globe 
+                       },
+                       { 
+                         title: "Executive In-Person", 
+                         date: "Aug 10 – Aug 11, 2026", 
+                         time: "Intensive (2-Day Session)",
+                         icon: MapPin 
+                       }
+                     ].map((schedule, i) => (
+                       <div key={i} className="p-10 rounded-[2.5rem] bg-white/5 border border-white/10 relative overflow-hidden group hover:border-primary transition-all">
+                          <div className="absolute top-0 right-0 p-6 opacity-10">
+                             <schedule.icon className="w-20 h-20 text-white" />
+                          </div>
+                          <h5 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-6">#{schedule.title}</h5>
+                          <div className="space-y-4">
+                             <div>
+                                <p className="text-[9px] font-black uppercase text-white/40 tracking-widest mb-1">Schedule Date</p>
+                                <p className="text-lg font-black text-white">{schedule.date}</p>
+                             </div>
+                             <div>
+                                <p className="text-[9px] font-black uppercase text-white/40 tracking-widest mb-1">Time/Platform</p>
+                                <p className="text-base font-bold text-white/70 italic">{schedule.time}</p>
+                             </div>
+                          </div>
+                       </div>
+                     ))}
+                   </div>
+                </div>
+
+                {/* 6. FINAL CTAS */}
                 <div className="grid md:grid-cols-3 gap-8">
                    {[
                      { icon: LayoutDashboard, tag: "#AUTHORITY", text: "Uphold integrity and institutional excellence at the highest level." },
