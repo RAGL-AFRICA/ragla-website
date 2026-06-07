@@ -81,7 +81,7 @@ const Apply = () => {
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<ApplicationData>({
     resolver: zodResolver(applicationSchema),
     defaultValues: {
-      personalInfo: { gender: "Male", surname: "", firstName: "", otherNames: "" },
+      personalInfo: { gender: "Male", surname: "", firstName: "", otherNames: "", dobDay: "", dobMonth: "", dobYear: "" },
       professionalInfo: { positionLevel: [] },
       education: [{ qualification: "", institution: "", country: "", year: "" }],
       sponsorship: { type: "Self-Sponsored" },
@@ -94,6 +94,9 @@ const Apply = () => {
   const surname = watch("personalInfo.surname");
   const firstName = watch("personalInfo.firstName");
   const otherNames = watch("personalInfo.otherNames");
+  const dobDay = watch("personalInfo.dobDay");
+  const dobMonth = watch("personalInfo.dobMonth");
+  const dobYear = watch("personalInfo.dobYear");
 
   useEffect(() => {
     const s = (surname || "").trim();
@@ -106,6 +109,37 @@ const Apply = () => {
       setValue("personalInfo.fullName", "", { shouldDirty: true });
     }
   }, [surname, firstName, otherNames, setValue]);
+
+  // Compose DOB from selects as ISO YYYY-MM-DD for backend
+  useEffect(() => {
+    if (dobYear && dobMonth && dobDay) {
+      const mm = String(dobMonth).padStart(2, '0');
+      const dd = String(dobDay).padStart(2, '0');
+      const iso = `${dobYear}-${mm}-${dd}`;
+      setValue("personalInfo.dob", iso, { shouldDirty: true });
+    } else {
+      setValue("personalInfo.dob", "", { shouldDirty: true });
+    }
+  }, [dobDay, dobMonth, dobYear, setValue]);
+
+  // helper arrays for DOB selects
+  const currentYear = new Date().getFullYear();
+  const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
+  const months = [
+    { value: '1', label: 'January' },
+    { value: '2', label: 'February' },
+    { value: '3', label: 'March' },
+    { value: '4', label: 'April' },
+    { value: '5', label: 'May' },
+    { value: '6', label: 'June' },
+    { value: '7', label: 'July' },
+    { value: '8', label: 'August' },
+    { value: '9', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' },
+  ];
+  const years = Array.from({ length: currentYear - 1899 }, (_, i) => String(currentYear - i));
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -231,12 +265,12 @@ const Apply = () => {
                       <Label className="uppercase text-[10px] font-bold tracking-widest text-zinc-500">Full Name (Surname, First Name, Other Names)</Label>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-1">
-                          <Input {...register("personalInfo.firstName")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg font-medium" placeholder="JOHN" />
-                          {errors.personalInfo?.firstName && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.firstName.message}</p>}
-                        </div>
-                        <div className="space-y-1">
                           <Input {...register("personalInfo.surname")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg font-medium" placeholder="DOE" />
                           {errors.personalInfo?.surname && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.surname.message}</p>}
+                        </div>
+                        <div className="space-y-1">
+                          <Input {...register("personalInfo.firstName")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg font-medium" placeholder="JOHN" />
+                          {errors.personalInfo?.firstName && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.firstName.message}</p>}
                         </div>
                         <div className="space-y-1">
                           <Input {...register("personalInfo.otherNames")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg font-medium" placeholder="SMITH (OPTIONAL)" />
@@ -252,7 +286,20 @@ const Apply = () => {
 
                     <div className="space-y-2">
                       <Label className="uppercase text-[10px] font-bold tracking-widest text-zinc-500">Date of Birth (DD/MM/YYYY)</Label>
-                      <Input type="date" {...register("personalInfo.dob")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors" />
+                      <div className="flex gap-2">
+                        <select {...register("personalInfo.dobDay")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary">
+                          <option value="">Day</option>
+                          {days.map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                        <select {...register("personalInfo.dobMonth")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary">
+                          <option value="">Month</option>
+                          {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                        </select>
+                        <select {...register("personalInfo.dobYear")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary">
+                          <option value="">Year</option>
+                          {years.map(y => <option key={y} value={y}>{y}</option>)}
+                        </select>
+                      </div>
                       {errors.personalInfo?.dob && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.dob.message}</p>}
                     </div>
 
@@ -361,16 +408,16 @@ const Apply = () => {
                           {fields.map((field, index) => (
                             <tr key={field.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-900/50 transition-colors">
                               <td className="p-2 border-b border-r border-slate-100 dark:border-zinc-800">
-                                <Input {...register(`education.${index}.qualification`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary h-10 font-medium bg-transparent" />
+                                <Input {...register(`education.${index}.qualification`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary font-medium bg-transparent" />
                               </td>
                               <td className="p-2 border-b border-r border-slate-100 dark:border-zinc-800">
-                                <Input {...register(`education.${index}.institution`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary h-10 font-medium bg-transparent" />
+                                <Input {...register(`education.${index}.institution`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary font-medium bg-transparent" />
                               </td>
                               <td className="p-2 border-b border-r border-slate-100 dark:border-zinc-800">
-                                <Input {...register(`education.${index}.country`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary h-10 font-medium bg-transparent" />
+                                <Input {...register(`education.${index}.country`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary font-medium bg-transparent" />
                               </td>
                               <td className="p-2 border-b border-r border-slate-100 dark:border-zinc-800">
-                                <Input type="number" {...register(`education.${index}.year`)} placeholder="2024" className="border-0 focus-visible:ring-1 focus-visible:ring-primary h-10 font-medium bg-transparent" />
+                                <Input type="number" {...register(`education.${index}.year`)} placeholder="2024" className="border-0 focus-visible:ring-1 focus-visible:ring-primary font-medium bg-transparent" />
                               </td>
                               <td className="p-2 border-b border-slate-100 dark:border-zinc-800 text-center">
                                 {index > 0 && (
@@ -387,6 +434,38 @@ const Apply = () => {
                     <p className="text-[10px] text-muted-foreground italic flex items-center gap-1 md:hidden pl-1">
                       <Info className="w-3 h-3" /> Swipe left to view full table
                     </p>
+                    {/* Mobile-friendly stacked view for education entries */}
+                    <div className="md:hidden space-y-4">
+                      {fields.map((field, index) => (
+                        <div key={field.id} className="p-4 border rounded-lg bg-white/50 dark:bg-zinc-900/30">
+                          <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Qualification</Label>
+                            <Input {...register(`education.${index}.qualification`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary font-medium bg-transparent" placeholder="e.g. MSc. Management" />
+                          </div>
+                          <div className="space-y-2 mt-3">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Institution</Label>
+                            <Input {...register(`education.${index}.institution`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary font-medium bg-transparent" placeholder="e.g. University of Ghana" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-3 mt-3">
+                            <div className="space-y-2">
+                              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Country</Label>
+                              <Input {...register(`education.${index}.country`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary font-medium bg-transparent" placeholder="Country" />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs font-bold uppercase tracking-widest text-zinc-500">Year Obtained</Label>
+                              <Input type="number" {...register(`education.${index}.year`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary font-medium bg-transparent" placeholder="2024" />
+                            </div>
+                          </div>
+                          <div className="flex justify-end mt-3">
+                            {index > 0 && (
+                              <button type="button" onClick={() => remove(index)} className="text-zinc-400 hover:text-red-500 transition-colors flex items-center gap-2">
+                                <Trash2 size={16} /> Remove
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
