@@ -287,15 +287,15 @@ const Apply = () => {
                     <div className="space-y-2">
                       <Label className="uppercase text-[10px] font-bold tracking-widest text-zinc-500">Date of Birth (DD/MM/YYYY)</Label>
                       <div className="flex gap-2">
-                        <select {...register("personalInfo.dobDay")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary">
+                        <select {...register("personalInfo.dobDay")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary text-slate-900 dark:text-foreground" style={{ WebkitTextFillColor: 'currentColor' }}>
                           <option value="">Day</option>
                           {days.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
-                        <select {...register("personalInfo.dobMonth")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary">
+                        <select {...register("personalInfo.dobMonth")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary text-slate-900 dark:text-foreground" style={{ WebkitTextFillColor: 'currentColor' }}>
                           <option value="">Month</option>
                           {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                         </select>
-                        <select {...register("personalInfo.dobYear")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary">
+                        <select {...register("personalInfo.dobYear")} className="w-1/3 border-0 border-b-2 border-slate-200 dark:border-zinc-800 bg-transparent px-3 py-2 focus-visible:ring-0 focus-visible:border-primary text-slate-900 dark:text-foreground" style={{ WebkitTextFillColor: 'currentColor' }}>
                           <option value="">Year</option>
                           {years.map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
