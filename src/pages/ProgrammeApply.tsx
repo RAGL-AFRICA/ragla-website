@@ -370,7 +370,7 @@ const Apply = () => {
                                 <Input {...register(`education.${index}.country`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary h-10 font-medium bg-transparent" />
                               </td>
                               <td className="p-2 border-b border-r border-slate-100 dark:border-zinc-800">
-                                <Input type="number" {...register(`education.${index}.year`)} className="border-0 focus-visible:ring-1 focus-visible:ring-primary h-10 font-medium bg-transparent" />
+                                <Input type="number" {...register(`education.${index}.year`)} placeholder="2024" className="border-0 focus-visible:ring-1 focus-visible:ring-primary h-10 font-medium bg-transparent" />
                               </td>
                               <td className="p-2 border-b border-slate-100 dark:border-zinc-800 text-center">
                                 {index > 0 && (
