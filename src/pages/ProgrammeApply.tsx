@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   CheckCircle2, 
@@ -33,7 +33,10 @@ import isoBadge from "@/assets/iso-badge.png";
 // --- VALIDATION SCHEMA ---
 const applicationSchema = zod.object({
   personalInfo: zod.object({
-    fullName: zod.string().min(3, "Full name is required"),
+    surname: zod.string().min(1, "Surname is required"),
+    firstName: zod.string().min(1, "First name is required"),
+    otherNames: zod.string().optional(),
+    fullName: zod.string().optional(),
     gender: zod.string().min(1, "Gender is required"),
     dob: zod.string().min(1, "Date of birth is required"),
     nationality: zod.string().min(2, "Nationality is required"),
@@ -78,7 +81,7 @@ const Apply = () => {
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<ApplicationData>({
     resolver: zodResolver(applicationSchema),
     defaultValues: {
-      personalInfo: { gender: "Male" },
+      personalInfo: { gender: "Male", surname: "", firstName: "", otherNames: "" },
       professionalInfo: { positionLevel: [] },
       education: [{ qualification: "", institution: "", country: "", year: "" }],
       sponsorship: { type: "Self-Sponsored" },
@@ -86,6 +89,23 @@ const Apply = () => {
       date: new Date().toISOString().split('T')[0]
     }
   });
+
+  // Compose `personalInfo.fullName` from the split name fields
+  const surname = watch("personalInfo.surname");
+  const firstName = watch("personalInfo.firstName");
+  const otherNames = watch("personalInfo.otherNames");
+
+  useEffect(() => {
+    const s = (surname || "").trim();
+    const f = (firstName || "").trim();
+    const o = (otherNames || "").trim();
+    if (s || f || o) {
+      const composed = `${s}${f ? ", " + f : ""}${o ? " " + o : ""}`;
+      setValue("personalInfo.fullName", composed, { shouldDirty: true });
+    } else {
+      setValue("personalInfo.fullName", "", { shouldDirty: true });
+    }
+  }, [surname, firstName, otherNames, setValue]);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -209,8 +229,19 @@ const Apply = () => {
                   <div className="grid md:grid-cols-2 gap-x-10 gap-y-6">
                     <div className="space-y-2 col-span-2">
                       <Label className="uppercase text-[10px] font-bold tracking-widest text-zinc-500">Full Name (Surname, First Name, Other Names)</Label>
-                      <Input {...register("personalInfo.fullName")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg font-medium" placeholder="E.g. DOE, JOHN SMITH" />
-                      {errors.personalInfo?.fullName && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.fullName.message}</p>}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-1">
+                          <Input {...register("personalInfo.firstName")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg font-medium" placeholder="JOHN" />
+                          {errors.personalInfo?.firstName && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.firstName.message}</p>}
+                        </div>
+                        <div className="space-y-1">
+                          <Input {...register("personalInfo.surname")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg font-medium" placeholder="DOE" />
+                          {errors.personalInfo?.surname && <p className="text-[10px] text-red-500 font-bold uppercase">{errors.personalInfo.surname.message}</p>}
+                        </div>
+                        <div className="space-y-1">
+                          <Input {...register("personalInfo.otherNames")} className="border-0 border-b-2 border-slate-200 dark:border-zinc-800 rounded-none bg-transparent focus-visible:ring-0 focus-visible:border-primary transition-colors text-lg font-medium" placeholder="SMITH (OPTIONAL)" />
+                        </div>
+                      </div>
                     </div>
 
                     <div className="space-y-2">
