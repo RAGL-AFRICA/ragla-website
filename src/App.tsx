@@ -30,6 +30,7 @@ import Apply from "./pages/Apply.tsx";
 import ProgrammeApply from "./pages/ProgrammeApply.tsx";
 import Programmes from "./pages/Programmes.tsx";
 import CourseDetail from "./pages/CourseDetail.tsx";
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <Analytics />
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <ScrollToTop />
           <RAGLAChatbot />
