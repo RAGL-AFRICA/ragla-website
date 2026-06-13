@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
-import { Shield, Award, Users, BookOpen, Target, Handshake, GraduationCap, Star, Globe, Leaf } from "lucide-react";
+import { Shield, Award, Users, BookOpen, Target, Handshake, GraduationCap, Star, Globe, Leaf, ArrowRight } from "lucide-react";
 
 const missionAreas = [
   {
@@ -150,6 +150,32 @@ const AboutUs = () => {
                 <p className="text-muted-foreground text-sm leading-relaxed">{value.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Global Ambassador and Alliances Section */}
+      <section className="section-padding bg-secondary/30">
+        <div className="container-main">
+          <div className="bg-card border border-primary/20 rounded-[2rem] p-8 md:p-12 card-shadow flex flex-col md:flex-row items-center gap-8 md:gap-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+            
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-primary/30 shrink-0">
+              <img src="/smily-mukta-ghoshal.jpg" alt="Amb. (Dr.) Smily Mukta Ghoshal" className="w-full h-full object-cover" />
+            </div>
+            
+            <div className="space-y-4 text-center md:text-left">
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">Global Ambassador & Strategic Partner</span>
+              <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">Amb. (Dr.) Smily Mukta Ghoshal</h3>
+              <p className="text-muted-foreground text-sm max-w-2xl font-medium">
+                Welcoming our new Strategic Partner and Global Ambassador to advance innovative leadership solutions, promote governance excellence, and advocate for sustainability across Africa and the larger global community.
+              </p>
+              <div className="pt-2">
+                <Link to="/global-ambassador" className="inline-flex items-center gap-2 bg-primary text-[#00122e] px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:brightness-110 transition-all">
+                  View Executive Profile <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

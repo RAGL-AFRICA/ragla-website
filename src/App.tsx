@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import AboutUs from "./pages/AboutUs.tsx";
+import GlobalAmbassador from "./pages/GlobalAmbassador.tsx";
 import MembershipBenefits from "./pages/MembershipBenefits.tsx";
 import ContactUs from "./pages/ContactUs.tsx";
 import SignIn from "./pages/SignIn.tsx";
@@ -46,6 +47,8 @@ const App = () => (
           <RAGLAChatbot />
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/global-ambassador" element={<GlobalAmbassador />} />
+            <Route path="/ambassador" element={<GlobalAmbassador />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/membership-benefits" element={<MembershipBenefits />} />
             <Route path="/membership" element={<MembershipBenefits />} />
